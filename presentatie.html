@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voorraadbeheer Tool — HelloFresh Ruinerwold</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Sora:wght@600;700;800&display=swap');
+
+  :root {
+    --hf-green: #2D8653;
+    --hf-dark: #1B5E38;
+    --hf-cream: #F5F0E8;
+    --hf-white: #FFFFFF;
+    --hf-text: #2E2E2E;
+    --hf-light: #E8F5EE;
+    --hf-accent: #FF6B35;
+    --hf-gray: #6B7280;
+    --hf-border: rgba(45,134,83,0.2);
+  }
+
+  html { font-size: 17px; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #0D1A12;
+    color: var(--hf-text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ── Slideshow wrapper ── */
+  #deck {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 38px 62px 82px;
+    opacity: 0;
+    overflow: hidden;
+  }
+  .slide.active {
+    display: flex;
+    animation: slideIn .7s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: scale(.985) translateY(26px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* ── Staggered entrance for slide children ── */
+  .slide.active > * { animation: rise .65s cubic-bezier(.22,1,.36,1) both; }
+  .slide.active > *:nth-child(1) { animation-delay: .08s }
+  .slide.active > *:nth-child(2) { animation-delay: .18s }
+  .slide.active > *:nth-child(3) { animation-delay: .28s }
+  .slide.active > *:nth-child(4) { animation-delay: .38s }
+  .slide.active > *:nth-child(5) { animation-delay: .48s }
+  .slide.active > *:nth-child(6) { animation-delay: .58s }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slide.active, .slide.active > * { animation: none !important; }
+  }
+
+  /* ── Backgrounds — layered depth ── */
+  .bg-green   { background: radial-gradient(1200px 800px at 85% -10%, #37A266 0%, var(--hf-green) 48%, #226841 100%); }
+  .bg-dark    { background: radial-gradient(1200px 800px at 80% -10%, #27754A 0%, var(--hf-dark) 52%, #11341F 100%); }
+  .bg-cream   { background: linear-gradient(160deg, #FBF8F3 0%, var(--hf-cream) 55%, #EDE4D5 100%); }
+  .bg-white   { background: linear-gradient(160deg, #FFFFFF 0%, #F6FAF7 100%); }
+  .bg-light   { background: linear-gradient(160deg, #EFF8F3 0%, var(--hf-light) 100%); }
+  .bg-split   { background: linear-gradient(135deg, var(--hf-dark) 50%, var(--hf-green) 50%); }
+
+  /* ── Decorative glow orbs ── */
+  .bg-dark::before, .bg-green::before {
+    content: ''; position: absolute; width: 62vmin; height: 62vmin; border-radius: 50%;
+    background: radial-gradient(circle, rgba(110,207,161,.16), transparent 70%);
+    top: -18vmin; right: -12vmin; pointer-events: none;
+  }
+  .bg-dark::after, .bg-green::after {
+    content: ''; position: absolute; width: 52vmin; height: 52vmin; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,.06), transparent 70%);
+    bottom: -16vmin; left: -10vmin; pointer-events: none;
+  }
+  .bg-cream::before, .bg-white::before, .bg-light::before {
+    content: ''; position: absolute; width: 70vmin; height: 70vmin; border-radius: 50%;
+    background: radial-gradient(circle, rgba(45,134,83,.07), transparent 70%);
+    top: -22vmin; left: -15vmin; pointer-events: none;
+  }
+  .bg-cream::after, .bg-white::after, .bg-light::after {
+    content: ''; position: absolute; width: 55vmin; height: 55vmin; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,107,53,.05), transparent 70%);
+    bottom: -18vmin; right: -12vmin; pointer-events: none;
+  }
+
+  /* ── Typography ── */
+  .slide-tag {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: .6;
+    margin-bottom: 16px;
+  }
+
+  h1, h2, h3 { font-family: 'Sora', 'Inter', sans-serif; letter-spacing: -.02em; }
+  h1 {
+    font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+    font-weight: 800;
+    line-height: 1.06;
+    margin-bottom: 16px;
+  }
+  h2 {
+    font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .grad-text {
+    background: linear-gradient(95deg, #6ECFA1 10%, #B2EBCC 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    font-size: clamp(1rem, 2vw, 1.35rem);
+    font-weight: 300;
+    opacity: .85;
+    line-height: 1.5;
+    max-width: 780px;
+    text-align: center;
+  }
+  .subtitle-left { text-align: left; }
+
+  .white-text, .white-text * { color: #fff !important; }
+  .green-text { color: var(--hf-green) !important; }
+  .dark-text  { color: var(--hf-dark) !important; }
+
+  /* ── HF Logo badge ── */
+  .hf-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,.15);
+    border: 1.5px solid rgba(255,255,255,.3);
+    border-radius: 50px;
+    padding: 8px 20px;
+    margin-bottom: 28px;
+  }
+  .hf-logo-dot {
+    width: 28px; height: 28px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 900; color: var(--hf-green);
+    animation: logoPulse 3.2s ease-in-out infinite;
+  }
+  @keyframes logoPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,.35); }
+    55%      { box-shadow: 0 0 0 11px rgba(255,255,255,0); }
+  }
+  .hf-logo span { color: #fff; font-weight: 600; font-size: .9rem; letter-spacing: 1px; }
+
+  /* ── Divider line ── */
+  .hf-line {
+    width: 72px; height: 4px;
+    background: linear-gradient(90deg, var(--hf-green), #6ECFA1);
+    border-radius: 2px;
+    margin: 20px auto;
+    box-shadow: 0 0 14px rgba(110,207,161,.35);
+  }
+  .hf-line-white { background: linear-gradient(90deg, rgba(255,255,255,.7), rgba(255,255,255,.35)); box-shadow: 0 0 14px rgba(255,255,255,.25); }
+  .hf-line-left  { margin-left: 0; }
+
+  /* ── Grid layouts ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; width: 100%; max-width: 1100px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; width: 100%; max-width: 1100px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; width: 100%; max-width: 1100px; }
+
+  /* ── Cards — layered shadows + hover lift ── */
+  .card, .card-green, .card-dark, .card-cream, .card-outline {
+    border-radius: 18px;
+    padding: 28px;
+    transition: transform .35s cubic-bezier(.22,1,.36,1), box-shadow .35s ease;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid rgba(45,134,83,.08);
+    box-shadow: 0 1px 2px rgba(27,94,56,.05), 0 10px 32px rgba(27,94,56,.09);
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 2px 4px rgba(27,94,56,.06), 0 20px 48px rgba(27,94,56,.15); }
+  .card-green {
+    background: linear-gradient(150deg, #36A065 0%, var(--hf-green) 60%, #257547 100%);
+    color: #fff;
+    box-shadow: 0 12px 36px rgba(45,134,83,.32);
+  }
+  .card-green:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(45,134,83,.42); }
+  .card-dark {
+    background: linear-gradient(150deg, #226444 0%, var(--hf-dark) 65%), var(--hf-dark);
+    color: #fff;
+    box-shadow: 0 12px 36px rgba(27,94,56,.32);
+  }
+  .card-dark:hover { transform: translateY(-4px); box-shadow: 0 20px 48px rgba(27,94,56,.42); }
+  .card-cream {
+    background: var(--hf-cream);
+    box-shadow: 0 8px 26px rgba(27,94,56,.07);
+  }
+  .card-cream:hover { transform: translateY(-3px); box-shadow: 0 14px 36px rgba(27,94,56,.12); }
+  .card-outline {
+    background: rgba(255,255,255,.5);
+    border: 2px solid var(--hf-border);
+  }
+  .card-outline:hover { transform: translateY(-3px); border-color: rgba(45,134,83,.4); }
+
+  /* ── Role pill ── */
+  .role-pill {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .pill-green  { background: var(--hf-light); color: var(--hf-dark); }
+  .pill-orange { background: #FFF0E8; color: #C45A1A; }
+  .pill-dark   { background: rgba(255,255,255,.15); color: #fff; }
+
+  /* ── Feature list ── */
+  .feat-list {
+    list-style: none;
+    width: 100%;
+    max-width: 900px;
+  }
+  .feat-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  .feat-list li:last-child { border: none; }
+  .feat-icon {
+    width: 32px; height: 32px; flex-shrink: 0;
+    background: var(--hf-light);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .feat-text strong { display: block; font-size: 1rem; }
+  .feat-text span   { font-size: .88rem; color: var(--hf-gray); }
+
+  /* ── Roadmap ── */
+  .road-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(45,134,83,.15);
+  }
+  .road-item:last-child { border: none; }
+  .road-num {
+    width: 36px; height: 36px; flex-shrink: 0;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: .9rem;
+  }
+  .road-p1 { background: var(--hf-green); color: #fff; }
+  .road-p2 { background: var(--hf-light); color: var(--hf-dark); }
+  .road-p3 { background: #F5F5F5; color: var(--hf-gray); }
+  .road-text strong { display: block; font-size: 1rem; margin-bottom: 2px; }
+  .road-text span   { font-size: .86rem; color: var(--hf-gray); }
+
+  /* ── Bilingual label ── */
+  .bilabel {
+    display: flex; gap: 8px; align-items: center; margin-bottom: 6px;
+  }
+  .lang-badge {
+    font-size: 9px; font-weight: 800; letter-spacing: 2px;
+    padding: 2px 8px; border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .lang-nl { background: var(--hf-dark); color: #fff; }
+  .lang-en { background: #E5E7EB; color: #374151; }
+
+  /* ── Big stat ── */
+  .stat-block { text-align: center; }
+  .stat-num { font-size: clamp(2.5rem,6vw,4.5rem); font-weight: 800; line-height: 1; }
+  .stat-label { font-size: .85rem; font-weight: 500; opacity: .7; margin-top: 6px; }
+
+  /* ── Progress bar ── */
+  #progress {
+    position: fixed; top: 0; left: 0;
+    height: 3px; width: 0%;
+    background: linear-gradient(90deg, var(--hf-green), #6ECFA1);
+    box-shadow: 0 0 12px rgba(110,207,161,.6);
+    z-index: 300;
+    transition: width .55s cubic-bezier(.22,1,.36,1);
+  }
+
+  /* ── Navigation — glass pill, auto-fades when idle ── */
+  #nav {
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(8,18,12,.55);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 50px;
+    padding: 8px 18px;
+    z-index: 100;
+    box-shadow: 0 12px 32px rgba(0,0,0,.35);
+    transition: opacity .45s ease;
+  }
+  #nav.idle { opacity: .12; }
+  #nav:hover { opacity: 1; }
+  #nav button.arrow {
+    background: none; border: none; cursor: pointer;
+    color: #fff; font-size: 1rem; padding: 6px 10px;
+    border-radius: 8px; transition: background .2s;
+  }
+  #nav button.arrow:hover { background: rgba(255,255,255,.15); }
+  #slide-counter { color: rgba(255,255,255,.55); font-size: .8rem; min-width: 52px; text-align: center; font-variant-numeric: tabular-nums; }
+  #dots { display: flex; gap: 6px; align-items: center; }
+  #dots .dot {
+    width: 7px; height: 7px; border-radius: 4px;
+    background: rgba(255,255,255,.25);
+    border: none; padding: 0; cursor: pointer;
+    transition: all .35s cubic-bezier(.22,1,.36,1);
+  }
+  #dots .dot:hover { background: rgba(255,255,255,.55); }
+  #dots .dot.on {
+    width: 22px;
+    background: #6ECFA1;
+    box-shadow: 0 0 10px rgba(110,207,161,.6);
+  }
+
+  /* ── Fullscreen hint ── */
+  #hint {
+    position: fixed; top: 20px; right: 24px;
+    color: rgba(255,255,255,.4); font-size: .75rem;
+    pointer-events: none;
+  }
+
+  /* ── Two-column content ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    width: 100%;
+  }
+  .col-label {
+    font-size: .7rem; font-weight: 800; letter-spacing: 2px;
+    text-transform: uppercase; opacity: .5; margin-bottom: 10px;
+  }
+
+  /* ── Emoji icon big ── */
+  .icon-big { font-size: 3rem; margin-bottom: 16px; }
+
+  /* ── Slide header bar ── */
+  .slide-header {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: 20px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--hf-border);
+  }
+  .slide-header-dark { border-color: rgba(255,255,255,.1); }
+  .header-brand { font-size: .75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; opacity: .4; }
+</style>
+</head>
+<body>
+
+<div id="deck">
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 1 — Titelpagina
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-dark white-text active" id="s1">
+    <div class="hf-logo">
+      <div class="hf-logo-dot">HF</div>
+      <span>HelloFresh Ruinerwold</span>
+    </div>
+    <h1 style="text-align:center; color:#fff; max-width:980px">
+      Voorraadbeheer<br>
+      <span class="grad-text">Inventory Management</span>
+    </h1>
+    <div class="hf-line hf-line-white"></div>
+    <p class="subtitle" style="color:rgba(255,255,255,.78)">
+      Digitale vloeistoffenkast &amp; verbruiksartikelen — veilig, eenvoudig en real-time<br>
+      <em style="font-size:.9em; color:rgba(255,255,255,.55)">Digital chemical cabinet &amp; consumables — safe, simple and real-time</em>
+    </p>
+    <div style="margin-top:32px; display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:50px; padding:8px 22px">
+      <span style="font-size:1rem">🤖</span>
+      <span style="font-size:.8rem; color:rgba(255,255,255,.7); letter-spacing:.5px">Gebouwd op de werkvloer, samen met AI &nbsp;·&nbsp; <em style="color:rgba(255,255,255,.45)">Built on the work floor, together with AI</em></span>
+    </div>
+    <div style="margin-top:36px; display:flex; gap:24px; opacity:.45; font-size:.78rem">
+      <span>↑ / ↓ &nbsp;or&nbsp; ← / → to navigate</span>
+      <span>·</span>
+      <span>F to fullscreen</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 1b — Voorwoord / Foreword
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-cream" id="s1b">
+    <div class="slide-tag" style="color:var(--hf-dark)">Voorwoord · Foreword</div>
+    <h2 style="text-align:center; color:var(--hf-dark)">Een eerlijk verhaal<br><span style="font-weight:300; font-size:.65em; color:var(--hf-gray)">An honest story</span></h2>
+    <div class="hf-line"></div>
+    <div style="max-width:720px; margin-top:32px; display:flex; flex-direction:column; gap:24px">
+      <div style="display:flex; gap:20px; align-items:flex-start; background:#fff; border-radius:14px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,.06)">
+        <div style="font-size:2.2rem; flex-shrink:0">🙋</div>
+        <div>
+          <strong style="display:block; font-size:1.05rem; color:var(--hf-dark); margin-bottom:6px">Geen programmeur van beroep</strong>
+          <p style="font-size:.88rem; color:var(--hf-gray); line-height:1.6; margin:0">Ik ben geen Python- of softwareontwikkelaar. Mijn achtergrond ligt in de logistiek en de dagelijkse praktijk op de werkvloer bij HelloFresh Ruinerwold.<br><em>I am not a software developer. My background is in logistics and daily operations at HelloFresh Ruinerwold.</em></p>
+        </div>
+      </div>
+      <div style="display:flex; gap:20px; align-items:flex-start; background:#fff; border-radius:14px; padding:24px 28px; box-shadow:0 2px 12px rgba(0,0,0,.06)">
+        <div style="font-size:2.2rem; flex-shrink:0">🤖</div>
+        <div>
+          <strong style="display:block; font-size:1.05rem; color:var(--hf-dark); margin-bottom:6px">Gemaakt in samenwerking met Artificiële Intelligentie</strong>
+          <p style="font-size:.88rem; color:var(--hf-gray); line-height:1.6; margin:0">Deze tool is van begin tot eind gebouwd in samenwerking met AI. Ik heb de problemen benoemd, de wensen beschreven en de richting bepaald — de AI heeft dit vertaald naar werkende technologie.<br><em>This tool was built from start to finish in collaboration with AI. I identified the problems, described the requirements and set the direction — the AI translated this into working technology.</em></p>
+        </div>
+      </div>
+      <div style="display:flex; gap:20px; align-items:flex-start; background:var(--hf-dark); border-radius:14px; padding:24px 28px">
+        <div style="font-size:2.2rem; flex-shrink:0">💡</div>
+        <div>
+          <strong style="display:block; font-size:1.05rem; color:#fff; margin-bottom:6px">Het bewijs dat het kan</strong>
+          <p style="font-size:.88rem; color:rgba(255,255,255,.7); line-height:1.6; margin:0">Dit laat zien dat iedereen — ongeacht technische achtergrond — met de juiste hulpmiddelen een professionele oplossing kan bouwen voor een echt probleem.<br><em>This shows that anyone — regardless of technical background — can build a professional solution to a real problem with the right tools.</em></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 2 — Van probleem naar oplossing / Journey
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-cream" id="s2" style="padding:28px 54px 82px;">
+    <div class="slide-tag" style="color:var(--hf-dark)">Aanleiding · Context</div>
+    <h2 style="text-align:center; color:var(--hf-dark); font-size:clamp(1.2rem,2.5vw,1.8rem); margin-bottom:4px">Van probleem naar werkende tool<br><span style="font-weight:300; font-size:.65em; color:var(--hf-gray)">From problem to working solution</span></h2>
+    <div class="hf-line" style="margin:10px auto"></div>
+
+    <div style="display:grid; grid-template-columns:1fr 80px 80px 80px 1fr; align-items:center; gap:0; margin-top:28px; max-width:1000px; width:100%">
+
+      <!-- HUIDIG kolom -->
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="font-size:.65rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#e57373; margin-bottom:4px">❌ Huidig · Current</div>
+        <div style="background:#fff; border-radius:12px; padding:14px 16px; border-left:3px solid #e57373">
+          <div style="font-size:1.2rem; margin-bottom:4px">🔀</div>
+          <strong style="font-size:.82rem; color:var(--hf-dark); display:block">Langs elkaar heen werken</strong>
+          <span style="font-size:.72rem; color:var(--hf-gray)">Niemand wist wat de ander had besteld · Nobody knew what the other had ordered</span>
+        </div>
+        <div style="background:#fff; border-radius:12px; padding:14px 16px; border-left:3px solid #e57373">
+          <div style="font-size:1.2rem; margin-bottom:4px">📦</div>
+          <strong style="font-size:.82rem; color:var(--hf-dark); display:block">Te veel besteld</strong>
+          <span style="font-size:.72rem; color:var(--hf-gray)">Overschotten moesten worden teruggestuurd — onduidelijk <em>waarom</em> er structureel te veel werd besteld · Surpluses returned, no insight into <em>why</em> over-ordering kept happening</span>
+        </div>
+        <div style="background:#fff; border-radius:12px; padding:14px 16px; border-left:3px solid #e57373">
+          <div style="font-size:1.2rem; margin-bottom:4px">🌐</div>
+          <strong style="font-size:.82rem; color:var(--hf-dark); display:block">Taalbarrière</strong>
+          <span style="font-size:.72rem; color:var(--hf-gray)">Invallers vertaalden alles via Google Translate · Temps translated via Google Translate</span>
+        </div>
+      </div>
+
+      <!-- Pijlen + tussenkolom -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px; padding:0 4px">
+        <div style="width:2px; flex:1; background:linear-gradient(to bottom, #e57373, #f5a623)"></div>
+        <div style="font-size:1.1rem">→</div>
+        <div style="width:2px; flex:1; background:linear-gradient(to bottom, #f5a623, #f5a623)"></div>
+      </div>
+      <div style="background:var(--hf-dark); border-radius:14px; padding:16px 10px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:6px; align-self:stretch">
+        <div style="font-size:1.6rem">🤖</div>
+        <div style="font-size:.62rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--hf-green); line-height:1.4">AI samen<br>werking</div>
+        <div style="font-size:.6rem; color:rgba(255,255,255,.4); font-style:italic; line-height:1.4">idee + richting<br>→ werkende code</div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px; padding:0 4px">
+        <div style="width:2px; flex:1; background:linear-gradient(to bottom, #f5a623, var(--hf-green))"></div>
+        <div style="font-size:1.1rem">→</div>
+        <div style="width:2px; flex:1; background:linear-gradient(to bottom, var(--hf-green), var(--hf-green))"></div>
+      </div>
+
+      <!-- TOOL MOGELIJKHEID kolom -->
+      <div style="display:flex; flex-direction:column; gap:10px">
+        <div style="font-size:.65rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--hf-green); margin-bottom:4px">✅ Tool mogelijkheid · Tool capability</div>
+        <div style="background:#fff; border-radius:12px; padding:14px 16px; border-left:3px solid var(--hf-green)">
+          <div style="font-size:1.2rem; margin-bottom:4px">🔄</div>
+          <strong style="font-size:.82rem; color:var(--hf-dark); display:block">Real-time gedeelde voorraad</strong>
+          <span style="font-size:.72rem; color:var(--hf-gray)">Iedereen ziet dezelfde live stand · Everyone sees the same live stock</span>
+        </div>
+        <div style="background:#fff; border-radius:12px; padding:14px 16px; border-left:3px solid var(--hf-green)">
+          <div style="font-size:1.2rem; margin-bottom:4px">🔒</div>
+          <strong style="font-size:.82rem; color:var(--hf-dark); display:block">Uniforme werkhouding</strong>
+          <span style="font-size:.72rem; color:var(--hf-gray)">Digitale werkvoorraad die niet overschreden kan worden — iedereen werkt op dezelfde manier · Digital work stock that cannot be exceeded — one consistent way of working</span>
+        </div>
+        <div style="background:#fff; border-radius:12px; padding:14px 16px; border-left:3px solid var(--hf-green)">
+          <div style="font-size:1.2rem; margin-bottom:4px">🌍</div>
+          <strong style="font-size:.82rem; color:var(--hf-dark); display:block">Meertalige interface</strong>
+          <span style="font-size:.72rem; color:var(--hf-gray)">NL &amp; Arabisch — geen Google Translate meer nodig · NL &amp; Arabic — no more Google Translate</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 3 — De oplossing / The solution
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-green white-text" id="s3">
+    <div class="slide-tag" style="color:rgba(255,255,255,.6)">Oplossing · Solution</div>
+    <h2 style="text-align:center; color:#fff">Eén digitale hub<br><span style="font-weight:300; font-size:.65em; color:rgba(255,255,255,.7)">One digital hub</span></h2>
+    <div class="hf-line hf-line-white"></div>
+    <div class="grid-2" style="margin-top:28px; max-width:900px">
+      <div style="display:flex; flex-direction:column; gap:16px">
+        <div style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.12); border-radius:12px; padding:16px 20px">
+          <span style="font-size:1.5rem">📱</span>
+          <div>
+            <strong style="display:block; color:#fff">Mobiel &amp; desktop</strong>
+            <span style="font-size:.82rem; color:rgba(255,255,255,.7)">Werkt op elke telefoon, tablet of pc · Works on any device</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.12); border-radius:12px; padding:16px 20px">
+          <span style="font-size:1.5rem">🔄</span>
+          <div>
+            <strong style="display:block; color:#fff">Real-time sync</strong>
+            <span style="font-size:.82rem; color:rgba(255,255,255,.7)">Iedereen ziet dezelfde voorraad live · Everyone sees the same live stock</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.12); border-radius:12px; padding:16px 20px">
+          <span style="font-size:1.5rem">🔐</span>
+          <div>
+            <strong style="display:block; color:#fff">Rol-gebaseerde toegang</strong>
+            <span style="font-size:.82rem; color:rgba(255,255,255,.7)">Medewerker, Manager, Beheer · Employee, Manager, Admin</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:16px">
+        <div style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.12); border-radius:12px; padding:16px 20px">
+          <span style="font-size:1.5rem">📊</span>
+          <div>
+            <strong style="display:block; color:#fff">Automatisch rapporteren</strong>
+            <span style="font-size:.82rem; color:rgba(255,255,255,.7)">Bestelrapport met één klik · Order report in one click</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.12); border-radius:12px; padding:16px 20px">
+          <span style="font-size:1.5rem">🌍</span>
+          <div>
+            <strong style="display:block; color:#fff">Meertalig · Multilingual</strong>
+            <span style="font-size:.82rem; color:rgba(255,255,255,.7)">Nederlands &amp; Arabisch (RTL) · Dutch &amp; Arabic (RTL)</span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px; background:rgba(255,255,255,.12); border-radius:12px; padding:16px 20px">
+          <span style="font-size:1.5rem">☁️</span>
+          <div>
+            <strong style="display:block; color:#fff">Cloud-gebaseerd</strong>
+            <span style="font-size:.82rem; color:rgba(255,255,255,.7)">Geen installatie nodig · No installation needed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 3b — QR Code & Bereikbaarheid
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-dark white-text" id="s3b">
+    <div class="slide-tag" style="color:rgba(255,255,255,.5)">Bereikbaarheid · Accessibility</div>
+    <h2 style="text-align:center; color:#fff">Open de app via QR-code<br><span style="font-weight:300; font-size:.65em; color:rgba(255,255,255,.6)">Access via QR code — any network</span></h2>
+    <div class="hf-line hf-line-white"></div>
+
+    <div style="display:grid; grid-template-columns:240px 1fr; gap:52px; align-items:center; margin-top:24px; max-width:960px; width:100%">
+
+      <!-- QR code -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:18px">
+        <div style="background:#fff; border-radius:22px; padding:18px; box-shadow:0 20px 60px rgba(0,0,0,.4); position:relative">
+          <div id="qr-presentatie" style="width:200px; height:200px; border-radius:6px; overflow:hidden"></div>
+          <div style="position:absolute; bottom:-14px; left:50%; transform:translateX(-50%); background:var(--hf-green); color:#fff; border-radius:20px; padding:5px 16px; font-size:.72rem; font-weight:700; letter-spacing:.5px; white-space:nowrap; box-shadow:0 4px 14px rgba(45,134,83,.5)">✅ Altijd bereikbaar</div>
+        </div>
+        <div style="text-align:center; margin-top:8px; font-size:.65rem; color:rgba(255,255,255,.4); font-family:monospace; line-height:1.8">
+          leroyevertse-cloud.github.io<br>/voorraadbeheer-ruinerwold
+        </div>
+      </div>
+
+      <!-- Key points -->
+      <div style="display:flex; flex-direction:column; gap:16px">
+        <div style="display:flex; align-items:flex-start; gap:16px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:18px 20px">
+          <span style="font-size:1.8rem; flex-shrink:0">📶</span>
+          <div>
+            <strong style="display:block; color:#fff; margin-bottom:4px">Elke telefoon, elk netwerk</strong>
+            <span style="font-size:.82rem; color:rgba(255,255,255,.65); line-height:1.5">WiFi, 4G of 5G — het maakt niet uit welk netwerk je gebruikt. Alleen een internetverbinding volstaat.<br><em style="color:rgba(255,255,255,.4)">Any network works — WiFi, 4G or 5G. Just internet access is enough.</em></span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:16px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); border-radius:14px; padding:18px 20px">
+          <span style="font-size:1.8rem; flex-shrink:0">📱</span>
+          <div>
+            <strong style="display:block; color:#fff; margin-bottom:4px">Geen app te installeren</strong>
+            <span style="font-size:.82rem; color:rgba(255,255,255,.65); line-height:1.5">Gewoon de browser op je telefoon openen — werkt op Android én iPhone.<br><em style="color:rgba(255,255,255,.4)">Open the browser on your phone — works on Android and iPhone.</em></span>
+          </div>
+        </div>
+        <div style="display:flex; align-items:flex-start; gap:16px; background:rgba(45,134,83,.2); border:1px solid rgba(45,134,83,.45); border-radius:14px; padding:18px 20px">
+          <span style="font-size:1.8rem; flex-shrink:0">🔖</span>
+          <div>
+            <strong style="display:block; color:#fff; margin-bottom:4px">Eenmalig instellen — altijd direct toegang</strong>
+            <span style="font-size:.82rem; color:rgba(255,255,255,.75); line-height:1.5">Sla de QR-code op of voeg de link toe als bladwijzer op je telefoon. Daarna toegang met één tik.<br><em style="color:rgba(255,255,255,.45)">Save the QR or bookmark the link — always instant access with one tap.</em></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 4 — Drie rollen / Three roles
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-white" id="s4">
+    <div class="slide-tag" style="color:var(--hf-dark)">Toegang · Access</div>
+    <h2 style="text-align:center; color:var(--hf-dark)">Drie rollen · Three roles</h2>
+    <div class="hf-line"></div>
+    <div class="grid-3" style="margin-top:24px; max-width:1000px">
+      <div class="card-cream" style="text-align:center">
+        <div style="font-size:3rem; margin-bottom:12px">👷</div>
+        <div class="role-pill pill-green">Medewerker · Employee</div>
+        <h3 style="color:var(--hf-dark); margin-bottom:12px">Dagelijks gebruik<br><span style="font-weight:300; font-size:.8em; color:var(--hf-gray)">Daily use</span></h3>
+        <ul style="list-style:none; text-align:left; font-size:.85rem; color:var(--hf-gray)">
+          <li style="padding:5px 0; border-bottom:1px solid rgba(0,0,0,.06)">✓ Voorraad aanpassen · Adjust stock</li>
+          <li style="padding:5px 0; border-bottom:1px solid rgba(0,0,0,.06)">✓ Vloeistoffenkast inzien · View chemical cabinet</li>
+          <li style="padding:5px 0">✓ Eigen taal kiezen · Choose language</li>
+        </ul>
+      </div>
+      <div class="card-green" style="text-align:center">
+        <div style="font-size:3rem; margin-bottom:12px">🧑‍💼</div>
+        <div class="role-pill pill-dark">Manager</div>
+        <h3 style="color:#fff; margin-bottom:12px">Overzicht &amp; rapportage<br><span style="font-weight:300; font-size:.8em; color:rgba(255,255,255,.7)">Overview &amp; reporting</span></h3>
+        <ul style="list-style:none; text-align:left; font-size:.85rem; color:rgba(255,255,255,.85)">
+          <li style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,.15)">✓ Verbruiksoverzicht · Usage overview</li>
+          <li style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,.15)">✓ Logboek · Audit log</li>
+          <li style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,.15)">✓ Bestelrapport PDF · Order report PDF</li>
+          <li style="padding:5px 0">✓ E-mail export · Email export</li>
+        </ul>
+      </div>
+      <div class="card-dark" style="text-align:center">
+        <div style="font-size:3rem; margin-bottom:12px">⚙️</div>
+        <div class="role-pill pill-dark">Beheer · Admin</div>
+        <h3 style="color:#fff; margin-bottom:12px">Configuratie<br><span style="font-weight:300; font-size:.8em; color:rgba(255,255,255,.6)">Configuration</span></h3>
+        <ul style="list-style:none; text-align:left; font-size:.85rem; color:rgba(255,255,255,.8)">
+          <li style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,.1)">✓ Producten beheren · Manage products</li>
+          <li style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,.1)">✓ Accounts aanmaken · Create accounts</li>
+          <li style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,.1)">✓ Lekbakken instellen · Set drip trays</li>
+          <li style="padding:5px 0">✓ PIN-toegang · PIN access</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 3c — Unieke inlog & beperkte toegang
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-cream" id="s3c">
+    <div class="slide-tag" style="color:var(--hf-dark)">Beveiliging · Security</div>
+    <h2 style="text-align:center; color:var(--hf-dark)">Elke medewerker een eigen inlog<br><span style="font-weight:300; font-size:.65em; color:var(--hf-gray)">Personal login — limited access</span></h2>
+    <div class="hf-line"></div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:24px; max-width:1000px; width:100%">
+
+      <!-- Login mockup -->
+      <div style="background:var(--hf-dark); border-radius:18px; padding:28px; display:flex; flex-direction:column; gap:14px">
+        <div style="font-size:.7rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--hf-green)">Inloggen · Login</div>
+        <div style="background:rgba(255,255,255,.07); border-radius:10px; padding:14px 16px">
+          <div style="font-size:.72rem; color:rgba(255,255,255,.4); margin-bottom:8px">Kies jouw naam · Choose your name</div>
+          <div style="display:flex; flex-direction:column; gap:7px">
+            <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.05); border-radius:8px; padding:9px 12px">
+              <span>👷</span><span style="color:#fff; font-size:.86rem">Leroy E.</span>
+              <span style="margin-left:auto; background:rgba(45,134,83,.35); color:#6ECFA1; border-radius:4px; padding:2px 8px; font-size:.66rem">Medewerker</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; background:rgba(45,134,83,.2); border:1.5px solid rgba(45,134,83,.5); border-radius:8px; padding:9px 12px">
+              <span>👷</span><span style="color:#fff; font-size:.86rem; font-weight:600">Sanja K.</span>
+              <span style="margin-left:auto; background:rgba(45,134,83,.35); color:#6ECFA1; border-radius:4px; padding:2px 8px; font-size:.66rem">Medewerker</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.05); border-radius:8px; padding:9px 12px">
+              <span>👷</span><span style="color:rgba(255,255,255,.6); font-size:.86rem">Ahmed B.</span>
+              <span style="margin-left:auto; background:rgba(255,200,100,.15); color:#fbbf24; border-radius:4px; padding:2px 8px; font-size:.66rem">Medewerker</span>
+            </div>
+          </div>
+        </div>
+        <div style="background:rgba(255,255,255,.07); border-radius:10px; padding:12px 16px">
+          <div style="font-size:.72rem; color:rgba(255,255,255,.4); margin-bottom:6px">Wachtwoord · Password</div>
+          <div style="background:rgba(255,255,255,.05); border:1.5px solid var(--hf-green); border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center">
+            <span style="color:rgba(255,255,255,.5); letter-spacing:4px; font-size:1.1rem">••••••</span>
+            <span style="font-size:.8rem; color:rgba(255,255,255,.3)">🔒</span>
+          </div>
+        </div>
+        <div style="background:var(--hf-green); border-radius:8px; padding:10px; text-align:center; font-weight:700; color:#fff; font-size:.88rem">
+          Inloggen · Login →
+        </div>
+      </div>
+
+      <!-- Access overview -->
+      <div style="display:flex; flex-direction:column; gap:14px">
+        <div style="background:#EFF8F3; border-radius:14px; padding:18px 22px; border-left:4px solid var(--hf-green)">
+          <div style="font-size:.7rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--hf-green); margin-bottom:10px">✅ Medewerker heeft toegang tot</div>
+          <ul style="list-style:none; display:flex; flex-direction:column; gap:8px; font-size:.85rem; color:var(--hf-dark)">
+            <li>✓ Voorraad bekijken &amp; aanpassen</li>
+            <li>✓ Vloeistoffenkast inzien</li>
+            <li>✓ Eigen taal instellen (NL / AR)</li>
+          </ul>
+        </div>
+        <div style="background:#FFF5F5; border-radius:14px; padding:18px 22px; border-left:4px solid #e57373">
+          <div style="font-size:.7rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#c62828; margin-bottom:10px">🚫 Geen toegang tot</div>
+          <ul style="list-style:none; display:flex; flex-direction:column; gap:8px; font-size:.85rem; color:var(--hf-gray)">
+            <li>✗ Bestelrapporten genereren</li>
+            <li>✗ Logboek &amp; verbruiksoverzicht</li>
+            <li>✗ Producten aanmaken of verwijderen</li>
+            <li>✗ Accounts beheren</li>
+          </ul>
+        </div>
+        <div style="background:var(--hf-dark); border-radius:14px; padding:16px 20px; display:flex; align-items:flex-start; gap:12px">
+          <span style="font-size:1.4rem; flex-shrink:0">📋</span>
+          <div>
+            <strong style="display:block; color:#fff; font-size:.88rem; margin-bottom:4px">Elke wijziging vastgelegd op naam &amp; tijd</strong>
+            <span style="font-size:.8rem; color:rgba(255,255,255,.65); line-height:1.5">Het systeem registreert automatisch wie wat heeft gewijzigd en wanneer — volledig transparant voor de manager.<br><em style="color:rgba(255,255,255,.4)">The system automatically records who changed what and when.</em></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 5 — Vloeistoffenkast / Chemical cabinet
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-cream" id="s5">
+    <div class="slide-tag" style="color:var(--hf-dark)">Module 1</div>
+    <h2 style="text-align:center; color:var(--hf-dark)">Vloeistoffenkast<br><span style="font-weight:300; font-size:.65em; color:var(--hf-gray)">Chemical Cabinet</span></h2>
+    <div class="hf-line"></div>
+    <div class="grid-2" style="margin-top:24px; max-width:1000px">
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div style="display:flex; gap:16px; align-items:flex-start">
+            <span style="font-size:2rem">🧴</span>
+            <div>
+              <h3 style="color:var(--hf-dark)">4 lekbakken · 4 drip trays</h3>
+              <p style="font-size:.85rem; color:var(--hf-gray); margin-top:6px">Elke lekbak bijgehouden op GHS-categorie en liters (inclusief gedeeltelijke flessen)<br><span style="font-size:.78rem; color:var(--hf-green); font-weight:600">GHS = Globally Harmonized System of Classification and Labelling of Chemicals</span><br><em>Each tray tracked by GHS category and litres (incl. partial bottles)</em></p>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display:flex; gap:16px; align-items:flex-start">
+            <span style="font-size:2rem">⚠️</span>
+            <div>
+              <h3 style="color:var(--hf-dark)">GHS-categorieën · Hazard categories</h3>
+              <p style="font-size:.85rem; color:var(--hf-gray); margin-top:6px">
+                Lekbak 1 &amp; 2: <strong style="color:var(--hf-dark)">GHS02</strong> — Ontvlambare vloeistoffen en gassen<br>
+                Lekbak 3 &amp; 4: <strong style="color:var(--hf-dark)">GHS05</strong> — Bijtende / corrosieve stoffen<br>
+                <em style="font-size:.8em">Trays 1 &amp; 2: GHS02 Flammable liquids &amp; gases · Trays 3 &amp; 4: GHS05 Corrosive substances</em><br>
+                <span style="font-size:.78rem; color:var(--hf-green)">— conform ARBO-regelgeving · safety compliant</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="background:var(--hf-dark); border-radius:16px; padding:20px; height:100%; display:flex; flex-direction:column">
+          <div style="color:rgba(255,255,255,.5); font-size:.72rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px">Live voorbeeld · klik een lekbak ↓</div>
+
+          <!-- Lekbak 1 -->
+          <div id="lb1-wrap" style="border-radius:10px; overflow:hidden; margin-bottom:7px; border:1.5px solid transparent; transition:border-color .25s">
+            <div onclick="toggleLekbak('lb1')" onmouseover="this.style.background='rgba(255,255,255,.18)'" onmouseout="this.style.background='rgba(255,255,255,.1)'" style="background:rgba(255,255,255,.1); padding:12px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:background .2s">
+              <span style="color:#fff; font-size:.86rem">🔥 Lekbak 1 — GHS02 Ontvlambare vloeistoffen</span>
+              <div style="display:flex; align-items:center; gap:9px; flex-shrink:0">
+                <span style="background:var(--hf-green); color:#fff; border-radius:6px; padding:3px 10px; font-size:.76rem; font-weight:700">12.5 L</span>
+                <span id="lb1-arrow" style="color:rgba(255,255,255,.45); font-size:.85rem; display:inline-block; transition:transform .25s">▾</span>
+              </div>
+            </div>
+            <div id="lb1-detail" style="display:none; background:rgba(0,0,0,.22); padding:10px 14px">
+              <table style="width:100%; border-collapse:collapse; font-size:.74rem">
+                <thead><tr style="border-bottom:1px solid rgba(255,255,255,.12)">
+                  <th style="color:rgba(255,255,255,.4); text-align:left; padding:3px 6px; font-weight:600">Product</th>
+                  <th style="color:rgba(255,255,255,.4); text-align:center; padding:3px 6px; font-weight:600">Flessen</th>
+                  <th style="color:rgba(255,255,255,.4); text-align:right; padding:3px 6px; font-weight:600">Vol.</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:5px 6px; color:#fff">Ethanol 70%</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">3× vol</td>
+                    <td style="padding:5px 6px; text-align:right; color:#6ECFA1; font-weight:700">3.0 L</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:5px 6px; color:#fff">IPA Isopropanol 99%</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">4× vol + 1× ½</td>
+                    <td style="padding:5px 6px; text-align:right; color:#6ECFA1; font-weight:700">4.5 L</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:5px 6px; color:#fff">Hand Sanitizer</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">5× vol</td>
+                    <td style="padding:5px 6px; text-align:right; color:#6ECFA1; font-weight:700">5.0 L</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Lekbak 2 — oranje (bijna vol) -->
+          <div id="lb2-wrap" style="border-radius:10px; overflow:hidden; margin-bottom:7px; border:1.5px solid transparent; transition:border-color .25s">
+            <div onclick="toggleLekbak('lb2')" onmouseover="this.style.background='rgba(255,255,255,.18)'" onmouseout="this.style.background='rgba(255,255,255,.1)'" style="background:rgba(255,255,255,.1); padding:12px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:background .2s">
+              <span style="color:#fff; font-size:.86rem">🔥 Lekbak 2 — GHS02 Ontvlambare vloeistoffen</span>
+              <div style="display:flex; align-items:center; gap:9px; flex-shrink:0">
+                <span style="background:#C45A1A; color:#fff; border-radius:6px; padding:3px 10px; font-size:.76rem; font-weight:700">21.0 L ⚠️</span>
+                <span id="lb2-arrow" style="color:rgba(255,255,255,.45); font-size:.85rem; display:inline-block; transition:transform .25s">▾</span>
+              </div>
+            </div>
+            <div id="lb2-detail" style="display:none; background:rgba(0,0,0,.22); padding:10px 14px">
+              <table style="width:100%; border-collapse:collapse; font-size:.74rem">
+                <thead><tr style="border-bottom:1px solid rgba(255,255,255,.12)">
+                  <th style="color:rgba(255,255,255,.4); text-align:left; padding:3px 6px; font-weight:600">Product</th>
+                  <th style="color:rgba(255,255,255,.4); text-align:center; padding:3px 6px; font-weight:600">Flessen</th>
+                  <th style="color:rgba(255,255,255,.4); text-align:right; padding:3px 6px; font-weight:600">Vol.</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:5px 6px; color:#fff">Reinigingsalcohol</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">8× vol + 1× ¾</td>
+                    <td style="padding:5px 6px; text-align:right; color:#f87171; font-weight:700">8.75 L</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:5px 6px; color:#fff">Spiritus</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">6× vol + 1× ½</td>
+                    <td style="padding:5px 6px; text-align:right; color:#f87171; font-weight:700">6.5 L</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:5px 6px; color:#fff">Desinfectie spray</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">5× vol + 1× ¾</td>
+                    <td style="padding:5px 6px; text-align:right; color:#f87171; font-weight:700">5.75 L</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div style="margin-top:8px; background:rgba(196,90,26,.25); border-radius:6px; padding:6px 10px; font-size:.7rem; color:#fbbf24">
+                ⚠️ Lekbak 2 overschrijdt 80% capaciteit — leegruimen aanbevolen · Exceeds 80% capacity
+              </div>
+            </div>
+          </div>
+
+          <!-- Lekbak 3 -->
+          <div id="lb3-wrap" style="border-radius:10px; overflow:hidden; margin-bottom:7px; border:1.5px solid transparent; transition:border-color .25s">
+            <div onclick="toggleLekbak('lb3')" onmouseover="this.style.background='rgba(255,255,255,.18)'" onmouseout="this.style.background='rgba(255,255,255,.1)'" style="background:rgba(255,255,255,.1); padding:12px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:background .2s">
+              <span style="color:#fff; font-size:.86rem">⚗️ Lekbak 3 — GHS05 Bijtende / corrosieve stoffen</span>
+              <div style="display:flex; align-items:center; gap:9px; flex-shrink:0">
+                <span style="background:var(--hf-green); color:#fff; border-radius:6px; padding:3px 10px; font-size:.76rem; font-weight:700">8.0 L</span>
+                <span id="lb3-arrow" style="color:rgba(255,255,255,.45); font-size:.85rem; display:inline-block; transition:transform .25s">▾</span>
+              </div>
+            </div>
+            <div id="lb3-detail" style="display:none; background:rgba(0,0,0,.22); padding:10px 14px">
+              <table style="width:100%; border-collapse:collapse; font-size:.74rem">
+                <thead><tr style="border-bottom:1px solid rgba(255,255,255,.12)">
+                  <th style="color:rgba(255,255,255,.4); text-align:left; padding:3px 6px; font-weight:600">Product</th>
+                  <th style="color:rgba(255,255,255,.4); text-align:center; padding:3px 6px; font-weight:600">Flessen</th>
+                  <th style="color:rgba(255,255,255,.4); text-align:right; padding:3px 6px; font-weight:600">Vol.</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:5px 6px; color:#fff">Natriumhypochloriet</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">3× vol + 1× ½</td>
+                    <td style="padding:5px 6px; text-align:right; color:#6ECFA1; font-weight:700">3.5 L</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:5px 6px; color:#fff">Ontvetter</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">2× vol + 1× ¾</td>
+                    <td style="padding:5px 6px; text-align:right; color:#6ECFA1; font-weight:700">2.75 L</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:5px 6px; color:#fff">Descaler</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">1× vol + 1× ¾</td>
+                    <td style="padding:5px 6px; text-align:right; color:#6ECFA1; font-weight:700">1.75 L</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Lekbak 4 -->
+          <div id="lb4-wrap" style="border-radius:10px; overflow:hidden; border:1.5px solid transparent; transition:border-color .25s">
+            <div onclick="toggleLekbak('lb4')" onmouseover="this.style.background='rgba(255,255,255,.18)'" onmouseout="this.style.background='rgba(255,255,255,.1)'" style="background:rgba(255,255,255,.1); padding:12px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:background .2s">
+              <span style="color:#fff; font-size:.86rem">⚗️ Lekbak 4 — GHS05 Bijtende / corrosieve stoffen</span>
+              <div style="display:flex; align-items:center; gap:9px; flex-shrink:0">
+                <span style="background:var(--hf-green); color:#fff; border-radius:6px; padding:3px 10px; font-size:.76rem; font-weight:700">6.5 L</span>
+                <span id="lb4-arrow" style="color:rgba(255,255,255,.45); font-size:.85rem; display:inline-block; transition:transform .25s">▾</span>
+              </div>
+            </div>
+            <div id="lb4-detail" style="display:none; background:rgba(0,0,0,.22); padding:10px 14px">
+              <table style="width:100%; border-collapse:collapse; font-size:.74rem">
+                <thead><tr style="border-bottom:1px solid rgba(255,255,255,.12)">
+                  <th style="color:rgba(255,255,255,.4); text-align:left; padding:3px 6px; font-weight:600">Product</th>
+                  <th style="color:rgba(255,255,255,.4); text-align:center; padding:3px 6px; font-weight:600">Flessen</th>
+                  <th style="color:rgba(255,255,255,.4); text-align:right; padding:3px 6px; font-weight:600">Vol.</th>
+                </tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:5px 6px; color:#fff">Natronloog 10%</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">2× vol + 1× ½</td>
+                    <td style="padding:5px 6px; text-align:right; color:#6ECFA1; font-weight:700">2.5 L</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:5px 6px; color:#fff">Zoutzuur verdund</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">1× vol + 1× ¾</td>
+                    <td style="padding:5px 6px; text-align:right; color:#6ECFA1; font-weight:700">1.75 L</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:5px 6px; color:#fff">Ontvetter (zwaar)</td>
+                    <td style="padding:5px 6px; text-align:center; color:rgba(255,255,255,.55)">2× vol + 1× ¼</td>
+                    <td style="padding:5px 6px; text-align:right; color:#6ECFA1; font-weight:700">2.25 L</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div style="text-align:center; font-size:.64rem; color:rgba(255,255,255,.2); margin-top:10px; letter-spacing:.5px">
+            Klik een lekbak om de inhoud te zien · Click a tray to see contents
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleLekbak(id) {
+      ['lb1','lb2','lb3','lb4'].forEach(function(lbId) {
+        var detail = document.getElementById(lbId + '-detail');
+        var arrow  = document.getElementById(lbId + '-arrow');
+        var wrap   = document.getElementById(lbId + '-wrap');
+        if (lbId === id) {
+          var open = detail.style.display !== 'none';
+          detail.style.display = open ? 'none' : 'block';
+          arrow.style.transform = open ? '' : 'rotate(180deg)';
+          wrap.style.borderColor = open ? 'transparent' : 'rgba(45,134,83,.65)';
+        } else {
+          detail.style.display = 'none';
+          arrow.style.transform = '';
+          wrap.style.borderColor = 'transparent';
+        }
+      });
+    }
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 6 — Normale voorraad / Regular stock
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-white" id="s6">
+    <div class="slide-tag" style="color:var(--hf-dark)">Module 2</div>
+    <h2 style="text-align:center; color:var(--hf-dark)">Normale voorraad<br><span style="font-weight:300; font-size:.65em; color:var(--hf-gray)">Regular Stock</span></h2>
+    <div class="hf-line"></div>
+    <div class="grid-2" style="margin-top:24px; max-width:1000px">
+      <div style="display:flex; flex-direction:column; gap:14px">
+        <div class="card-cream">
+          <h3 style="color:var(--hf-dark); margin-bottom:8px">📦 Verbruiksartikelen op stuks<br><span style="font-weight:300; font-size:.85em; color:var(--hf-gray)">Consumables by unit</span></h3>
+          <p style="font-size:.82rem; color:var(--hf-gray)">Handschoenen, papier, zeep, schoonmaakdoekjes — alles op één plek<br><em>Gloves, paper, soap, wipes — all in one place</em></p>
+        </div>
+        <div class="card-cream">
+          <h3 style="color:var(--hf-dark); margin-bottom:8px">🔔 Minimumdrempel · Minimum threshold</h3>
+          <p style="font-size:.82rem; color:var(--hf-gray)">Visuele waarschuwing zodra voorraad te laag wordt<br><em>Visual warning as soon as stock runs too low</em></p>
+        </div>
+        <div class="card-green">
+          <h3 style="color:#fff; margin-bottom:8px">🚫 Maximale hoeveelheid · Maximum quantity</h3>
+          <p style="font-size:.82rem; color:rgba(255,255,255,.85)">Per product is een <strong>maximum toegestane hoeveelheid</strong> ingesteld. Het bestelrapport berekent automatisch hoeveel er bijbesteld <em>mag</em> worden — nooit meer dan de ruimte tot het maximum.<br><em>Each product has a set maximum. The order report calculates exactly how much <strong>may</strong> be ordered — never exceeding the allowed cap.</em></p>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:14px">
+      <div style="background:var(--hf-light); border-radius:16px; padding:24px">
+        <div style="color:var(--hf-dark); font-size:.75rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:16px">Slim bestelrapport · Smart order report</div>
+        <div style="display:flex; flex-direction:column; gap:10px">
+          <div style="background:#fff; border-radius:10px; padding:12px 14px">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+              <strong style="font-size:.88rem; color:var(--hf-dark)">Nitril handschoenen M</strong>
+              <span style="background:var(--hf-green); color:#fff; border-radius:6px; padding:3px 10px; font-size:.8rem; font-weight:700">8 / max 10</span>
+            </div>
+            <div style="font-size:.75rem; color:var(--hf-gray)">Bestellen: <strong style="color:var(--hf-green)">2 dozen</strong> &nbsp;·&nbsp; <em>Order: 2 boxes</em></div>
+          </div>
+          <div style="background:#fff; border-radius:10px; padding:12px 14px">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+              <strong style="font-size:.88rem; color:var(--hf-dark)">Papieren handdoekjes</strong>
+              <span style="background:#C45A1A; color:#fff; border-radius:6px; padding:3px 10px; font-size:.8rem; font-weight:700">3 / max 20 ⚠️</span>
+            </div>
+            <div style="font-size:.75rem; color:var(--hf-gray)">Bestellen: <strong style="color:#C45A1A">17 rollen</strong> &nbsp;·&nbsp; <em>Order: 17 rolls</em></div>
+          </div>
+          <div style="background:#fff; border-radius:10px; padding:12px 14px">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px">
+              <strong style="font-size:.88rem; color:var(--hf-dark)">Foamzeep navulling</strong>
+              <span style="background:var(--hf-green); color:#fff; border-radius:6px; padding:3px 10px; font-size:.8rem; font-weight:700">11 / max 12</span>
+            </div>
+            <div style="font-size:.75rem; color:var(--hf-gray)">Bestellen: <strong style="color:var(--hf-green)">1 fles</strong> &nbsp;·&nbsp; <em>Order: 1 bottle</em></div>
+          </div>
+          <div style="background:var(--hf-dark); border-radius:10px; padding:10px 14px; text-align:center">
+            <span style="font-size:.78rem; color:rgba(255,255,255,.8)">✅ Rapport berekent automatisch wat er besteld <em>mag</em> worden<br><em style="color:rgba(255,255,255,.5)">Report auto-calculates exactly what may be ordered</em></span>
+          </div>
+        </div>
+      </div>
+      <div class="card-dark" style="display:flex; align-items:flex-start; gap:14px">
+        <span style="font-size:1.6rem; flex-shrink:0">🔗</span>
+        <div>
+          <h3 style="color:#fff; font-size:.9rem; margin-bottom:8px">Uitbreidbaar naar alles<br><span style="font-weight:300; font-size:.85em; color:rgba(255,255,255,.6)">Expandable to anything</span></h3>
+          <p style="font-size:.78rem; color:rgba(255,255,255,.75); line-height:1.5; margin-bottom:10px">Alles wat met voorraadbeheer te maken heeft kan worden toegevoegd en aan elkaar gekoppeld — in hetzelfde systeem, zelfde werkwijze.<br><em style="color:rgba(255,255,255,.4)">Anything related to stock management can be added and linked — same system, same workflow.</em></p>
+          <div style="display:flex; flex-wrap:wrap; gap:6px">
+            <span style="background:rgba(255,255,255,.12); color:rgba(255,255,255,.8); border-radius:20px; padding:3px 11px; font-size:.68rem">💧 Waterflessen</span>
+            <span style="background:rgba(255,255,255,.12); color:rgba(255,255,255,.8); border-radius:20px; padding:3px 11px; font-size:.68rem">🔧 Profile garage benodigdheden</span>
+            <span style="background:rgba(255,255,255,.12); color:rgba(255,255,255,.8); border-radius:20px; padding:3px 11px; font-size:.68rem">🥗 HelloFresh benodigdheden</span>
+            <span style="background:rgba(45,134,83,.4); color:#6ECFA1; border-radius:20px; padding:3px 11px; font-size:.68rem; font-weight:700">+ nog veel meer</span>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 7v — Wekelijkse voorraadtelling
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-light" id="s7v" style="padding:34px 56px 78px;">
+    <div class="slide-tag" style="color:var(--hf-dark)">Werkwijze medewerker · Employee workflow</div>
+    <h2 style="text-align:center; color:var(--hf-dark)">Wekelijkse voorraadtelling<br><span style="font-weight:300; font-size:.65em; color:var(--hf-gray)">Weekly stock count</span></h2>
+    <div class="hf-line"></div>
+
+    <div style="display:flex; gap:10px; margin:14px 0 22px">
+      <span style="background:var(--hf-green); color:#fff; border-radius:20px; padding:5px 18px; font-size:.8rem; font-weight:700">📅 1× per week</span>
+      <span style="background:#fff; border:1.5px solid var(--hf-border); color:var(--hf-dark); border-radius:20px; padding:5px 18px; font-size:.8rem; font-weight:600">of 1× per 2 weken · or every 2 weeks</span>
+    </div>
+
+    <!-- Workflow stappen -->
+    <div style="display:flex; align-items:stretch; gap:0; max-width:1060px; width:100%">
+
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center">
+        <div style="width:58px; height:58px; background:var(--hf-green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:12px; box-shadow:0 6px 20px rgba(45,134,83,.3); flex-shrink:0">📱</div>
+        <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; color:var(--hf-green); text-transform:uppercase; margin-bottom:6px">Stap 1</div>
+        <h3 style="color:var(--hf-dark); font-size:.9rem; margin-bottom:6px">App openen</h3>
+        <p style="font-size:.75rem; color:var(--hf-gray); line-height:1.5; max-width:160px">Scan de QR-code of open de bladwijzer op je eigen telefoon.<br><em>Scan the QR or open your bookmark.</em></p>
+      </div>
+
+      <div style="display:flex; align-items:center; padding:0 4px; margin-top:-30px">
+        <div style="font-size:1.4rem; color:var(--hf-green); opacity:.35">→</div>
+      </div>
+
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center">
+        <div style="width:58px; height:58px; background:var(--hf-light); border:2px solid var(--hf-border); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:12px; flex-shrink:0">🔐</div>
+        <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; color:var(--hf-gray); text-transform:uppercase; margin-bottom:6px">Stap 2</div>
+        <h3 style="color:var(--hf-dark); font-size:.9rem; margin-bottom:6px">Inloggen</h3>
+        <p style="font-size:.75rem; color:var(--hf-gray); line-height:1.5; max-width:160px">Kies jouw naam en voer je eigen wachtwoord in.<br><em>Select your name and enter your password.</em></p>
+      </div>
+
+      <div style="display:flex; align-items:center; padding:0 4px; margin-top:-30px">
+        <div style="font-size:1.4rem; color:var(--hf-green); opacity:.35">→</div>
+      </div>
+
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center">
+        <div style="width:58px; height:58px; background:var(--hf-light); border:2px solid var(--hf-border); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:12px; flex-shrink:0">🚶</div>
+        <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; color:var(--hf-gray); text-transform:uppercase; margin-bottom:6px">Stap 3</div>
+        <h3 style="color:var(--hf-dark); font-size:.9rem; margin-bottom:6px">Rondlopen</h3>
+        <p style="font-size:.75rem; color:var(--hf-gray); line-height:1.5; max-width:160px">Loop langs de kast en tel de producten fysiek na.<br><em>Walk past the cabinet and count products.</em></p>
+      </div>
+
+      <div style="display:flex; align-items:center; padding:0 4px; margin-top:-30px">
+        <div style="font-size:1.4rem; color:var(--hf-green); opacity:.35">→</div>
+      </div>
+
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center">
+        <div style="width:58px; height:58px; background:var(--hf-light); border:2px solid var(--hf-border); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:12px; flex-shrink:0">✏️</div>
+        <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; color:var(--hf-gray); text-transform:uppercase; margin-bottom:6px">Stap 4</div>
+        <h3 style="color:var(--hf-dark); font-size:.9rem; margin-bottom:6px">Bijwerken</h3>
+        <p style="font-size:.75rem; color:var(--hf-gray); line-height:1.5; max-width:160px">Pas de aantallen aan via de + of − knoppen in de app.<br><em>Update quantities via + or − buttons.</em></p>
+      </div>
+
+      <div style="display:flex; align-items:center; padding:0 4px; margin-top:-30px">
+        <div style="font-size:1.4rem; color:var(--hf-green); opacity:.35">→</div>
+      </div>
+
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center">
+        <div style="width:58px; height:58px; background:var(--hf-green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:12px; box-shadow:0 6px 20px rgba(45,134,83,.3); flex-shrink:0">✅</div>
+        <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; color:var(--hf-green); text-transform:uppercase; margin-bottom:6px">Klaar!</div>
+        <h3 style="color:var(--hf-dark); font-size:.9rem; margin-bottom:6px">Gesynchroniseerd</h3>
+        <p style="font-size:.75rem; color:var(--hf-gray); line-height:1.5; max-width:160px">Data direct opgeslagen — zichtbaar voor iedereen in real-time.<br><em>Data saved instantly and visible to all.</em></p>
+      </div>
+
+    </div>
+
+    <!-- Toelichting row -->
+    <div style="margin-top:22px; max-width:960px; width:100%; display:grid; grid-template-columns:1fr 1fr; gap:14px">
+
+      <div style="background:var(--hf-dark); border-radius:12px; padding:14px 20px; display:flex; align-items:flex-start; gap:14px">
+        <span style="font-size:1.3rem; flex-shrink:0">⏱️</span>
+        <p style="font-size:.8rem; color:rgba(255,255,255,.75); line-height:1.5; margin:0">
+          Een volledige voorraadtelling duurt gemiddeld <strong style="color:#fff">5 à 10 minuten</strong>. Door dit wekelijks of tweewekelijks te doen blijft de data altijd actueel.<br>
+          <em style="color:rgba(255,255,255,.45)">A full stock count takes about 5–10 minutes. Done regularly, data always stays current.</em>
+        </p>
+      </div>
+
+      <div style="background:linear-gradient(135deg, #7C3AED22, #C45A1A18); border:1px solid rgba(196,90,26,.35); border-radius:12px; padding:14px 20px; display:flex; align-items:flex-start; gap:14px">
+        <span style="font-size:1.3rem; flex-shrink:0">🔍</span>
+        <p style="font-size:.8rem; color:var(--hf-text); line-height:1.5; margin:0">
+          Bij langdurig gebruik onthult het systeem <strong style="color:var(--hf-dark)">onregelmatigheden</strong>: wanneer in een bepaalde week meer voorraad wordt verbruikt dan in eerdere vergelijkbare weken, is dat direct zichtbaar in het verbruiksoverzicht — een vroeg signaal voor verlies, diefstal of inefficiënt gebruik.<br>
+          <em style="color:var(--hf-gray)">Over time, the system reveals irregularities: unusually high consumption in a given week stands out against previous weeks — an early signal for loss, theft or inefficient use.</em>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 7 — Workflow / Bestelproces
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-dark white-text" id="s7w">
+    <div class="slide-tag" style="color:rgba(255,255,255,.5)">Werkwijze · Workflow</div>
+    <h2 style="text-align:center; color:#fff">Hoe werkt het bestelproces?<br><span style="font-weight:300; font-size:.65em; color:rgba(255,255,255,.6)">How does the order process work?</span></h2>
+    <div class="hf-line hf-line-white"></div>
+
+    <!-- Workflow stappen -->
+    <div style="display:flex; align-items:stretch; gap:0; margin-top:32px; max-width:1060px; width:100%">
+
+      <!-- Stap 1 -->
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; position:relative">
+        <div style="width:64px; height:64px; background:var(--hf-green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:14px; box-shadow:0 8px 24px rgba(45,134,83,.4); flex-shrink:0">📋</div>
+        <div style="font-size:.7rem; font-weight:800; letter-spacing:2px; color:var(--hf-green); text-transform:uppercase; margin-bottom:6px">Stap 1</div>
+        <h3 style="color:#fff; font-size:.95rem; margin-bottom:8px">Bestelrapport<br>genereren</h3>
+        <p style="font-size:.78rem; color:rgba(255,255,255,.6); line-height:1.5; max-width:180px">Manager opent het portaal en genereert met één klik een rapport. Het systeem berekent automatisch wat er besteld mag worden.<br><em>Manager opens the portal and generates a report with one click.</em></p>
+      </div>
+
+      <!-- Pijl -->
+      <div style="display:flex; align-items:center; padding:0 4px; margin-top:-30px">
+        <div style="font-size:1.6rem; color:rgba(255,255,255,.2)">→</div>
+      </div>
+
+      <!-- Stap 2 -->
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center">
+        <div style="width:64px; height:64px; background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:14px; flex-shrink:0">📧</div>
+        <div style="font-size:.7rem; font-weight:800; letter-spacing:2px; color:rgba(255,255,255,.4); text-transform:uppercase; margin-bottom:6px">Stap 2</div>
+        <h3 style="color:#fff; font-size:.95rem; margin-bottom:8px">Rapport verstuurd<br>naar inkoop</h3>
+        <p style="font-size:.78rem; color:rgba(255,255,255,.6); line-height:1.5; max-width:180px">Het rapport wordt per e-mail verstuurd, gekopieerd naar WhatsApp/Teams, of opgeslagen als PDF.<br><em>The report is sent by email, copied to WhatsApp/Teams, or saved as PDF.</em></p>
+      </div>
+
+      <!-- Pijl -->
+      <div style="display:flex; align-items:center; padding:0 4px; margin-top:-30px">
+        <div style="font-size:1.6rem; color:rgba(255,255,255,.2)">→</div>
+      </div>
+
+      <!-- Stap 3 -->
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center">
+        <div style="width:64px; height:64px; background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:14px; flex-shrink:0">🚚</div>
+        <div style="font-size:.7rem; font-weight:800; letter-spacing:2px; color:rgba(255,255,255,.4); text-transform:uppercase; margin-bottom:6px">Stap 3</div>
+        <h3 style="color:#fff; font-size:.95rem; margin-bottom:8px">Goederen fysiek<br>geleverd</h3>
+        <p style="font-size:.78rem; color:rgba(255,255,255,.6); line-height:1.5; max-width:180px">Inkoop verwerkt de bestelling. De producten worden fysiek afgeleverd op de HUB.<br><em>Procurement processes the order. Products are physically delivered to the HUB.</em></p>
+      </div>
+
+      <!-- Pijl -->
+      <div style="display:flex; align-items:center; padding:0 4px; margin-top:-30px">
+        <div style="font-size:1.6rem; color:rgba(255,255,255,.2)">→</div>
+      </div>
+
+      <!-- Stap 4 -->
+      <div style="flex:1; display:flex; flex-direction:column; align-items:center; text-align:center">
+        <div style="width:64px; height:64px; background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:14px; flex-shrink:0">➕</div>
+        <div style="font-size:.7rem; font-weight:800; letter-spacing:2px; color:rgba(255,255,255,.4); text-transform:uppercase; margin-bottom:6px">Stap 4</div>
+        <h3 style="color:#fff; font-size:.95rem; margin-bottom:8px">Medewerker werkt<br>voorraad bij</h3>
+        <p style="font-size:.78rem; color:rgba(255,255,255,.6); line-height:1.5; max-width:180px">Zodra de goederen in de kast liggen, werkt de medewerker de voorraad bij via de + knop. De data weerspiegelt altijd de werkelijke situatie.<br><em>Once goods are stocked, the employee updates inventory via the + button.</em></p>
+      </div>
+
+    </div>
+
+    <!-- Toelichting -->
+    <div style="margin-top:28px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:14px 24px; display:flex; align-items:center; gap:14px; max-width:900px">
+      <span style="font-size:1.3rem; flex-shrink:0">💡</span>
+      <p style="font-size:.8rem; color:rgba(255,255,255,.75); line-height:1.5">
+        De voorraad wordt pas bijgewerkt wanneer producten er <strong style="color:#fff">fysiek aanwezig</strong> zijn — zo klopt de data altijd met de werkelijkheid. Automatisch aanvullen na bestelling staat op de roadmap als toekomstige uitbreiding.<br>
+        <em style="color:rgba(255,255,255,.45)">Stock is only updated once products are physically present — ensuring data always reflects reality. Auto-replenishment after ordering is on the roadmap.</em>
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 7m — Medewerker in de app
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-white" id="s7m" style="padding:30px 54px 78px;">
+    <div class="slide-tag" style="color:var(--hf-dark)">Medewerker rol · Employee view</div>
+    <h2 style="text-align:center; color:var(--hf-dark)">Medewerker in de app<br><span style="font-weight:300; font-size:.65em; color:var(--hf-gray)">What the employee sees &amp; does</span></h2>
+    <div class="hf-line"></div>
+
+    <div style="display:grid; grid-template-columns:260px 1fr; gap:44px; margin-top:20px; max-width:1020px; width:100%; align-items:start">
+
+      <!-- Links: telefoon mockup -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px">
+        <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--hf-gray)">📱 Telefoonscherm · Phone screen</div>
+
+        <div style="background:#1a1a1a; border-radius:30px; padding:12px 9px; width:224px; box-shadow:0 20px 60px rgba(0,0,0,.22)">
+          <!-- Notch -->
+          <div style="background:#000; border-radius:10px; width:72px; height:16px; margin:0 auto 9px; display:flex; align-items:center; justify-content:center">
+            <div style="width:7px; height:7px; background:#2a2a2a; border-radius:50%"></div>
+          </div>
+          <!-- App screen -->
+          <div style="background:var(--hf-cream); border-radius:16px; overflow:hidden">
+            <!-- App header -->
+            <div style="background:var(--hf-dark); padding:9px 12px; display:flex; justify-content:space-between; align-items:center">
+              <div style="display:flex; align-items:center; gap:7px">
+                <div style="width:20px; height:20px; background:var(--hf-green); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.58rem; font-weight:900; color:#fff">HF</div>
+                <span style="color:#fff; font-size:.68rem; font-weight:700">Leroy E.</span>
+              </div>
+              <span style="background:rgba(255,255,255,.14); color:rgba(255,255,255,.7); border-radius:4px; padding:1px 6px; font-size:.56rem; font-weight:700">NL</span>
+            </div>
+            <!-- Label -->
+            <div style="padding:7px 11px 3px; font-size:.58rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:var(--hf-gray)">Normale voorraad</div>
+            <!-- Products -->
+            <div style="padding:0 8px 10px; display:flex; flex-direction:column; gap:6px">
+
+              <!-- Nitril — interactief -->
+              <div style="background:#fff; border-radius:9px; padding:9px 10px; box-shadow:0 1px 4px rgba(0,0,0,.07)">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px">
+                  <span style="font-size:.68rem; font-weight:700; color:var(--hf-dark)">Nitril M</span>
+                  <span id="nitril-badge" style="background:var(--hf-green); color:#fff; border-radius:4px; padding:1px 6px; font-size:.6rem; font-weight:700">8/10</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                  <span style="font-size:.56rem; color:var(--hf-gray)">dozen</span>
+                  <div style="display:flex; gap:5px">
+                    <button onclick="demoMin()" style="width:24px; height:24px; border-radius:5px; border:none; background:var(--hf-dark); color:#fff; font-size:.85rem; cursor:pointer; font-weight:700; line-height:1">−</button>
+                    <button style="width:24px; height:24px; border-radius:5px; border:none; background:var(--hf-green); color:#fff; font-size:.85rem; cursor:pointer; font-weight:700; line-height:1">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Handdoekjes — laag -->
+              <div style="background:#fff; border-radius:9px; padding:9px 10px; box-shadow:0 1px 4px rgba(0,0,0,.07); border-left:3px solid #e57373">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px">
+                  <span style="font-size:.68rem; font-weight:700; color:var(--hf-dark)">Handdoekjes</span>
+                  <span style="background:#e57373; color:#fff; border-radius:4px; padding:1px 6px; font-size:.6rem; font-weight:700">3/20 ⚠️</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                  <span style="font-size:.56rem; color:#e57373; font-weight:600">Laag!</span>
+                  <div style="display:flex; gap:5px">
+                    <button style="width:24px; height:24px; border-radius:5px; border:none; background:var(--hf-dark); color:#fff; font-size:.85rem; cursor:pointer; font-weight:700; line-height:1">−</button>
+                    <button style="width:24px; height:24px; border-radius:5px; border:none; background:var(--hf-green); color:#fff; font-size:.85rem; cursor:pointer; font-weight:700; line-height:1">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Foamzeep -->
+              <div style="background:#fff; border-radius:9px; padding:9px 10px; box-shadow:0 1px 4px rgba(0,0,0,.07)">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px">
+                  <span style="font-size:.68rem; font-weight:700; color:var(--hf-dark)">Foamzeep</span>
+                  <span style="background:var(--hf-green); color:#fff; border-radius:4px; padding:1px 6px; font-size:.6rem; font-weight:700">11/12</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                  <span style="font-size:.56rem; color:var(--hf-gray)">flessen</span>
+                  <div style="display:flex; gap:5px">
+                    <button style="width:24px; height:24px; border-radius:5px; border:none; background:var(--hf-dark); color:#fff; font-size:.85rem; cursor:pointer; font-weight:700; line-height:1">−</button>
+                    <button style="width:24px; height:24px; border-radius:5px; border:none; background:var(--hf-green); color:#fff; font-size:.85rem; cursor:pointer; font-weight:700; line-height:1">+</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div style="width:56px; height:4px; background:#3a3a3a; border-radius:2px; margin:9px auto 0"></div>
+        </div>
+
+        <div id="demo-hint" style="font-size:.7rem; color:var(--hf-green); font-weight:700; text-align:center; animation:demoPulse 2s ease-in-out infinite">
+          ← Klik de − bij Nitril M
+        </div>
+      </div>
+
+      <!-- Rechts: wat het systeem doet -->
+      <div style="display:flex; flex-direction:column; gap:13px">
+        <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--hf-gray)">Wat het systeem doet · What the system does</div>
+
+        <!-- Stap 1 -->
+        <div id="demo-step1" style="background:var(--hf-light); border-radius:14px; padding:16px 20px; border-left:4px solid var(--hf-green); opacity:.25; transition:opacity .4s">
+          <div style="display:flex; align-items:center; gap:12px">
+            <span style="font-size:1.5rem; flex-shrink:0">💾</span>
+            <div style="flex:1">
+              <strong style="display:block; color:var(--hf-dark); font-size:.9rem">1. Direct opgeslagen</strong>
+              <span style="font-size:.8rem; color:var(--hf-gray)">Wijziging vastgelegd op naam + tijdstip · Saved with name &amp; timestamp</span>
+            </div>
+            <div id="demo-saved" style="background:var(--hf-green); color:#fff; border-radius:8px; padding:4px 12px; font-size:.72rem; font-weight:700; opacity:0; transition:opacity .35s; white-space:nowrap; flex-shrink:0">✅ Opgeslagen!</div>
+          </div>
+        </div>
+
+        <!-- Stap 2 -->
+        <div id="demo-step2" style="background:#fff; border-radius:14px; padding:16px 20px; border:1px solid rgba(45,134,83,.14); box-shadow:0 2px 10px rgba(0,0,0,.05); opacity:.25; transition:opacity .4s">
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:10px">
+            <span style="font-size:1.5rem; flex-shrink:0">📋</span>
+            <div>
+              <strong style="display:block; color:var(--hf-dark); font-size:.9rem">2. Logboek bijgewerkt</strong>
+              <span style="font-size:.8rem; color:var(--hf-gray)">Manager ziet wie wat wijzigde · Manager sees who changed what</span>
+            </div>
+          </div>
+          <div id="demo-log" style="background:var(--hf-dark); border-radius:8px; padding:9px 14px; font-size:.74rem; opacity:0; transition:opacity .4s">
+            <span style="color:rgba(255,255,255,.45)">11-06-2026 08:14 &nbsp;·&nbsp;</span>
+            <span style="color:#fff; font-weight:700">Leroy</span>
+            <span style="color:rgba(255,255,255,.55)"> → Nitril M: </span>
+            <span style="color:#aaa; text-decoration:line-through">8</span>
+            <span style="color:#6ECFA1; font-weight:700"> → 7</span>
+            <span style="margin-left:8px; background:rgba(45,134,83,.4); color:#6ECFA1; border-radius:4px; padding:1px 7px; font-size:.65rem">Medewerker</span>
+          </div>
+        </div>
+
+        <!-- Stap 3 -->
+        <div id="demo-step3" style="background:#fff; border-radius:14px; padding:16px 20px; border:1px solid rgba(45,134,83,.14); box-shadow:0 2px 10px rgba(0,0,0,.05); opacity:.25; transition:opacity .4s">
+          <div style="display:flex; align-items:center; gap:12px">
+            <span style="font-size:1.5rem; flex-shrink:0">☁️</span>
+            <div style="flex:1">
+              <strong style="display:block; color:var(--hf-dark); font-size:.9rem">3. Real-time sync naar iedereen</strong>
+              <span style="font-size:.8rem; color:var(--hf-gray)">Alle apparaten zien de nieuwe stand direct · All devices update instantly</span>
+            </div>
+            <div id="demo-sync" style="display:flex; gap:6px; opacity:0; transition:opacity .35s; flex-shrink:0">
+              <span style="background:var(--hf-light); border-radius:6px; padding:3px 9px; font-size:.68rem; color:var(--hf-dark); font-weight:600">📱 Sanja</span>
+              <span style="background:var(--hf-light); border-radius:6px; padding:3px 9px; font-size:.68rem; color:var(--hf-dark); font-weight:600">💻 Manager</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conclusie -->
+        <div style="background:var(--hf-dark); border-radius:14px; padding:16px 20px; display:flex; align-items:flex-start; gap:12px">
+          <span style="font-size:1.5rem; flex-shrink:0">👷</span>
+          <div>
+            <strong style="display:block; color:#fff; font-size:.9rem; margin-bottom:4px">Medewerker gaat gewoon verder met werken</strong>
+            <span style="font-size:.8rem; color:rgba(255,255,255,.7); line-height:1.5">Geen formulier, geen bevestiging, geen papier. Eén klik op − of + is genoeg — de rest gaat automatisch.<br><em style="color:rgba(255,255,255,.4)">No form, no confirmation, no paper. One tap on − or + is enough — the rest is automatic.</em></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes demoPulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: .35; }
+    }
+  </style>
+  <script>
+    var demoCount = 8;
+    var demoDone  = false;
+    function demoMin() {
+      if (demoDone) return;
+      demoDone = true;
+      demoCount--;
+      document.getElementById('nitril-badge').textContent = demoCount + '/10';
+      document.getElementById('demo-hint').style.display = 'none';
+      // stap 1
+      document.getElementById('demo-step1').style.opacity = '1';
+      document.getElementById('demo-saved').style.opacity = '1';
+      // stap 2
+      setTimeout(function() {
+        document.getElementById('demo-step2').style.opacity = '1';
+        setTimeout(function() { document.getElementById('demo-log').style.opacity = '1'; }, 200);
+      }, 450);
+      // stap 3
+      setTimeout(function() {
+        document.getElementById('demo-step3').style.opacity = '1';
+        setTimeout(function() { document.getElementById('demo-sync').style.opacity = '1'; }, 200);
+      }, 900);
+    }
+  </script>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 8 (was 7) — Manager portaal / Manager portal
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-dark white-text" id="s7" style="padding:34px 48px 82px; justify-content:flex-start;">
+    <div style="width:100%; max-width:1100px">
+      <div style="display:flex; align-items:baseline; justify-content:center; gap:12px; margin-bottom:4px">
+        <div class="slide-tag" style="color:rgba(255,255,255,.5); margin:0">Module 3</div>
+      </div>
+      <h2 style="text-align:center; color:#fff; margin-bottom:4px">Manager portaal<br><span style="font-weight:300; font-size:.65em; color:rgba(255,255,255,.6)">Manager Portal</span></h2>
+      <div class="hf-line hf-line-white" style="margin:12px auto 16px"></div>
+
+      <!-- 4 clickable cards -->
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:16px">
+
+        <div class="mgr-card" data-tab="logboek" onclick="showTab('logboek')" style="background:rgba(255,255,255,.08); border-radius:14px; padding:18px 14px; text-align:center; cursor:pointer; transition:all .2s; border:2px solid transparent">
+          <div style="font-size:2rem; margin-bottom:8px">📋</div>
+          <h3 style="color:#fff; font-size:.9rem; margin-bottom:4px">Logboek<br><em style="font-weight:300; font-size:.82em; color:rgba(255,255,255,.5)">Audit Log</em></h3>
+          <p style="font-size:.72rem; color:rgba(255,255,255,.5)">Elke wijziging bijgehouden<br><em>Every change tracked</em></p>
+          <div style="margin-top:10px; font-size:.68rem; color:rgba(255,255,255,.3); letter-spacing:1px">↓ KLIK VOOR VOORBEELD</div>
+        </div>
+
+        <div class="mgr-card" data-tab="verbruik" onclick="showTab('verbruik')" style="background:rgba(255,255,255,.08); border-radius:14px; padding:18px 14px; text-align:center; cursor:pointer; transition:all .2s; border:2px solid transparent">
+          <div style="font-size:2rem; margin-bottom:8px">📈</div>
+          <h3 style="color:#fff; font-size:.9rem; margin-bottom:4px">Verbruik<br><em style="font-weight:300; font-size:.82em; color:rgba(255,255,255,.5)">Usage</em></h3>
+          <p style="font-size:.72rem; color:rgba(255,255,255,.5)">Maandelijks overzicht<br><em>Monthly overview</em></p>
+          <div style="margin-top:10px; font-size:.68rem; color:rgba(255,255,255,.3); letter-spacing:1px">↓ KLIK VOOR VOORBEELD</div>
+        </div>
+
+        <div class="mgr-card" data-tab="rapport" onclick="showTab('rapport')" style="background:rgba(45,134,83,.35); border:2px solid var(--hf-green); border-radius:14px; padding:18px 14px; text-align:center; cursor:pointer; transition:all .2s">
+          <div style="font-size:2rem; margin-bottom:8px">📄</div>
+          <h3 style="color:#fff; font-size:.9rem; margin-bottom:4px">Bestelrapport PDF<br><em style="font-weight:300; font-size:.82em; color:rgba(255,255,255,.6)">Order Report PDF</em></h3>
+          <p style="font-size:.72rem; color:rgba(255,255,255,.6)">Één klik → klaar rapport<br><em>One click → ready</em></p>
+          <div style="margin-top:10px; font-size:.68rem; color:rgba(255,255,255,.4); letter-spacing:1px">↓ KLIK VOOR VOORBEELD</div>
+        </div>
+
+        <div class="mgr-card" data-tab="email" onclick="showTab('email')" style="background:rgba(255,255,255,.08); border-radius:14px; padding:18px 14px; text-align:center; cursor:pointer; transition:all .2s; border:2px solid transparent">
+          <div style="font-size:2rem; margin-bottom:8px">✉️</div>
+          <h3 style="color:#fff; font-size:.9rem; margin-bottom:4px">E-mail export<br><em style="font-weight:300; font-size:.82em; color:rgba(255,255,255,.5)">Email Export</em></h3>
+          <p style="font-size:.72rem; color:rgba(255,255,255,.5)">Versturen of kopiëren<br><em>Send or copy</em></p>
+          <div style="margin-top:10px; font-size:.68rem; color:rgba(255,255,255,.3); letter-spacing:1px">↓ KLIK VOOR VOORBEELD</div>
+        </div>
+
+      </div>
+
+      <!-- Preview panel -->
+      <div id="mgr-preview" style="background:rgba(255,255,255,.06); border:1.5px solid rgba(255,255,255,.12); border-radius:14px; overflow:hidden; transition:all .3s">
+
+        <!-- Default state -->
+        <div id="tab-default" style="padding:18px 24px; text-align:center; color:rgba(255,255,255,.3); font-size:.85rem">
+          ↑ Klik op een onderwerp hierboven voor een voorbeeld &nbsp;·&nbsp; <em>Click a topic above to see an example</em>
+        </div>
+
+        <!-- LOGBOEK -->
+        <div id="tab-logboek" style="display:none; padding:16px 20px">
+          <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--hf-green); margin-bottom:10px">📋 Logboek — Auditlog voorbeeld · Audit log example</div>
+          <table style="width:100%; border-collapse:collapse; font-size:.78rem">
+            <thead>
+              <tr style="border-bottom:1px solid rgba(255,255,255,.15)">
+                <th style="color:rgba(255,255,255,.45); font-weight:600; text-align:left; padding:5px 8px">Tijdstip · Time</th>
+                <th style="color:rgba(255,255,255,.45); font-weight:600; text-align:left; padding:5px 8px">Naam · Name</th>
+                <th style="color:rgba(255,255,255,.45); font-weight:600; text-align:left; padding:5px 8px">Rol · Role</th>
+                <th style="color:rgba(255,255,255,.45); font-weight:600; text-align:left; padding:5px 8px">Actie · Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                <td style="padding:7px 8px; color:rgba(255,255,255,.5)">11-06-2026 08:14</td>
+                <td style="padding:7px 8px; color:#fff; font-weight:600">Leroy</td>
+                <td style="padding:7px 8px"><span style="background:rgba(45,134,83,.4); color:#6ECFA1; border-radius:4px; padding:2px 8px; font-size:.7rem">Medewerker</span></td>
+                <td style="padding:7px 8px; color:rgba(255,255,255,.8)">Nitril handschoenen M: <span style="color:#aaa">8</span> → <span style="color:#6ECFA1">7</span></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                <td style="padding:7px 8px; color:rgba(255,255,255,.5)">11-06-2026 07:52</td>
+                <td style="padding:7px 8px; color:#fff; font-weight:600">Annebien</td>
+                <td style="padding:7px 8px"><span style="background:rgba(45,134,83,.6); color:#fff; border-radius:4px; padding:2px 8px; font-size:.7rem">Manager</span></td>
+                <td style="padding:7px 8px; color:rgba(255,255,255,.8)">Papieren handdoekjes: <span style="color:#aaa">5</span> → <span style="color:#f87171">3</span> ⚠️</td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                <td style="padding:7px 8px; color:rgba(255,255,255,.5)">10-06-2026 16:30</td>
+                <td style="padding:7px 8px; color:#fff; font-weight:600">Sanja</td>
+                <td style="padding:7px 8px"><span style="background:rgba(45,134,83,.4); color:#6ECFA1; border-radius:4px; padding:2px 8px; font-size:.7rem">Medewerker</span></td>
+                <td style="padding:7px 8px; color:rgba(255,255,255,.8)">Foamzeep navulling: <span style="color:#aaa">12</span> → <span style="color:#6ECFA1">11</span></td>
+              </tr>
+              <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                <td style="padding:7px 8px; color:rgba(255,255,255,.5)">10-06-2026 14:15</td>
+                <td style="padding:7px 8px; color:#fff; font-weight:600">Annebien</td>
+                <td style="padding:7px 8px"><span style="background:rgba(45,134,83,.6); color:#fff; border-radius:4px; padding:2px 8px; font-size:.7rem">Manager</span></td>
+                <td style="padding:7px 8px; color:rgba(255,255,255,.8)">Lekbak 2 bijgewerkt: 4.0 L → 4.5 L</td>
+              </tr>
+              <tr>
+                <td style="padding:7px 8px; color:rgba(255,255,255,.5)">10-06-2026 08:01</td>
+                <td style="padding:7px 8px; color:#fff; font-weight:600">Admin</td>
+                <td style="padding:7px 8px"><span style="background:rgba(255,255,255,.15); color:#fff; border-radius:4px; padding:2px 8px; font-size:.7rem">Beheer</span></td>
+                <td style="padding:7px 8px; color:rgba(255,255,255,.8)">Product toegevoegd: Desinfectiemiddel (max 8)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- VERBRUIK -->
+        <div id="tab-verbruik" style="display:none; padding:16px 20px">
+          <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--hf-green); margin-bottom:10px">📈 Verbruik — Mei 2026 · Usage — May 2026</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+            <div>
+              <table style="width:100%; border-collapse:collapse; font-size:.78rem">
+                <thead>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.15)">
+                    <th style="color:rgba(255,255,255,.45); font-weight:600; text-align:left; padding:5px 8px">Product</th>
+                    <th style="color:rgba(255,255,255,.45); font-weight:600; text-align:right; padding:5px 8px">Verbruikt · Used</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:7px 8px; color:#fff">Nitril handschoenen M</td>
+                    <td style="padding:7px 8px; text-align:right; color:#6ECFA1; font-weight:700">12 dozen</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:7px 8px; color:#fff">Papieren handdoekjes</td>
+                    <td style="padding:7px 8px; text-align:right; color:#6ECFA1; font-weight:700">8 rollen</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:7px 8px; color:#fff">Foamzeep navulling</td>
+                    <td style="padding:7px 8px; text-align:right; color:#6ECFA1; font-weight:700">3 flessen</td>
+                  </tr>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                    <td style="padding:7px 8px; color:#fff">Desinfectiemiddel</td>
+                    <td style="padding:7px 8px; text-align:right; color:#6ECFA1; font-weight:700">5 flessen</td>
+                  </tr>
+                  <tr>
+                    <td style="padding:7px 8px; color:#fff">Schoonmaakmiddel</td>
+                    <td style="padding:7px 8px; text-align:right; color:#6ECFA1; font-weight:700">2 flessen</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; justify-content:center">
+              <div style="background:rgba(255,255,255,.06); border-radius:10px; padding:10px 14px">
+                <div style="font-size:.7rem; color:rgba(255,255,255,.4); margin-bottom:4px">Meest verbruikt · Most used</div>
+                <div style="color:#fff; font-weight:700">Nitril handschoenen M</div>
+                <div style="font-size:.72rem; color:#6ECFA1">12 dozen in mei</div>
+              </div>
+              <div style="background:rgba(255,255,255,.06); border-radius:10px; padding:10px 14px">
+                <div style="font-size:.7rem; color:rgba(255,255,255,.4); margin-bottom:4px">Periode · Period</div>
+                <div style="color:#fff; font-weight:700">Mei 2026</div>
+                <div style="font-size:.72rem; color:rgba(255,255,255,.5)">01-05-2026 t/m 31-05-2026</div>
+              </div>
+              <div style="background:rgba(255,255,255,.06); border-radius:10px; padding:10px 14px">
+                <div style="font-size:.7rem; color:rgba(255,255,255,.4); margin-bottom:4px">Export mogelijk als · Export as</div>
+                <div style="color:#fff; font-weight:600; font-size:.82rem">PDF &nbsp;·&nbsp; Kopiëren &nbsp;·&nbsp; E-mail</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BESTELRAPPORT -->
+        <div id="tab-rapport" style="display:none; padding:16px 20px">
+          <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--hf-green); margin-bottom:10px">📄 Bestelrapport — Juni 2026 · Order Report — June 2026</div>
+          <div style="display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start">
+            <table style="width:100%; border-collapse:collapse; font-size:.78rem">
+              <thead>
+                <tr style="border-bottom:1px solid rgba(255,255,255,.15)">
+                  <th style="color:rgba(255,255,255,.45); font-weight:600; text-align:left; padding:5px 8px">Product</th>
+                  <th style="color:rgba(255,255,255,.45); font-weight:600; text-align:center; padding:5px 8px">Huidig · Current</th>
+                  <th style="color:rgba(255,255,255,.45); font-weight:600; text-align:center; padding:5px 8px">Max</th>
+                  <th style="color:rgba(255,255,255,.45); font-weight:600; text-align:right; padding:5px 8px">Bestellen · Order</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                  <td style="padding:7px 8px; color:#fff">Papieren handdoekjes</td>
+                  <td style="padding:7px 8px; text-align:center; color:#f87171">3</td>
+                  <td style="padding:7px 8px; text-align:center; color:rgba(255,255,255,.4)">20</td>
+                  <td style="padding:7px 8px; text-align:right; color:#f87171; font-weight:700">17 rollen ⚠️</td>
+                </tr>
+                <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                  <td style="padding:7px 8px; color:#fff">Nitril handschoenen M</td>
+                  <td style="padding:7px 8px; text-align:center; color:#6ECFA1">8</td>
+                  <td style="padding:7px 8px; text-align:center; color:rgba(255,255,255,.4)">10</td>
+                  <td style="padding:7px 8px; text-align:right; color:#6ECFA1; font-weight:700">2 dozen</td>
+                </tr>
+                <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+                  <td style="padding:7px 8px; color:#fff">Desinfectiemiddel</td>
+                  <td style="padding:7px 8px; text-align:center; color:#fbbf24">5</td>
+                  <td style="padding:7px 8px; text-align:center; color:rgba(255,255,255,.4)">8</td>
+                  <td style="padding:7px 8px; text-align:right; color:#fbbf24; font-weight:700">3 flessen</td>
+                </tr>
+                <tr>
+                  <td style="padding:7px 8px; color:#fff">Foamzeep navulling</td>
+                  <td style="padding:7px 8px; text-align:center; color:#6ECFA1">11</td>
+                  <td style="padding:7px 8px; text-align:center; color:rgba(255,255,255,.4)">12</td>
+                  <td style="padding:7px 8px; text-align:right; color:#6ECFA1; font-weight:700">1 fles</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="min-width:160px; display:flex; flex-direction:column; gap:8px">
+              <div style="background:rgba(45,134,83,.3); border:1px solid var(--hf-green); border-radius:10px; padding:10px 14px; text-align:center">
+                <div style="font-size:.7rem; color:rgba(255,255,255,.5)">Gegenereerd · Generated</div>
+                <div style="color:#fff; font-weight:700; font-size:.85rem">11-06-2026</div>
+                <div style="font-size:.7rem; color:rgba(255,255,255,.5)">door Leroy E.</div>
+              </div>
+              <div style="background:rgba(255,255,255,.06); border-radius:10px; padding:10px 14px; text-align:center">
+                <div style="font-size:.7rem; color:rgba(255,255,255,.4); margin-bottom:4px">Nooit meer dan max</div>
+                <div style="color:#6ECFA1; font-weight:700; font-size:.8rem">✅ Automatisch berekend</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div id="tab-email" style="display:none; padding:16px 20px">
+          <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--hf-green); margin-bottom:10px">✉️ E-mail export voorbeeld · Email export example</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
+            <div style="background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:14px; font-size:.78rem">
+              <div style="display:flex; flex-direction:column; gap:4px; margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,.1)">
+                <div><span style="color:rgba(255,255,255,.4); width:60px; display:inline-block">Aan:</span> <span style="color:#6ECFA1">inkoop@hellofresh.nl</span></div>
+                <div><span style="color:rgba(255,255,255,.4); width:60px; display:inline-block">Van:</span> <span style="color:#fff">leroy.evertse@hellofresh.com</span></div>
+                <div><span style="color:rgba(255,255,255,.4); width:60px; display:inline-block">Onderwerp:</span> <span style="color:#fff">Bestelrapport Ruinerwold HUB — Juni 2026</span></div>
+              </div>
+              <div style="color:rgba(255,255,255,.8); line-height:1.7; font-size:.76rem">
+                Beste inkoop,<br><br>
+                Hierbij het bestelrapport voor HUB Ruinerwold (11-06-2026):<br><br>
+                • Papieren handdoekjes: <strong style="color:#f87171">17 rollen</strong><br>
+                • Nitril handschoenen M: <strong style="color:#6ECFA1">2 dozen</strong><br>
+                • Desinfectiemiddel: <strong style="color:#fbbf24">3 flessen</strong><br>
+                • Foamzeep navulling: <strong style="color:#6ECFA1">1 fles</strong><br><br>
+                <span style="color:rgba(255,255,255,.5); font-size:.72rem">Gegenereerd via het Voorraadbeheer systeem.<br>Met vriendelijke groet,<br>Leroy Evertse — Manager HUB Ruinerwold</span>
+              </div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; justify-content:center">
+              <div style="background:rgba(255,255,255,.06); border-radius:10px; padding:12px 14px">
+                <div style="font-size:.7rem; color:rgba(255,255,255,.4); margin-bottom:6px">Opties · Options</div>
+                <div style="display:flex; flex-direction:column; gap:6px">
+                  <div style="display:flex; align-items:center; gap:8px; font-size:.78rem; color:#fff">
+                    <span style="background:var(--hf-green); border-radius:4px; padding:2px 10px; font-size:.7rem">✉️ Versturen</span> Direct naar inkoop
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px; font-size:.78rem; color:#fff">
+                    <span style="background:rgba(255,255,255,.15); border-radius:4px; padding:2px 10px; font-size:.7rem">📋 Kopiëren</span> Plakken in Teams / WhatsApp
+                  </div>
+                  <div style="display:flex; align-items:center; gap:8px; font-size:.78rem; color:#fff">
+                    <span style="background:rgba(255,255,255,.15); border-radius:4px; padding:2px 10px; font-size:.7rem">📄 PDF</span> Downloaden als bestand
+                  </div>
+                </div>
+              </div>
+              <div style="background:rgba(45,134,83,.2); border:1px solid rgba(45,134,83,.5); border-radius:10px; padding:10px 14px; font-size:.75rem; color:rgba(255,255,255,.75)">
+                ✅ Rapport bevat automatisch alleen producten die besteld <em>mogen</em> worden<br>
+                <em style="color:rgba(255,255,255,.4)">Report only includes products that may be ordered</em>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end preview panel -->
+    </div>
+  </div>
+
+  <style>
+    .mgr-card:hover { transform: translateY(-3px); background: rgba(255,255,255,.14) !important; }
+    .mgr-card.active { border-color: var(--hf-green) !important; background: rgba(45,134,83,.3) !important; }
+  </style>
+  <script>
+    function showTab(name) {
+      // hide all tab contents
+      ['logboek','verbruik','rapport','email','default'].forEach(t => {
+        document.getElementById('tab-' + t).style.display = 'none';
+      });
+      // deactivate all cards
+      document.querySelectorAll('.mgr-card').forEach(c => c.classList.remove('active'));
+      // show selected
+      document.getElementById('tab-' + name).style.display = 'block';
+      // activate card
+      const card = document.querySelector('[data-tab="' + name + '"]');
+      if (card) card.classList.add('active');
+    }
+  </script>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 8b — Organische tool / Adaptive system
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-green white-text" id="s8b">
+    <div class="slide-tag" style="color:rgba(255,255,255,.6)">Filosofie · Philosophy</div>
+    <h2 style="text-align:center; color:#fff">Geen vast systeem — een levende tool<br><span style="font-weight:300; font-size:.65em; color:rgba(255,255,255,.7)">Not a fixed system — a living tool</span></h2>
+    <div class="hf-line" style="background:rgba(255,255,255,.3)"></div>
+
+    <div style="max-width:920px; width:100%; margin-top:22px; display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:start">
+
+      <!-- Links: hoofdboodschap -->
+      <div style="background:rgba(255,255,255,.1); border-radius:16px; padding:28px 30px; border:1px solid rgba(255,255,255,.15)">
+        <div style="font-size:2.6rem; margin-bottom:12px">🌱</div>
+        <h3 style="color:#fff; font-size:1.05rem; margin-bottom:10px">Groeit mee met de organisatie<br><em style="font-weight:300; font-size:.8em; color:rgba(255,255,255,.65)">Grows with the organisation</em></h3>
+        <p style="font-size:.83rem; color:rgba(255,255,255,.82); line-height:1.65">
+          De tool is bewust gebouwd om aan te passen, niet om vast te staan. Nieuwe producten, andere drempelwaarden, extra modules: alles is instelbaar zonder de app opnieuw te bouwen.
+        </p>
+        <p style="font-size:.75rem; color:rgba(255,255,255,.5); line-height:1.55; margin-top:10px; font-style:italic">
+          The tool is deliberately built to adapt — not to be rigid. New products, different thresholds, extra modules: everything configurable without rebuilding the app.
+        </p>
+      </div>
+
+      <!-- Rechts: drie pijlers -->
+      <div style="display:flex; flex-direction:column; gap:14px">
+
+        <div style="background:rgba(255,255,255,.08); border-radius:12px; padding:15px 18px; border-left:4px solid rgba(255,255,255,.35); display:flex; align-items:flex-start; gap:14px">
+          <div style="font-size:1.7rem; flex-shrink:0">👷</div>
+          <div>
+            <div style="color:#fff; font-weight:600; font-size:.88rem">Op maat voor medewerkers<br><em style="font-weight:300; font-size:.85em; color:rgba(255,255,255,.6)">Tailored to employees</em></div>
+            <div style="color:rgba(255,255,255,.65); font-size:.77rem; margin-top:4px; line-height:1.4">Accounts, talen en rechten worden ingericht op het team · Accounts, languages and rights fit the team</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,255,255,.08); border-radius:12px; padding:15px 18px; border-left:4px solid rgba(255,255,255,.35); display:flex; align-items:flex-start; gap:14px">
+          <div style="font-size:1.7rem; flex-shrink:0">🏭</div>
+          <div>
+            <div style="color:#fff; font-weight:600; font-size:.88rem">Aangepast aan de werkomgeving<br><em style="font-weight:300; font-size:.85em; color:rgba(255,255,255,.6)">Adapted to the workplace</em></div>
+            <div style="color:rgba(255,255,255,.65); font-size:.77rem; margin-top:4px; line-height:1.4">Producten, lekbakken, drempelwaarden — instelbaar per vestiging · Products, trays, thresholds — per site</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(255,255,255,.08); border-radius:12px; padding:15px 18px; border-left:4px solid rgba(255,255,255,.35); display:flex; align-items:flex-start; gap:14px">
+          <div style="font-size:1.7rem; flex-shrink:0">💬</div>
+          <div>
+            <div style="color:#fff; font-weight:600; font-size:.88rem">Gebouwd op terugkoppeling<br><em style="font-weight:300; font-size:.85em; color:rgba(255,255,255,.6)">Built on feedback</em></div>
+            <div style="color:rgba(255,255,255,.65); font-size:.77rem; margin-top:4px; line-height:1.4">Wensen van de werkvloer worden functies · Wishes from the floor become features</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 9 — Toekomstige mogelijkheden / Future
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-white" id="s9" style="padding:26px 54px 78px;">
+    <div class="slide-tag" style="color:var(--hf-dark)">Roadmap</div>
+    <h2 style="text-align:center; color:var(--hf-dark)">Toekomstige mogelijkheden<br><span style="font-weight:300; font-size:.65em; color:var(--hf-gray)">Future possibilities</span></h2>
+    <div class="hf-line"></div>
+
+    <!-- Multi-location banner -->
+    <div style="margin-top:20px; max-width:1000px; width:100%; background:var(--hf-dark); border-radius:14px; padding:20px 28px; display:grid; grid-template-columns:1fr auto; gap:24px; align-items:center">
+      <div>
+        <div style="font-size:.7rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--hf-green); margin-bottom:8px">Uitbreidbaar · Scalable</div>
+        <h3 style="color:#fff; margin-bottom:6px">🏢 Tot 20 vestigingen · Up to 20 locations</h3>
+        <p style="font-size:.82rem; color:rgba(255,255,255,.75); line-height:1.5">
+          Het systeem is technisch gereed om uit te breiden naar meerdere HelloFresh-vestigingen. Elke locatie krijgt een eigen afgeschermde omgeving — dezelfde app, andere data. Een centraal beheerportaal kan vestigingen naast elkaar tonen voor vergelijking en gecombineerde rapportage.<br>
+          <em style="color:rgba(255,255,255,.5)">The system is technically ready to scale across multiple HelloFresh locations. Each site gets its own isolated environment — same app, separate data. A central admin portal can display locations side by side for comparison and combined reporting.</em>
+        </p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; min-width:220px">
+        <div style="background:rgba(255,255,255,.08); border-radius:10px; padding:12px 16px; text-align:center">
+          <div style="font-size:1.6rem; font-weight:800; color:var(--hf-green)">3–6 MB</div>
+          <div style="font-size:.72rem; color:rgba(255,255,255,.5); margin-top:3px">opslag per vestiging/jaar · storage per location/year</div>
+        </div>
+        <div style="background:rgba(255,255,255,.08); border-radius:10px; padding:12px 16px; text-align:center">
+          <div style="font-size:1.6rem; font-weight:800; color:var(--hf-green)">500 MB</div>
+          <div style="font-size:.72rem; color:rgba(255,255,255,.5); margin-top:3px">gratis Supabase-limiet · free Supabase limit</div>
+        </div>
+        <div style="background:rgba(45,134,83,.3); border:1px solid var(--hf-green); border-radius:10px; padding:10px 16px; text-align:center">
+          <div style="font-size:.8rem; color:#fff; font-weight:600">✅ 500+ producten per vestiging mogelijk<br><em style="font-weight:300; color:rgba(255,255,255,.6)">20 locaties ruim binnen gratis tier · 20 locations well within free tier</em></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toekomstige uitbreidingen -->
+    <div style="margin-top:18px; max-width:1000px; width:100%">
+      <div style="font-size:.68rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--hf-gray); margin-bottom:12px">Meer toekomstige uitbreidingen · More future features</div>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px">
+
+        <div style="background:var(--hf-light); border-radius:12px; padding:16px; border-top:3px solid var(--hf-green)">
+          <div style="font-size:1.6rem; margin-bottom:8px">📷</div>
+          <h3 style="color:var(--hf-dark); font-size:.88rem; margin-bottom:5px">Barcode scannen</h3>
+          <p style="font-size:.76rem; color:var(--hf-gray); line-height:1.4">Producten in en uit scannen met de camera van je telefoon. Sneller bijwerken, minder fouten.<br><em>Scan products in/out with your phone camera.</em></p>
+        </div>
+
+        <div style="background:var(--hf-light); border-radius:12px; padding:16px; border-top:3px solid rgba(45,134,83,.3)">
+          <div style="font-size:1.6rem; margin-bottom:8px">📊</div>
+          <h3 style="color:var(--hf-dark); font-size:.88rem; margin-bottom:5px">Verbruikstrend grafiek</h3>
+          <p style="font-size:.76rem; color:var(--hf-gray); line-height:1.4">Grafiek van verbruik over tijd — inzicht in patronen en seizoenspieken.<br><em>Usage trends — patterns and seasonal peaks.</em></p>
+        </div>
+
+        <div style="background:var(--hf-light); border-radius:12px; padding:16px; border-top:3px solid rgba(45,134,83,.3)">
+          <div style="font-size:1.6rem; margin-bottom:8px">🔔</div>
+          <h3 style="color:var(--hf-dark); font-size:.88rem; margin-bottom:5px">Lage-voorraad melding</h3>
+          <p style="font-size:.76rem; color:var(--hf-gray); line-height:1.4">Automatische e-mailmelding zodra een product onder het minimum zakt.<br><em>Auto email when stock drops below minimum.</em></p>
+        </div>
+
+        <div style="background:var(--hf-light); border-radius:12px; padding:16px; border-top:3px solid rgba(45,134,83,.3)">
+          <div style="font-size:1.6rem; margin-bottom:8px">📅</div>
+          <h3 style="color:var(--hf-dark); font-size:.88rem; margin-bottom:5px">Houdbaarheidsdatum</h3>
+          <p style="font-size:.76rem; color:var(--hf-gray); line-height:1.4">Vervaldatum per product bijhouden — relevant voor ARBO-inspectie.<br><em>Track expiry dates — relevant for ARBO inspection.</em></p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SLIDE 10 — Technologie / Technology
+  ═══════════════════════════════════════════════════ -->
+  <div class="slide bg-cream" id="s10">
+    <div class="slide-tag" style="color:var(--hf-dark)">Techniek · Technology</div>
+    <h2 style="text-align:center; color:var(--hf-dark)">Hoe het werkt onder de motorkap<br><span style="font-weight:300; font-size:.65em; color:var(--hf-gray)">How it works under the hood</span></h2>
+    <div class="hf-line"></div>
+    <div class="grid-3" style="margin-top:24px; max-width:900px">
+      <div class="card" style="text-align:center">
+        <div style="font-size:2.5rem; margin-bottom:10px">⚛️</div>
+        <h3 style="color:var(--hf-dark); margin-bottom:8px">React + Vite</h3>
+        <p style="font-size:.82rem; color:var(--hf-gray)">Snelle, moderne web-app — werkt offline met local fallback<br><em>Fast modern web app — works offline with local fallback</em></p>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:2.5rem; margin-bottom:10px">☁️</div>
+        <h3 style="color:var(--hf-dark); margin-bottom:8px">Supabase</h3>
+        <p style="font-size:.82rem; color:var(--hf-gray)">Cloud-database met real-time sync &amp; automatische keep-alive<br><em>Cloud database with real-time sync &amp; auto keep-alive</em></p>
+        <div style="margin-top:12px; background:var(--hf-light); border-radius:8px; padding:10px; font-size:.75rem; color:var(--hf-dark)">
+          <div style="margin-bottom:4px">📦 Per vestiging/jaar: <strong>3–6 MB</strong></div>
+          <div style="margin-bottom:4px">🆓 Gratis limiet: <strong>500 MB</strong></div>
+          <div>🏢 <strong>20 vestigingen</strong> mogelijk binnen gratis tier<br><em style="color:var(--hf-gray)">20 locations within free tier</em></div>
+        </div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:2.5rem; margin-bottom:10px">🐙</div>
+        <h3 style="color:var(--hf-dark); margin-bottom:8px">GitHub Pages</h3>
+        <p style="font-size:.82rem; color:var(--hf-gray)">Gratis hosting, altijd beschikbaar, geen server nodig<br><em>Free hosting, always available, no server needed</em></p>
+      </div>
+    </div>
+    <div style="margin-top:24px; margin-bottom:40px; display:flex; gap:32px; max-width:700px">
+      <div class="stat-block">
+        <div class="stat-num" style="color:var(--hf-green)">100%</div>
+        <div class="stat-label">Browser-based — geen installatie · no install</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num" style="color:var(--hf-green)">3</div>
+        <div class="stat-label">Rollen met eigen toegang · Roles with own access</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num" style="color:var(--hf-green)">2</div>
+        <div class="stat-label">Talen (NL + AR) · Languages</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num" style="color:var(--hf-green)">∞</div>
+        <div class="stat-label">Apparaten tegelijk · Devices simultaneously</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end #deck -->
+
+<!-- Progress bar -->
+<div id="progress"></div>
+
+<!-- Navigation bar -->
+<div id="nav">
+  <button class="arrow" onclick="go(-1)" title="Previous">◀</button>
+  <div id="dots"></div>
+  <span id="slide-counter">1 / 13</span>
+  <button class="arrow" onclick="go(1)" title="Next">▶</button>
+</div>
+
+<div id="hint">F — fullscreen · ESC — exit</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('slide-counter');
+  const progress = document.getElementById('progress');
+  const nav = document.getElementById('nav');
+  const dotsBox = document.getElementById('dots');
+  let current = 0;
+
+  // Build dot indicators
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' on' : '');
+    d.title = 'Slide ' + (i + 1);
+    d.onclick = () => show(i);
+    dotsBox.appendChild(d);
+  });
+
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    counter.textContent = (current + 1) + ' / ' + slides.length;
+    progress.style.width = ((current + 1) / slides.length * 100) + '%';
+    dotsBox.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i === current));
+    wakeNav();
+  }
+
+  function go(dir) { show(current + dir); }
+
+  // Nav fades out when idle, so it never covers slide text
+  let idleTimer;
+  function wakeNav() {
+    nav.classList.remove('idle');
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => nav.classList.add('idle'), 3000);
+  }
+  document.addEventListener('mousemove', wakeNav);
+  wakeNav();
+
+  progress.style.width = (1 / slides.length * 100) + '%';
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  go(-1);
+    if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  // Touch/swipe support
+  let touchX = 0;
+  document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; });
+  document.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+  });
+
+  // QR code genereren (client-side, werkt offline)
+  new QRCode(document.getElementById('qr-presentatie'), {
+    text: 'https://leroyevertse-cloud.github.io/voorraadbeheer-ruinerwold/',
+    width: 200,
+    height: 200,
+    colorDark: '#1B5E38',
+    colorLight: '#FFFFFF',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+</script>
+</body>
+</html>
