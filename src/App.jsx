@@ -103,6 +103,16 @@ const TRANS = {
     tabStatus:"Status", tabConsumption:"Verbruik", tabLog:"Logboek",
     trays:"Lekbakken", monthlyReport:"Maandelijkse Uitdraai", createOrderReport:"Bestelrapport aanmaken",
     colProduct:"Product", colOrder:"Bestel",
+    monthlyConsumption:"Maandverbruik", recordMonthly:"Maandstand vastleggen", saving:"Opslaan...",
+    recordMonthlyHint:"Druk op maandstand vastleggen aan het begin van de maand.",
+    consumptionVs:"Verbruik t.o.v.", noConsumption:"Geen verbruik", monthlyRecords:"Maandstanden",
+    productsToReorder:(n)=>`${n} producten bijbestellen`, allStockOk:"Alle voorraden op peil!",
+    recipients:"Ontvangers", noRecipients:"Geen ontvangers. Stel in via Beheerder.",
+    sendByEmail:"Verstuur per e-mail", copyReport:"Kopieer rapport", copied:"Gekopieerd!", downloadPdf:"Download PDF",
+    repTitle:"BESTELRAPPORTAGE", repDate:"Datum", repLocation:"Locatie", repNormalStock:"NORMALE VOORRAAD", repTotal:"TOTAAL TE BESTELLEN", repBottles:"flessen", repOk:"ok", repTarget:"doel",
+    activityLog:"Activiteitenlog", clearLog:"Wissen", confirmClearLog:"Hele logboek wissen? Dit kan niet ongedaan worden gemaakt.", noActivity:"Nog geen activiteit geregistreerd.", roleSystem:"Systeem",
+    partNone:"geen", confirmEmptyTray:(label)=>`${label} volledig leeg melden? Dit zet alle producten op 0.`,
+    targetLabel:"doel", confirmEmptyStock:"Normale voorraad volledig leeg melden? Dit zet alle artikelen op 0.",
     langLabel:"🇳🇱 Nederlands",
   },
   en: {
@@ -133,6 +143,16 @@ const TRANS = {
     tabStatus:"Status", tabConsumption:"Consumption", tabLog:"Log",
     trays:"Trays", monthlyReport:"Monthly Report", createOrderReport:"Create order report",
     colProduct:"Product", colOrder:"Order",
+    monthlyConsumption:"Monthly consumption", recordMonthly:"Record monthly stock", saving:"Saving...",
+    recordMonthlyHint:"Tap record monthly stock at the start of the month.",
+    consumptionVs:"Consumption vs", noConsumption:"No consumption", monthlyRecords:"Monthly records",
+    productsToReorder:(n)=>`${n} products to reorder`, allStockOk:"All stock at target!",
+    recipients:"Recipients", noRecipients:"No recipients. Set them up via Admin.",
+    sendByEmail:"Send by email", copyReport:"Copy report", copied:"Copied!", downloadPdf:"Download PDF",
+    repTitle:"ORDER REPORT", repDate:"Date", repLocation:"Location", repNormalStock:"NORMAL STOCK", repTotal:"TOTAL TO ORDER", repBottles:"bottles", repOk:"ok", repTarget:"target",
+    activityLog:"Activity log", clearLog:"Clear", confirmClearLog:"Clear the entire log? This cannot be undone.", noActivity:"No activity recorded yet.", roleSystem:"System",
+    partNone:"none", confirmEmptyTray:(label)=>`Report ${label} completely empty? This sets all products to 0.`,
+    targetLabel:"target", confirmEmptyStock:"Report normal stock completely empty? This sets all items to 0.",
     langLabel:"🇬🇧 English",
   },
   ar: {
@@ -163,6 +183,16 @@ const TRANS = {
     tabStatus:"الحالة", tabConsumption:"الاستهلاك", tabLog:"السجل",
     trays:"صواني التسرب", monthlyReport:"التقرير الشهري", createOrderReport:"إنشاء تقرير الطلب",
     colProduct:"المنتج", colOrder:"اطلب",
+    monthlyConsumption:"الاستهلاك الشهري", recordMonthly:"تسجيل الحالة الشهرية", saving:"جارٍ الحفظ...",
+    recordMonthlyHint:"اضغط على تسجيل الحالة الشهرية في بداية الشهر.",
+    consumptionVs:"الاستهلاك مقارنةً بـ", noConsumption:"لا يوجد استهلاك", monthlyRecords:"السجلات الشهرية",
+    productsToReorder:(n)=>`${n} منتجات لإعادة الطلب`, allStockOk:"كل المخزون عند الهدف!",
+    recipients:"المستلمون", noRecipients:"لا يوجد مستلمون. قم بإعدادهم عبر المسؤول.",
+    sendByEmail:"إرسال بالبريد الإلكتروني", copyReport:"نسخ التقرير", copied:"تم النسخ!", downloadPdf:"تنزيل PDF",
+    repTitle:"تقرير الطلب", repDate:"التاريخ", repLocation:"الموقع", repNormalStock:"المخزون العادي", repTotal:"الإجمالي للطلب", repBottles:"زجاجات", repOk:"تمام", repTarget:"الهدف",
+    activityLog:"سجل الأنشطة", clearLog:"مسح", confirmClearLog:"مسح السجل بالكامل؟ لا يمكن التراجع عن هذا.", noActivity:"لم يتم تسجيل أي نشاط بعد.", roleSystem:"النظام",
+    partNone:"لا شيء", confirmEmptyTray:(label)=>`الإبلاغ عن أن ${label} فارغة تماماً؟ سيؤدي هذا إلى ضبط كل المنتجات على 0.`,
+    targetLabel:"الهدف", confirmEmptyStock:"الإبلاغ عن أن المخزون العادي فارغ تماماً؟ سيؤدي هذا إلى ضبط كل العناصر على 0.",
     langLabel:"🇸🇦 العربية",
   },
   fr: {
@@ -193,6 +223,16 @@ const TRANS = {
     tabStatus:"Statut", tabConsumption:"Consommation", tabLog:"Journal",
     trays:"Bacs", monthlyReport:"Récapitulatif mensuel", createOrderReport:"Créer un rapport de commande",
     colProduct:"Produit", colOrder:"Commander",
+    monthlyConsumption:"Consommation mensuelle", recordMonthly:"Enregistrer le relevé mensuel", saving:"Enregistrement...",
+    recordMonthlyHint:"Appuyez sur enregistrer le relevé mensuel au début du mois.",
+    consumptionVs:"Consommation par rapport à", noConsumption:"Aucune consommation", monthlyRecords:"Relevés mensuels",
+    productsToReorder:(n)=>`${n} produits à recommander`, allStockOk:"Tous les stocks à l'objectif !",
+    recipients:"Destinataires", noRecipients:"Aucun destinataire. Configurez-les via Administration.",
+    sendByEmail:"Envoyer par e-mail", copyReport:"Copier le rapport", copied:"Copié !", downloadPdf:"Télécharger le PDF",
+    repTitle:"RAPPORT DE COMMANDE", repDate:"Date", repLocation:"Emplacement", repNormalStock:"STOCK NORMAL", repTotal:"TOTAL À COMMANDER", repBottles:"bouteilles", repOk:"ok", repTarget:"objectif",
+    activityLog:"Journal d'activité", clearLog:"Effacer", confirmClearLog:"Effacer tout le journal ? Cette action est irréversible.", noActivity:"Aucune activité enregistrée pour le moment.", roleSystem:"Système",
+    partNone:"aucune", confirmEmptyTray:(label)=>`Signaler ${label} entièrement vide ? Cela met tous les produits à 0.`,
+    targetLabel:"objectif", confirmEmptyStock:"Signaler le stock normal entièrement vide ? Cela met tous les articles à 0.",
     langLabel:"🇫🇷 Français",
   },
 };
@@ -200,6 +240,8 @@ const tr = (lang, key, ...args) => {
   const v = TRANS[lang]?.[key] ?? TRANS.nl[key] ?? key;
   return typeof v === "function" ? v(...args) : v;
 };
+const LOCALE = {nl:"nl-NL", en:"en-GB", ar:"ar-EG", fr:"fr-FR"};
+const dloc = (lang) => LOCALE[lang] || "nl-NL";
 
 const DEF = {
   appName: "Voorraadbeheer", location: "Ruinerwold",
@@ -734,13 +776,13 @@ export default function App() {
             </div>
           )}
           {mgrTab==="verbruik"&&cfg.features.consumptionTracking&&(
-            <ConsumptionView inv={inv} snaps={snaps} setSnaps={saveSnaps} onSnap={takeSnap} cfg={cfg}/>
+            <ConsumptionView inv={inv} snaps={snaps} setSnaps={saveSnaps} onSnap={takeSnap} cfg={cfg} lang={lang}/>
           )}
           {mgrTab==="logboek"&&(
-            <AuditView log={auditLog} onClear={clearAudit}/>
+            <AuditView log={auditLog} onClear={clearAudit} lang={lang}/>
           )}
         </div>
-        {showReport&&<ReportModal cfg={cfg} inv={inv} onClose={()=>setShowReport(false)}/>}
+        {showReport&&<ReportModal cfg={cfg} inv={inv} onClose={()=>setShowReport(false)} lang={lang}/>}
         <Ftr/>
       </div>
     );
@@ -999,7 +1041,7 @@ function ShelfDetail({shelf,inv,onUpdate,cfg,onAudit,lang="nl"}){
                       <button key={v} style={{height:44,padding:"0 8px",background:active?"#EEF9E6":"#F5FBF0",border:`2px solid ${active?"#3D8B2E":"#C8E6B0"}`,borderRadius:10,color:active?"#3D8B2E":"#8AAA7A",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:1}}
                         onClick={()=>onUpdate(p.id,"partial",st.partial===v?0:v)}>
                         <span>{v===0?"--":`${v}%`}</span>
-                        <span style={{fontSize:7,opacity:0.7}}>{v===0?"geen":v===25?"¼":v===50?"½":"¾"}</span>
+                        <span style={{fontSize:7,opacity:0.7}}>{v===0?tr(lang,"partNone"):v===25?"¼":v===50?"½":"¾"}</span>
                       </button>
                     );
                   })}
@@ -1009,16 +1051,16 @@ function ShelfDetail({shelf,inv,onUpdate,cfg,onAudit,lang="nl"}){
           </div>
         );
       })}
-      <button style={{width:"100%",padding:13,background:"#FDEDEA",border:"2px solid #D44A2A55",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}} onClick={()=>{if(!window.confirm(`${shelf.label} volledig leeg melden? Dit zet alle producten op 0.`))return;aPr(shelf).forEach(p=>{onUpdate(p.id,"full",0);onUpdate(p.id,"partial",0);});onAudit?.(`${shelf.label} leeg gemeld`)}}>
+      <button style={{width:"100%",padding:13,background:"#FDEDEA",border:"2px solid #D44A2A55",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}} onClick={()=>{if(!window.confirm(tr(lang,"confirmEmptyTray",shelf.label)))return;aPr(shelf).forEach(p=>{onUpdate(p.id,"full",0);onUpdate(p.id,"partial",0);});onAudit?.(`${shelf.label} leeg gemeld`)}}>
         {tr(lang,"reportEmpty")}
       </button>
     </div>
   );
 }
 
-function ConsumptionView({inv,snaps,setSnaps,onSnap,cfg}){
+function ConsumptionView({inv,snaps,setSnaps,onSnap,cfg,lang="nl"}){
   const [taking,setTaking]=useState(false);
-  const label=new Date().toLocaleDateString("nl-NL",{month:"long",year:"numeric"});
+  const label=new Date().toLocaleDateString(dloc(lang),{month:"long",year:"numeric"});
   const hasSnaps=snaps.length>0;
   const latest=hasSnaps?snaps[0]:null;
   const calc=(snapInv)=>{
@@ -1035,17 +1077,17 @@ function ConsumptionView({inv,snaps,setSnaps,onSnap,cfg}){
   const total=rows.reduce((s,r)=>s+r.used,0);
   return(
     <div>
-      <div style={{fontSize:14,fontWeight:900,color:"#3D8B2E",textTransform:"uppercase",letterSpacing:1,marginBottom:14}}>Maandverbruik</div>
+      <div style={{fontSize:14,fontWeight:900,color:"#3D8B2E",textTransform:"uppercase",letterSpacing:1,marginBottom:14}}>{tr(lang,"monthlyConsumption")}</div>
       <button style={{...S.btn,width:"100%",background:"linear-gradient(135deg,#3D8B2E,#5AAE3C)",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginBottom:14}}
         onClick={()=>{setTaking(true);onSnap(label);setTaking(false);}}>
         <span style={{fontSize:20}}>📸</span>
-        <div><div>{taking?"Opslaan...":"Maandstand vastleggen"}</div><div style={{fontSize:10,opacity:0.8,marginTop:2}}>{label}</div></div>
+        <div><div>{taking?tr(lang,"saving"):tr(lang,"recordMonthly")}</div><div style={{fontSize:10,opacity:0.8,marginTop:2}}>{label}</div></div>
       </button>
-      {!hasSnaps&&<div style={{...S.card,textAlign:"center",padding:28}}><div style={{fontSize:36,marginBottom:10}}>📊</div><div style={{fontSize:13,color:"#8AAA7A"}}>Druk op maandstand vastleggen aan het begin van de maand.</div></div>}
+      {!hasSnaps&&<div style={{...S.card,textAlign:"center",padding:28}}><div style={{fontSize:36,marginBottom:10}}>📊</div><div style={{fontSize:13,color:"#8AAA7A"}}>{tr(lang,"recordMonthlyHint")}</div></div>}
       {hasSnaps&&(
         <div style={{...S.card,padding:0,overflow:"hidden"}}>
           <div style={{background:"#EEF9E6",padding:"12px 16px",borderBottom:"2px solid #C8E6B0",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-            <div style={{fontSize:13,fontWeight:900,color:"#3D8B2E"}}>Verbruik t.o.v. {latest.label}</div>
+            <div style={{fontSize:13,fontWeight:900,color:"#3D8B2E"}}>{tr(lang,"consumptionVs")} {latest.label}</div>
             <div style={{fontSize:16,fontWeight:900,color:"#3D8B2E"}}>{total.toFixed(2)}L</div>
           </div>
           {aSh(cfg).map(sh=>{
@@ -1055,7 +1097,7 @@ function ConsumptionView({inv,snaps,setSnaps,onSnap,cfg}){
                 <div style={{fontSize:10,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:2,marginBottom:6,display:"flex",alignItems:"center",gap:6}}>
                   <div style={{width:8,height:8,borderRadius:"50%",background:sh.color}}/>{sh.label}
                 </div>
-                {shRows.length===0&&<div style={{fontSize:11,color:"#8AAA7A",paddingBottom:6}}>Geen verbruik</div>}
+                {shRows.length===0&&<div style={{fontSize:11,color:"#8AAA7A",paddingBottom:6}}>{tr(lang,"noConsumption")}</div>}
                 {shRows.map(r=>(
                   <div key={r.p.id} style={{display:"flex",alignItems:"center",gap:10,padding:"5px 0",borderBottom:"1px solid #F5FBF0"}}>
                     <div style={{flex:1}}><div style={{fontSize:12,fontWeight:700}}>{r.p.name}</div><div style={{height:5,background:"#EEF9E6",borderRadius:3,overflow:"hidden",marginTop:3}}><div style={{height:"100%",width:`${Math.min((r.used/r.maxUsed)*100,100)}%`,background:sh.color,borderRadius:3}}/></div></div>
@@ -1069,10 +1111,10 @@ function ConsumptionView({inv,snaps,setSnaps,onSnap,cfg}){
       )}
       {snaps.length>0&&(
         <div style={{...S.card,marginTop:12}}>
-          <div style={{fontSize:11,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:2,marginBottom:10}}>Maandstanden</div>
+          <div style={{fontSize:11,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:2,marginBottom:10}}>{tr(lang,"monthlyRecords")}</div>
           {snaps.map(snap=>(
             <div key={snap.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid #EEF9E6"}}>
-              <div><div style={{fontSize:13,fontWeight:700,color:"#4A6A3A"}}>{snap.label}</div><div style={{fontSize:10,color:"#8AAA7A",marginTop:1}}>{new Date(snap.date).toLocaleDateString("nl-NL",{day:"2-digit",month:"short"})}</div></div>
+              <div><div style={{fontSize:13,fontWeight:700,color:"#4A6A3A"}}>{snap.label}</div><div style={{fontSize:10,color:"#8AAA7A",marginTop:1}}>{new Date(snap.date).toLocaleDateString(dloc(lang),{day:"2-digit",month:"short"})}</div></div>
               <button style={{background:"#FDEDEA",border:"none",color:"#D44A2A",borderRadius:7,width:36,height:36,cursor:"pointer",fontSize:15}} onClick={()=>{const n=snaps.filter(s=>s.id!==snap.id);setSnaps(n);}}>×</button>
             </div>
           ))}
@@ -1227,56 +1269,56 @@ function AdminPanel({cfg,onSave}){
   );
 }
 
-function ReportModal({cfg,inv,onClose}){
+function ReportModal({cfg,inv,onClose,lang="nl"}){
   const [copied,setCopied]=useState(false);
   const emails=(cfg.emails||[]).filter(e=>e.active&&e.email.includes("@"));
-  const lines=[`${cfg.appName.toUpperCase()} — BESTELRAPPORTAGE`,`Datum: ${new Date().toLocaleDateString("nl-NL",{weekday:"long",day:"2-digit",month:"long",year:"numeric"})}`,`Locatie: ${cfg.location}`,""];
+  const lines=[`${cfg.appName.toUpperCase()} — ${tr(lang,"repTitle")}`,`${tr(lang,"repDate")}: ${new Date().toLocaleDateString(dloc(lang),{weekday:"long",day:"2-digit",month:"long",year:"numeric"})}`,`${tr(lang,"repLocation")}: ${cfg.location}`,""];
   let total=0;
   aSh(cfg).forEach(sh=>{
     lines.push(`${sh.label} (${shL(sh,inv).toFixed(1)}L / ${sh.maxLiters}L)`);
     aPr(sh).forEach(p=>{
       const s=inv[p.id]||{full:0,partial:0};const need=Math.max(0,p.target-s.full);total+=need;
       const curr=s.partial>0?`${s.full}+${s.partial}%`:`${s.full}`;
-      lines.push(`  ${p.name.padEnd(24)} ${curr.padEnd(8)} doel:${p.target}  ${need>0?`+${need} flessen`:"ok"}`);
+      lines.push(`  ${p.name.padEnd(24)} ${curr.padEnd(8)} ${tr(lang,"repTarget")}:${p.target}  ${need>0?`+${need} ${tr(lang,"repBottles")}`:tr(lang,"repOk")}`);
     });lines.push("");
   });
   const vp=(cfg.voorraad||[]).filter(p=>p.active!==false);
   if(vp.length>0){
-    lines.push("NORMALE VOORRAAD");
+    lines.push(tr(lang,"repNormalStock"));
     vp.forEach(p=>{
       const cnt=(inv[p.id]||{count:0}).count;const need=Math.max(0,p.target-cnt);total+=need;
       const mv=p.unit==="rol"?"rollen":p.unit==="doos"?"dozen":`${p.unit}s`;
-      lines.push(`  ${p.name.padEnd(24)} ${String(cnt).padEnd(8)} doel:${p.target}  ${need>0?`+${need} ${mv}`:"ok"}`);
+      lines.push(`  ${p.name.padEnd(24)} ${String(cnt).padEnd(8)} ${tr(lang,"repTarget")}:${p.target}  ${need>0?`+${need} ${mv}`:tr(lang,"repOk")}`);
     });
     lines.push("");
   }
-  lines.push(`TOTAAL TE BESTELLEN: ${total}`);
+  lines.push(`${tr(lang,"repTotal")}: ${total}`);
   const report=lines.join("\n");
   return(
     <div className="modal-overlay" style={{position:"fixed",inset:0,background:"rgba(30,90,15,0.55)",zIndex:500,display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
-      <div className="modal-box" style={{width:"100%",maxWidth:480,minHeight:"100vh",display:"flex",flexDirection:"column",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)"}}>
+      <div dir={lang==="ar"?"rtl":"ltr"} className="modal-box" style={{width:"100%",maxWidth:480,minHeight:"100vh",display:"flex",flexDirection:"column",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)"}}>
         <div style={{background:"#3D8B2E",padding:"13px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0}}>
-          <div style={{fontSize:15,fontWeight:900,color:"#fff"}}>Maandelijkse Uitdraai</div>
+          <div style={{fontSize:15,fontWeight:900,color:"#fff"}}>{tr(lang,"monthlyReport")}</div>
           <button style={{background:"rgba(255,255,255,0.15)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:16,width:36,height:36,borderRadius:10,cursor:"pointer",fontWeight:700}} onClick={onClose}>×</button>
         </div>
         <div style={{flex:1,padding:16,background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)"}}>
           <div style={{background:total>0?"#FFFBEA":"#EEF9E6",border:`2px solid ${total>0?"#F5C842":"#9FCC80"}`,borderRadius:14,padding:"14px 16px",marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
             <span style={{fontSize:28}}>{total>0?"📦":"🎉"}</span>
-            <div style={{fontSize:14,fontWeight:900,color:total>0?"#A06A00":"#3D8B2E"}}>{total>0?`${total} producten bijbestellen`:"Alle voorraden op peil!"}</div>
+            <div style={{fontSize:14,fontWeight:900,color:total>0?"#A06A00":"#3D8B2E"}}>{total>0?tr(lang,"productsToReorder",total):tr(lang,"allStockOk")}</div>
           </div>
           <div style={{...S.card,marginBottom:14}}>
-            <div style={{fontSize:11,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>Ontvangers ({emails.length})</div>
-            {emails.length===0&&<div style={{fontSize:12,color:"#8AAA7A"}}>Geen ontvangers. Stel in via Beheerder.</div>}
+            <div style={{fontSize:11,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>{tr(lang,"recipients")} ({emails.length})</div>
+            {emails.length===0&&<div style={{fontSize:12,color:"#8AAA7A"}}>{tr(lang,"noRecipients")}</div>}
             {emails.map(e=><div key={e.id} style={{fontSize:12,fontWeight:700,color:"#4A6A3A",padding:"4px 0"}}>📬 {e.dept} — {e.email}</div>)}
           </div>
           <textarea readOnly value={report} style={{width:"100%",height:200,background:"#F5FBF0",border:"2px solid #C8E6B0",borderRadius:10,padding:12,fontFamily:"monospace",fontSize:10,color:"#4A6A3A",lineHeight:1.7,resize:"none",outline:"none",marginBottom:12}}/>
           <button style={{...S.btn,width:"100%",background:"linear-gradient(135deg,#E8632A,#D44A20)",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:10,opacity:emails.length===0?0.5:1,cursor:emails.length===0?"not-allowed":"pointer"}}
             onClick={()=>{const to=emails.map(e=>e.email).join(",");const subj=encodeURIComponent(`${cfg.appName} — Bestelrapport`);window.location.href=`mailto:${to}?subject=${subj}&body=${encodeURIComponent(report)}`;}} disabled={emails.length===0}>
-            <span style={{fontSize:20}}>📧</span> Verstuur per e-mail
+            <span style={{fontSize:20}}>📧</span> {tr(lang,"sendByEmail")}
           </button>
           <button style={{...S.btn,width:"100%",background:"#fff",border:"2.5px solid #C8E6B0",color:copied?"#3D8B2E":"#4A6A3A",display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:8}}
             onClick={async()=>{try{await navigator.clipboard.writeText(report);}catch{}setCopied(true);setTimeout(()=>setCopied(false),2500);}}>
-            {copied?"✅ Gekopieerd!":"⧉ Kopieer rapport"}
+            {copied?`✅ ${tr(lang,"copied")}`:`⧉ ${tr(lang,"copyReport")}`}
           </button>
           <button style={{...S.btn,width:"100%",background:"#fff",border:"2.5px solid #C8E6B0",color:"#4A6A3A",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}
             onClick={()=>{
@@ -1286,7 +1328,7 @@ function ReportModal({cfg,inv,onClose}){
               report.split("\n").forEach(line=>{if(y>ph-12){doc.addPage();y=14;}doc.text(line||" ",12,y);y+=4.8;});
               doc.save(`bestelrapport-${new Date().toISOString().slice(0,10)}.pdf`);
             }}>
-            📄 Download PDF
+            📄 {tr(lang,"downloadPdf")}
           </button>
         </div>
       </div>
@@ -1308,7 +1350,7 @@ function VoorraadView({cfg,inv,onUpdate,onAudit,lang="nl"}){
           </div>
           <div style={{textAlign:"right"}}>
             <div style={{fontSize:26,fontWeight:900,color:totalNeed>0?"#E8A020":"#3D8B2E"}}>{totalNeed}</div>
-            <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600}}>te bestellen</div>
+            <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600}}>{tr(lang,"toOrder")}</div>
           </div>
         </div>
         <div style={{height:8,background:"#D8E8F8",borderRadius:5,overflow:"hidden"}}>
@@ -1330,7 +1372,7 @@ function VoorraadView({cfg,inv,onUpdate,onAudit,lang="nl"}){
             <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:10}}>
               <div>
                 <div style={{fontSize:15,fontWeight:800}}>{p.name}</div>
-                <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:2}}>per {p.unit} · doel: {p.target} {p.unit}{p.target!==1?"s":""}</div>
+                <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:2}}>{tr(lang,"per")} {p.unit} · {tr(lang,"targetLabel")}: {p.target} {p.unit}{p.target!==1?"s":""}</div>
               </div>
               <div style={{textAlign:"right"}}>
                 <div style={{fontSize:15,fontWeight:800,color:col}}>{cnt}</div>
@@ -1358,7 +1400,7 @@ function VoorraadView({cfg,inv,onUpdate,onAudit,lang="nl"}){
       })}
 
       <button style={{width:"100%",padding:13,background:"#FDEDEA",border:"2px solid #D44A2A55",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}}
-        onClick={()=>{if(!window.confirm("Normale voorraad volledig leeg melden? Dit zet alle artikelen op 0."))return;products.forEach(p=>onUpdate(p.id,"count",0));onAudit?.("Normale voorraad leeg gemeld")}}>
+        onClick={()=>{if(!window.confirm(tr(lang,"confirmEmptyStock")))return;products.forEach(p=>onUpdate(p.id,"count",0));onAudit?.("Normale voorraad leeg gemeld")}}>
         {tr(lang,"reportStockEmpty")}
       </button>
     </div>
@@ -1689,27 +1731,27 @@ function ManualModal({type,lang="nl",onClose}){
   );
 }
 
-function AuditView({log,onClear}){
+function AuditView({log,onClear,lang="nl"}){
   const roleColor={worker:"#3D8B2E",manager:"#E8632A",admin:"#7C5CBF",systeem:"#8AAA7A"};
-  const roleLabel={worker:"Medewerker",manager:"Manager",admin:"Beheerder",systeem:"Systeem"};
+  const roleLabel={worker:tr(lang,"worker"),manager:tr(lang,"manager"),admin:tr(lang,"admin"),systeem:tr(lang,"roleSystem")};
   return(
     <div>
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-        <div style={{fontSize:11,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:2}}>Activiteitenlog ({log.length})</div>
-        {log.length>0&&<button style={{background:"#FDEDEA",border:"1.5px solid #D44A2A44",color:"#D44A2A",borderRadius:8,padding:"4px 10px",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}} onClick={()=>{if(!window.confirm("Hele logboek wissen? Dit kan niet ongedaan worden gemaakt."))return;onClear();}}>Wissen</button>}
+        <div style={{fontSize:11,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:2}}>{tr(lang,"activityLog")} ({log.length})</div>
+        {log.length>0&&<button style={{background:"#FDEDEA",border:"1.5px solid #D44A2A44",color:"#D44A2A",borderRadius:8,padding:"4px 10px",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}} onClick={()=>{if(!window.confirm(tr(lang,"confirmClearLog")))return;onClear();}}>{tr(lang,"clearLog")}</button>}
       </div>
       {log.length===0&&(
         <div style={{...S.card,textAlign:"center",padding:28}}>
           <div style={{fontSize:32,marginBottom:8}}>📋</div>
-          <div style={{fontSize:13,color:"#8AAA7A"}}>Nog geen activiteit geregistreerd.</div>
+          <div style={{fontSize:13,color:"#8AAA7A"}}>{tr(lang,"noActivity")}</div>
         </div>
       )}
       {log.map(e=>{
         const col=roleColor[e.role]||"#8AAA7A";
         const lbl=e.user||roleLabel[e.role]||e.role;
         const dt=new Date(e.ts);
-        const dateStr=dt.toLocaleDateString("nl-NL",{day:"2-digit",month:"short"});
-        const timeStr=dt.toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"});
+        const dateStr=dt.toLocaleDateString(dloc(lang),{day:"2-digit",month:"short"});
+        const timeStr=dt.toLocaleTimeString(dloc(lang),{hour:"2-digit",minute:"2-digit"});
         return(
           <div key={e.id} style={{...S.card,padding:"10px 14px",display:"flex",alignItems:"flex-start",gap:10,marginBottom:8}}>
             <div style={{flexShrink:0,marginTop:2}}>
