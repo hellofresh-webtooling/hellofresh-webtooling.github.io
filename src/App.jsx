@@ -93,6 +93,16 @@ const TRANS = {
     ofTarget:(done,total)=>`${done} van ${total} producten op doelstelling`,
     flammable:"Ontvlambaar", corrosive:"Corrosief",
     persons:"personen", person:"persoon", pinRequired:"PIN vereist",
+    manualBtn:"Handleiding", manualWorker:"Voor Medewerkers", manualWorkerSub:"Voorraad bijwerken & inloggen",
+    manualManager:"Voor Managers", manualManagerSub:"Overzicht, rapportage & beheer",
+    qrPrint:"QR-code afdrukken", qrPrintBtn:"Afdrukken",
+    qrAccessVia:"Toegang via QR-code", qrScanToOpen:"Scan om de app te openen", qrAppName:"Voorraadbeheer App",
+    qrStep1:"Open de camera-app op je telefoon", qrStep2:"Richt de camera op de QR-code", qrStep3:"Tik op de melding om in te loggen",
+    stockManagement:"Voorraadbeheer",
+    selectName:"Selecteer je naam", noAccounts:"Geen accounts beschikbaar.",
+    tabStatus:"Status", tabConsumption:"Verbruik", tabLog:"Logboek",
+    trays:"Lekbakken", monthlyReport:"Maandelijkse Uitdraai", createOrderReport:"Bestelrapport aanmaken",
+    colProduct:"Product", colOrder:"Bestel",
     langLabel:"🇳🇱 Nederlands",
   },
   en: {
@@ -113,6 +123,16 @@ const TRANS = {
     ofTarget:(done,total)=>`${done} of ${total} products at target`,
     flammable:"Flammable", corrosive:"Corrosive",
     persons:"persons", person:"person", pinRequired:"PIN required",
+    manualBtn:"Manual", manualWorker:"For Employees", manualWorkerSub:"Update stock & log in",
+    manualManager:"For Managers", manualManagerSub:"Overview, reporting & management",
+    qrPrint:"Print QR code", qrPrintBtn:"Print",
+    qrAccessVia:"Access via QR code", qrScanToOpen:"Scan to open the app", qrAppName:"Stock Management App",
+    qrStep1:"Open the camera app on your phone", qrStep2:"Point the camera at the QR code", qrStep3:"Tap the notification to log in",
+    stockManagement:"Stock Management",
+    selectName:"Select your name", noAccounts:"No accounts available.",
+    tabStatus:"Status", tabConsumption:"Consumption", tabLog:"Log",
+    trays:"Trays", monthlyReport:"Monthly Report", createOrderReport:"Create order report",
+    colProduct:"Product", colOrder:"Order",
     langLabel:"🇬🇧 English",
   },
   ar: {
@@ -133,6 +153,16 @@ const TRANS = {
     ofTarget:(done,total)=>`${done} من ${total} منتجات عند الهدف`,
     flammable:"قابل للاشتعال", corrosive:"آكل",
     persons:"أشخاص", person:"شخص", pinRequired:"يتطلب رمز PIN",
+    manualBtn:"الدليل", manualWorker:"للموظفين", manualWorkerSub:"تحديث المخزون وتسجيل الدخول",
+    manualManager:"للمدراء", manualManagerSub:"نظرة عامة، تقارير وإدارة",
+    qrPrint:"طباعة رمز QR", qrPrintBtn:"طباعة",
+    qrAccessVia:"الدخول عبر رمز QR", qrScanToOpen:"امسح لفتح التطبيق", qrAppName:"تطبيق إدارة المخزون",
+    qrStep1:"افتح تطبيق الكاميرا على هاتفك", qrStep2:"وجّه الكاميرا نحو رمز QR", qrStep3:"اضغط على الإشعار لتسجيل الدخول",
+    stockManagement:"إدارة المخزون",
+    selectName:"اختر اسمك", noAccounts:"لا توجد حسابات متاحة.",
+    tabStatus:"الحالة", tabConsumption:"الاستهلاك", tabLog:"السجل",
+    trays:"صواني التسرب", monthlyReport:"التقرير الشهري", createOrderReport:"إنشاء تقرير الطلب",
+    colProduct:"المنتج", colOrder:"اطلب",
     langLabel:"🇸🇦 العربية",
   },
   fr: {
@@ -153,6 +183,16 @@ const TRANS = {
     ofTarget:(done,total)=>`${done} sur ${total} produits à l'objectif`,
     flammable:"Inflammable", corrosive:"Corrosif",
     persons:"personnes", person:"personne", pinRequired:"PIN requis",
+    manualBtn:"Manuel", manualWorker:"Pour les employés", manualWorkerSub:"Mettre à jour le stock & se connecter",
+    manualManager:"Pour les managers", manualManagerSub:"Aperçu, rapports & gestion",
+    qrPrint:"Imprimer le code QR", qrPrintBtn:"Imprimer",
+    qrAccessVia:"Accès via code QR", qrScanToOpen:"Scannez pour ouvrir l'application", qrAppName:"Application de gestion des stocks",
+    qrStep1:"Ouvrez l'appareil photo de votre téléphone", qrStep2:"Dirigez la caméra vers le code QR", qrStep3:"Appuyez sur la notification pour vous connecter",
+    stockManagement:"Gestion des stocks",
+    selectName:"Sélectionnez votre nom", noAccounts:"Aucun compte disponible.",
+    tabStatus:"Statut", tabConsumption:"Consommation", tabLog:"Journal",
+    trays:"Bacs", monthlyReport:"Récapitulatif mensuel", createOrderReport:"Créer un rapport de commande",
+    colProduct:"Produit", colOrder:"Commander",
     langLabel:"🇫🇷 Français",
   },
 };
@@ -497,7 +537,7 @@ export default function App() {
             <button
               onClick={()=>setManualMenu(m=>!m)}
               style={{background:"#fff",border:"2.5px solid #C8E6B0",borderRadius:20,padding:"12px 28px",fontFamily:"Nunito,Arial,sans-serif",fontSize:14,fontWeight:800,color:"#3D8B2E",cursor:"pointer",display:"flex",alignItems:"center",gap:8,boxShadow:"0 3px 12px rgba(61,139,46,0.12)"}}>
-              <span style={{fontSize:18}}>📖</span> Handleiding <span style={{fontSize:11,opacity:0.6}}>{manualMenu?"▲":"▼"}</span>
+              <span style={{fontSize:18}}>📖</span> {tr(lang,"manualBtn")} <span style={{fontSize:11,opacity:0.6}}>{manualMenu?"▲":"▼"}</span>
             </button>
             {manualMenu&&(
               <div style={{position:"absolute",top:"110%",left:"50%",transform:"translateX(-50%)",background:"#fff",border:"2px solid #C8E6B0",borderRadius:14,boxShadow:"0 8px 28px rgba(61,139,46,0.18)",zIndex:100,width:"min(260px,90vw)",overflow:"hidden"}}>
@@ -505,16 +545,16 @@ export default function App() {
                   style={{width:"100%",padding:"14px 18px",background:"none",border:"none",borderBottom:"1.5px solid #EEF9E6",fontFamily:"Nunito,Arial,sans-serif",fontSize:13,fontWeight:800,color:"#3D8B2E",cursor:"pointer",display:"flex",alignItems:"center",gap:10,textAlign:"left"}}>
                   <span style={{fontSize:22}}>👥</span>
                   <div>
-                    <div>Voor Medewerkers</div>
-                    <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:1}}>Voorraad bijwerken & inloggen</div>
+                    <div>{tr(lang,"manualWorker")}</div>
+                    <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:1}}>{tr(lang,"manualWorkerSub")}</div>
                   </div>
                 </button>
                 <button onClick={()=>{setShowManual("manager");setManualMenu(false);}}
                   style={{width:"100%",padding:"14px 18px",background:"none",border:"none",fontFamily:"Nunito,Arial,sans-serif",fontSize:13,fontWeight:800,color:"#E8632A",cursor:"pointer",display:"flex",alignItems:"center",gap:10,textAlign:"left"}}>
                   <span style={{fontSize:22}}>📊</span>
                   <div>
-                    <div>Voor Managers</div>
-                    <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:1}}>Overzicht, rapportage & beheer</div>
+                    <div>{tr(lang,"manualManager")}</div>
+                    <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:1}}>{tr(lang,"manualManagerSub")}</div>
                   </div>
                 </button>
               </div>
@@ -526,30 +566,30 @@ export default function App() {
             <button
               onClick={()=>setShowQR(true)}
               style={{background:"#fff",border:"2.5px solid #C8E6B0",borderRadius:20,padding:"12px 28px",fontFamily:"Nunito,Arial,sans-serif",fontSize:14,fontWeight:800,color:"#3D8B2E",cursor:"pointer",display:"flex",alignItems:"center",gap:8,boxShadow:"0 3px 12px rgba(61,139,46,0.12)"}}>
-              <span style={{fontSize:18}}>📱</span> QR-code afdrukken
+              <span style={{fontSize:18}}>📱</span> {tr(lang,"qrPrint")}
             </button>
           </div>
         </div>
         {showManual&&<ManualModal type={showManual} lang={lang} onClose={()=>setShowManual(null)}/>}
-        {showQR&&<QRPrintModal cfg={cfg} locId={locId} onClose={()=>setShowQR(false)}/>}
+        {showQR&&<QRPrintModal cfg={cfg} locId={locId} lang={lang} onClose={()=>setShowQR(false)}/>}
         <Ftr/>
       </div>
     );
 
     const roleAccs = loginRole==="worker" ? workerAccs : managerAccs;
     const roleColor = loginRole==="worker" ? "#3D8B2E" : "#E8632A";
-    const roleName = loginRole==="worker" ? "Medewerker" : "Manager";
     return (
-      <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
+      <div dir={lang==="ar"?"rtl":"ltr"} style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
         <style>{GF}</style>
-        <Hdr cfg={cfg} onBack={()=>{setLoginRole(null);setLoginErr("");}} backLabel="Terug"/>
+        <Hdr cfg={cfg} lang={lang} onBack={()=>{setLoginRole(null);setLoginErr("");}} backLabel={tr(lang,"back")}/>
         <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"24px 20px",width:"100%"}}>
           <div style={{marginBottom:6,fontSize:28}}>{loginRole==="worker"?"👥":"📊"}</div>
-          <div style={{fontSize:18,fontWeight:900,color:roleColor,marginBottom:20}}>{roleName} inloggen</div>
+          <div style={{fontSize:18,fontWeight:900,color:roleColor,marginBottom:20}}>{tr(lang,loginRole==="worker"?"loginWorker":"loginManager")}</div>
           <div style={{width:"100%",maxWidth:340}}>
             <AccountLoginPanel
               key={loginRole}
               accounts={roleAccs}
+              lang={lang}
               loginErr={loginErr}
               onClear={()=>setLoginErr("")}
               onFail={id=>setLoginErr(id)}
@@ -579,11 +619,11 @@ export default function App() {
     const totalOrderVoorraad=vProducts.reduce((s,p)=>s+Math.max(0,p.target-(inv[p.id]||{count:0}).count),0);
     const totalOrder=totalOrderShelves+totalOrderVoorraad;
     return (
-      <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center",paddingBottom:40}}>
+      <div dir={lang==="ar"?"rtl":"ltr"} style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center",paddingBottom:40}}>
         <style>{GF}</style>
-        <Hdr cfg={cfg} role="manager" userName={currentUser} onBack={()=>{setRole(null);setCurrentUser(null);setLang("nl");}} backLabel={tr(lang,"logout")}/>
+        <Hdr cfg={cfg} role="manager" userName={currentUser} lang={lang} onBack={()=>{setRole(null);setCurrentUser(null);setLang("nl");}} backLabel={tr(lang,"logout")}/>
         <div className="resp-wide" style={{display:"flex",gap:8,width:"100%",maxWidth:440,padding:"12px 14px 0",margin:"0 auto"}}>
-          {[["status","Status"],["verbruik","Verbruik"],["logboek","Logboek"]].map(([t,l])=>(
+          {[["status",tr(lang,"tabStatus")],["verbruik",tr(lang,"tabConsumption")],["logboek",tr(lang,"tabLog")]].map(([t,l])=>(
             <button key={t} onClick={()=>setMgrTab(t)}
               style={{flex:1,padding:"10px 6px",border:"2.5px solid",borderColor:mgrTab===t?"#3D8B2E":"#C8E6B0",borderRadius:12,background:mgrTab===t?"#3D8B2E":"#fff",color:mgrTab===t?"#fff":"#8AAA7A",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}}>
               {l}
@@ -596,18 +636,18 @@ export default function App() {
               <div style={{display:"flex",gap:10,marginBottom:14}}>
                 <div style={{flex:1,...S.card,textAlign:"center",padding:12}}>
                   <div style={{fontSize:28,fontWeight:900,color:totalOrder>0?"#E8A020":"#3D8B2E"}}>{totalOrder}</div>
-                  <div style={{fontSize:9,color:"#8AAA7A",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginTop:3}}>Te bestellen</div>
+                  <div style={{fontSize:9,color:"#8AAA7A",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginTop:3}}>{tr(lang,"toOrder")}</div>
                 </div>
                 <div style={{flex:1,...S.card,textAlign:"center",padding:12}}>
                   <div style={{fontSize:28,fontWeight:900,color:"#5AAE3C"}}>{shelves.length}</div>
-                  <div style={{fontSize:9,color:"#8AAA7A",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginTop:3}}>Lekbakken</div>
+                  <div style={{fontSize:9,color:"#8AAA7A",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginTop:3}}>{tr(lang,"trays")}</div>
                 </div>
               </div>
               {cfg.features.emailReports&&(
                 <button className="btn-hover" onClick={()=>setShowReport(true)}
                   style={{width:"100%",padding:"16px 20px",background:"linear-gradient(135deg,#E8632A,#D44A20)",border:"none",borderRadius:16,color:"#fff",fontFamily:"Nunito,sans-serif",fontSize:15,fontWeight:900,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:12,marginBottom:16}}>
                   <span style={{fontSize:22}}>📧</span>
-                  <div><div>Maandelijkse Uitdraai</div><div style={{fontSize:10,opacity:0.85,marginTop:2}}>Bestelrapport aanmaken</div></div>
+                  <div><div>{tr(lang,"monthlyReport")}</div><div style={{fontSize:10,opacity:0.85,marginTop:2}}>{tr(lang,"createOrderReport")}</div></div>
                 </button>
               )}
               <div className="mgr-grid">
@@ -633,7 +673,7 @@ export default function App() {
                     <div style={{height:5,background:"#EEF9E6"}}><div style={{height:"100%",width:`${pct}%`,background:col}}/></div>
                     <div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr auto",padding:"5px 10px",borderBottom:"1px solid #EEF9E6"}}>
-                        {["Product","Bestel"].map(h=><div key={h} style={{fontSize:9,color:"#8AAA7A",fontWeight:800,textTransform:"uppercase",letterSpacing:1,textAlign:h!=="Product"?"right":"left"}}>{h}</div>)}
+                        {[["product",tr(lang,"colProduct")],["order",tr(lang,"colOrder")]].map(([k,h])=><div key={k} style={{fontSize:9,color:"#8AAA7A",fontWeight:800,textTransform:"uppercase",letterSpacing:1,textAlign:k!=="product"?"right":"left"}}>{h}</div>)}
                       </div>
                       {aPr(sh).map(p=>{
                         const st=inv[p.id]||{full:0,partial:0};
@@ -660,9 +700,9 @@ export default function App() {
                     <div style={{display:"flex",alignItems:"center",gap:8}}>
                       <span style={{fontSize:16}}>📦</span>
                       <div>
-                        <div style={{fontSize:13,fontWeight:800}}>Normale Voorraad</div>
+                        <div style={{fontSize:13,fontWeight:800}}>{tr(lang,"normalStock")}</div>
                         <div style={{fontSize:9,color:"#5A80B0",fontWeight:700,marginTop:2}}>
-                          {totalOrderVoorraad>0?`${totalOrderVoorraad} te bestellen`:"op voorraad"}
+                          {totalOrderVoorraad>0?`${totalOrderVoorraad} ${tr(lang,"toOrder")}`:tr(lang,"inStock")}
                         </div>
                       </div>
                     </div>
@@ -672,7 +712,7 @@ export default function App() {
                   </div>
                   <div>
                     <div style={{display:"grid",gridTemplateColumns:"1fr auto",padding:"5px 10px",borderBottom:"1px solid #EBF3FD"}}>
-                      {["Product","Bestel"].map(h=><div key={h} style={{fontSize:9,color:"#8AAA7A",fontWeight:800,textTransform:"uppercase",letterSpacing:1,textAlign:h!=="Product"?"right":"left"}}>{h}</div>)}
+                      {[["product",tr(lang,"colProduct")],["order",tr(lang,"colOrder")]].map(([k,h])=><div key={k} style={{fontSize:9,color:"#8AAA7A",fontWeight:800,textTransform:"uppercase",letterSpacing:1,textAlign:k!=="product"?"right":"left"}}>{h}</div>)}
                     </div>
                     {vProducts.map(p=>{
                       const cnt=(inv[p.id]||{count:0}).count;
@@ -805,15 +845,15 @@ function Hdr({cfg,role,isAdmin,onBack,backLabel,onSwitch,userName,lang="nl"}){
   );
 }
 
-function AccountLoginPanel({accounts,onSuccess,onFail,loginErr,onClear,roleColor}){
+function AccountLoginPanel({accounts,onSuccess,onFail,loginErr,onClear,roleColor,lang="nl"}){
   const [selectedId,setSelectedId]=useState(accounts[0]?.id??null);
   const acc=accounts.find(a=>a.id===selectedId)||accounts[0];
-  if(!acc)return <div style={{color:"#8AAA7A",textAlign:"center",padding:20,fontSize:13}}>Geen accounts beschikbaar.</div>;
+  if(!acc)return <div style={{color:"#8AAA7A",textAlign:"center",padding:20,fontSize:13}}>{tr(lang,"noAccounts")}</div>;
   return(
     <div>
       {accounts.length>1&&(
         <div style={{marginBottom:14}}>
-          <label className="lbl-responsive" style={S.lbl}>Selecteer je naam</label>
+          <label className="lbl-responsive" style={S.lbl}>{tr(lang,"selectName")}</label>
           <div style={{position:"relative"}}>
             <select style={{...S.inp,width:"100%",borderColor:roleColor+"66",paddingRight:36,appearance:"none",WebkitAppearance:"none"}}
               value={selectedId}
@@ -824,12 +864,12 @@ function AccountLoginPanel({accounts,onSuccess,onFail,loginErr,onClear,roleColor
           </div>
         </div>
       )}
-      <LoginCard key={acc.id} acc={acc} onSuccess={()=>onSuccess(acc)} onFail={()=>onFail(acc.id)} hasErr={loginErr===acc.id} onClear={onClear} hideRole/>
+      <LoginCard key={acc.id} acc={acc} lang={lang} onSuccess={()=>onSuccess(acc)} onFail={()=>onFail(acc.id)} hasErr={loginErr===acc.id} onClear={onClear} hideRole/>
     </div>
   );
 }
 
-function LoginCard({acc,onSuccess,onFail,hasErr,onClear,hideRole}){
+function LoginCard({acc,onSuccess,onFail,hasErr,onClear,hideRole,lang="nl"}){
   const [pass,setPass]=useState("");
   const [showPw,setShowPw]=useState(false);
   const [attempts,setAttempts]=useState(0);
@@ -859,24 +899,24 @@ function LoginCard({acc,onSuccess,onFail,hasErr,onClear,hideRole}){
       {!hideRole&&<div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14,paddingBottom:12,borderBottom:`2px solid ${isMgr?"#E8632A22":"#EEF9E6"}`}}>
         <span style={{fontSize:28}}>{isMgr?"📊":"👥"}</span>
         <div>
-          <div style={{fontSize:15,fontWeight:900,color:isMgr?"#E8632A":"#3D8B2E"}}>{isMgr?"Manager":"Medewerker"}</div>
+          <div style={{fontSize:15,fontWeight:900,color:isMgr?"#E8632A":"#3D8B2E"}}>{isMgr?tr(lang,"manager"):tr(lang,"worker")}</div>
           <div style={{fontSize:11,fontWeight:700,color:isMgr?"#E8632A":"#3D8B2E",background:isMgr?"#FDF0EB":"#EEF9E6",border:`1.5px solid ${isMgr?"#E8632A44":"#C8E6B0"}`,borderRadius:20,padding:"2px 10px",display:"inline-block",marginTop:3}}>{acc.username}</div>
         </div>
       </div>}
       {hideRole&&<div style={{fontSize:15,fontWeight:900,color:isMgr?"#E8632A":"#3D8B2E",marginBottom:14}}>{acc.username}</div>}
-      {isLocked&&<div style={{background:"#FDEDEA",border:"1.5px solid #D44A2A",borderRadius:10,padding:"9px 12px",fontSize:12,fontWeight:700,color:"#D44A2A",marginBottom:10}}>Geblokkeerd — wacht 30 seconden</div>}
-      {!isLocked&&hasErr&&<div style={{background:"#FDEDEA",border:"1.5px solid #D44A2A",borderRadius:10,padding:"9px 12px",fontSize:12,fontWeight:700,color:"#D44A2A",marginBottom:10}}>Onjuist wachtwoord{attempts>0?` (${attempts}/3)`:""}</div>}
-      <label className="lbl-responsive" style={S.lbl}>Wachtwoord</label>
+      {isLocked&&<div style={{background:"#FDEDEA",border:"1.5px solid #D44A2A",borderRadius:10,padding:"9px 12px",fontSize:12,fontWeight:700,color:"#D44A2A",marginBottom:10}}>{tr(lang,"blockedMsg")}</div>}
+      {!isLocked&&hasErr&&<div style={{background:"#FDEDEA",border:"1.5px solid #D44A2A",borderRadius:10,padding:"9px 12px",fontSize:12,fontWeight:700,color:"#D44A2A",marginBottom:10}}>{tr(lang,"wrongPw")}{attempts>0?` (${attempts}/3)`:""}</div>}
+      <label className="lbl-responsive" style={S.lbl}>{tr(lang,"password")}</label>
       <div style={{position:"relative",width:"100%"}}>
         <input style={{...S.inp,paddingRight:44,marginBottom:12,borderColor:hasErr?"#D44A2A":"#C8E6B0"}}
-          type={showPw?"text":"password"} placeholder="Voer wachtwoord in" value={pass}
+          type={showPw?"text":"password"} placeholder={tr(lang,"enterPw")} value={pass}
           disabled={isLocked}
           onChange={e=>{setPass(e.target.value);if(hasErr)onClear();}}
           onKeyDown={e=>e.key==="Enter"&&tryLogin()}/>
         <button style={{position:"absolute",insetInlineEnd:8,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",fontSize:18,color:"#8AAA7A",padding:"8px",lineHeight:1}} onClick={()=>setShowPw(p=>!p)}>{showPw?"🙈":"👁"}</button>
       </div>
       <button style={{...S.btn,width:"100%",background:isLocked?"#ccc":isMgr?"linear-gradient(135deg,#E8632A,#D44A20)":"linear-gradient(135deg,#3D8B2E,#5AAE3C)",color:"#fff",letterSpacing:1,textTransform:"uppercase",cursor:isLocked?"not-allowed":"pointer"}} onClick={tryLogin} disabled={isLocked}>
-        {isLocked?"Geblokkeerd...":isMgr?"Manager inloggen":"Medewerker inloggen"}
+        {isLocked?tr(lang,"blockedBtn"):isMgr?tr(lang,"loginManager"):tr(lang,"loginWorker")}
       </button>
     </div>
   );
@@ -1686,7 +1726,7 @@ function AuditView({log,onClear}){
   );
 }
 
-function QRPrintModal({cfg,locId,onClose}){
+function QRPrintModal({cfg,locId,lang="nl",onClose}){
   const base="https://hellofresh-webtooling.github.io/";
   // Unieke URL per hub: scannen opent de app direct op deze locatie (slaat het keuzescherm over).
   const appUrl=locId?`${base}?loc=${locId}`:base;
@@ -1705,15 +1745,15 @@ function QRPrintModal({cfg,locId,onClose}){
       {/* Sticky knoppenbalk — blijft altijd bovenin staan tijdens scrollen */}
       <div className="qr-no-print" style={{position:"sticky",top:0,zIndex:710,display:"flex",gap:12,alignItems:"center",justifyContent:"center",marginBottom:20,padding:"10px 14px",background:"rgba(0,0,0,0.55)",borderRadius:16,backdropFilter:"blur(4px)",flexShrink:0}}>
         <button onClick={()=>window.print()} style={{background:"#3D8B2E",border:"none",borderRadius:14,padding:"12px 28px",fontFamily:"Nunito,sans-serif",fontSize:15,fontWeight:800,color:"#fff",cursor:"pointer",boxShadow:"0 4px 16px rgba(61,139,46,0.35)"}}>
-          🖨️ Afdrukken
+          🖨️ {tr(lang,"qrPrintBtn")}
         </button>
-        <button onClick={onClose} aria-label="Sluiten" title="Sluiten" style={{width:48,height:48,borderRadius:"50%",background:"#D44A2A",border:"none",color:"#fff",fontSize:26,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 16px rgba(212,74,42,0.5)",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,flexShrink:0}}>
+        <button onClick={onClose} aria-label={tr(lang,"close")} title={tr(lang,"close")} style={{width:48,height:48,borderRadius:"50%",background:"#D44A2A",border:"none",color:"#fff",fontSize:26,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 16px rgba(212,74,42,0.5)",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1,flexShrink:0}}>
           ×
         </button>
       </div>
 
       {/* A4 pagina */}
-      <div id="qr-a4-print" style={{
+      <div id="qr-a4-print" dir={lang==="ar"?"rtl":"ltr"} style={{
         width:"210mm",minHeight:"297mm",background:"#fff",
         boxShadow:"0 12px 48px rgba(0,0,0,0.4)",
         display:"flex",flexDirection:"column",
@@ -1721,7 +1761,7 @@ function QRPrintModal({cfg,locId,onClose}){
         overflow:"hidden",flexShrink:0,position:"relative",
       }}>
         {/* Fysieke sluitknop op de sheet zelf — tikbaar op telefoon/tablet, wordt niet meegeprint */}
-        <button onClick={onClose} aria-label="Sluiten" title="Sluiten" className="qr-no-print" style={{position:"absolute",top:16,right:16,zIndex:5,width:52,height:52,borderRadius:"50%",background:"#fff",border:"3px solid #D44A2A",color:"#D44A2A",fontSize:30,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 14px rgba(0,0,0,0.25)",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>
+        <button onClick={onClose} aria-label={tr(lang,"close")} title={tr(lang,"close")} className="qr-no-print" style={{position:"absolute",top:16,right:16,zIndex:5,width:52,height:52,borderRadius:"50%",background:"#fff",border:"3px solid #D44A2A",color:"#D44A2A",fontSize:30,fontWeight:900,cursor:"pointer",boxShadow:"0 4px 14px rgba(0,0,0,0.25)",display:"flex",alignItems:"center",justifyContent:"center",lineHeight:1}}>
           ×
         </button>
         {/* Header */}
@@ -1734,8 +1774,8 @@ function QRPrintModal({cfg,locId,onClose}){
             <div style={{fontSize:20,fontWeight:700,color:"rgba(255,255,255,0.82)",marginTop:6,letterSpacing:0.5}}>{location}</div>
           </div>
           <div style={{marginLeft:"auto",textAlign:"right"}}>
-            <div style={{fontSize:11,fontWeight:800,color:"rgba(255,255,255,0.6)",textTransform:"uppercase",letterSpacing:2}}>Voorraadbeheer</div>
-            <div style={{fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.5)",marginTop:3}}>Toegang via QR-code</div>
+            <div style={{fontSize:11,fontWeight:800,color:"rgba(255,255,255,0.6)",textTransform:"uppercase",letterSpacing:2}}>{tr(lang,"stockManagement")}</div>
+            <div style={{fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.5)",marginTop:3}}>{tr(lang,"qrAccessVia")}</div>
           </div>
         </div>
 
@@ -1744,7 +1784,7 @@ function QRPrintModal({cfg,locId,onClose}){
 
         {/* Hoofd content */}
         <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"52px 48px 40px"}}>
-          <div style={{fontSize:13,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:3,marginBottom:36}}>Scan om de app te openen</div>
+          <div style={{fontSize:13,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:3,marginBottom:36}}>{tr(lang,"qrScanToOpen")}</div>
 
           {/* QR code kaart */}
           <div style={{
@@ -1768,7 +1808,7 @@ function QRPrintModal({cfg,locId,onClose}){
             />
           </div>
 
-          <div style={{fontSize:30,fontWeight:900,color:"#1A3A0A",marginBottom:10,textAlign:"center",letterSpacing:-0.5}}>Voorraadbeheer App</div>
+          <div style={{fontSize:30,fontWeight:900,color:"#1A3A0A",marginBottom:10,textAlign:"center",letterSpacing:-0.5}}>{tr(lang,"qrAppName")}</div>
           <div style={{fontSize:13,fontWeight:700,color:"#8AAA7A",textAlign:"center",letterSpacing:0.5,marginBottom:40}}>{appUrl}</div>
 
           {/* Scheidingslijn */}
@@ -1781,9 +1821,9 @@ function QRPrintModal({cfg,locId,onClose}){
           {/* Stappen */}
           <div style={{display:"flex",flexDirection:"column",gap:16,width:"100%",maxWidth:380}}>
             {[
-              ["1","📷","Open de camera-app op je telefoon"],
-              ["2","🔍","Richt de camera op de QR-code"],
-              ["3","✅","Tik op de melding om in te loggen"],
+              ["1","📷",tr(lang,"qrStep1")],
+              ["2","🔍",tr(lang,"qrStep2")],
+              ["3","✅",tr(lang,"qrStep3")],
             ].map(([num,icon,text])=>(
               <div key={num} style={{display:"flex",gap:16,alignItems:"center"}}>
                 <div style={{width:36,height:36,background:"linear-gradient(135deg,#3D8B2E,#2D7A1E)",borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,boxShadow:"0 3px 10px rgba(61,139,46,0.3)"}}>
@@ -1798,7 +1838,7 @@ function QRPrintModal({cfg,locId,onClose}){
 
         {/* Footer */}
         <div style={{background:"#F0FAE8",borderTop:"3px solid #C8E6B0",padding:"20px 48px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-          <div style={{fontSize:12,fontWeight:700,color:"#8AAA7A"}}>HelloFresh {location} · Voorraadbeheer</div>
+          <div style={{fontSize:12,fontWeight:700,color:"#8AAA7A"}}>HelloFresh {location} · {tr(lang,"stockManagement")}</div>
           <div style={{display:"flex",gap:6,alignItems:"center"}}>
             <div style={{width:8,height:8,background:"#3D8B2E",borderRadius:"50%"}}/>
             <div style={{width:8,height:8,background:"#E8632A",borderRadius:"50%"}}/>
