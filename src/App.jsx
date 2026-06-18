@@ -136,7 +136,7 @@ const TRANS = {
     sdsNone:"Nog geen VIB geüpload.", sdsView:"Bekijken", sdsDownload:"Downloaden",
     sdsUpload:"VIB uploaden", sdsAdd:"VIB toevoegen", sdsReplace:"VIB vervangen", sdsRemove:"VIB verwijderen",
     sdsUploading:"Uploaden…", sdsUploadedBy:"Geüpload door", sdsUploadedOn:"op",
-    sdsTooBig:"Bestand te groot (max 10 MB).", sdsBadType:"Alleen PDF, JPG of PNG toegestaan.",
+    sdsTooBig:"Bestand te groot (max 10 MB).", sdsBadType:"Alleen PDF-bestanden toegestaan.",
     sdsError:"Upload mislukt. Probeer opnieuw.", sdsRemoveConfirm:"Dit document verwijderen?",
     sdsKind:"Documenttype", sdsKindVib:"VIB", sdsKindTech:"Technisch blad", sdsKindManual:"Gebruiksinstructie", sdsKindOther:"Overig",
   },
@@ -201,7 +201,7 @@ const TRANS = {
     sdsNone:"No SDS uploaded yet.", sdsView:"View", sdsDownload:"Download",
     sdsUpload:"Upload SDS", sdsAdd:"Add SDS", sdsReplace:"Replace SDS", sdsRemove:"Remove SDS",
     sdsUploading:"Uploading…", sdsUploadedBy:"Uploaded by", sdsUploadedOn:"on",
-    sdsTooBig:"File too large (max 10 MB).", sdsBadType:"Only PDF, JPG or PNG allowed.",
+    sdsTooBig:"File too large (max 10 MB).", sdsBadType:"Only PDF files allowed.",
     sdsError:"Upload failed. Please try again.", sdsRemoveConfirm:"Remove this document?",
     sdsKind:"Document type", sdsKindVib:"SDS", sdsKindTech:"Technical sheet", sdsKindManual:"Instructions", sdsKindOther:"Other",
   },
@@ -266,7 +266,7 @@ const TRANS = {
     sdsNone:"لم يتم رفع صحيفة سلامة بعد.", sdsView:"عرض", sdsDownload:"تنزيل",
     sdsUpload:"رفع صحيفة السلامة", sdsAdd:"إضافة مستند", sdsReplace:"استبدال صحيفة السلامة", sdsRemove:"حذف صحيفة السلامة",
     sdsUploading:"جارٍ الرفع…", sdsUploadedBy:"رفعها", sdsUploadedOn:"في",
-    sdsTooBig:"الملف كبير جداً (الحد 10 ميغابايت).", sdsBadType:"يُسمح فقط بملفات PDF أو JPG أو PNG.",
+    sdsTooBig:"الملف كبير جداً (الحد 10 ميغابايت).", sdsBadType:"يُسمح فقط بملفات PDF.",
     sdsError:"فشل الرفع. حاول مرة أخرى.", sdsRemoveConfirm:"حذف هذا المستند؟",
     sdsKind:"نوع المستند", sdsKindVib:"صحيفة السلامة", sdsKindTech:"الورقة الفنية", sdsKindManual:"تعليمات الاستخدام", sdsKindOther:"أخرى",
   },
@@ -331,7 +331,7 @@ const TRANS = {
     sdsNone:"Aucune FDS téléchargée.", sdsView:"Consulter", sdsDownload:"Télécharger",
     sdsUpload:"Téléverser la FDS", sdsAdd:"Ajouter une FDS", sdsReplace:"Remplacer la FDS", sdsRemove:"Supprimer la FDS",
     sdsUploading:"Téléversement…", sdsUploadedBy:"Téléversé par", sdsUploadedOn:"le",
-    sdsTooBig:"Fichier trop volumineux (max 10 Mo).", sdsBadType:"Seuls PDF, JPG ou PNG sont autorisés.",
+    sdsTooBig:"Fichier trop volumineux (max 10 Mo).", sdsBadType:"Seuls les fichiers PDF sont autorisés.",
     sdsError:"Échec du téléversement. Réessayez.", sdsRemoveConfirm:"Supprimer ce document ?",
     sdsKind:"Type de document", sdsKindVib:"FDS", sdsKindTech:"Fiche technique", sdsKindManual:"Instructions", sdsKindOther:"Autre",
   },
@@ -2079,7 +2079,7 @@ function SdsControl({product,locId,meta,canEdit=false,lang="nl",uploadedBy="",on
     const file=e.target.files?.[0];
     if(e.target)e.target.value="";   // reset zodat hetzelfde bestand opnieuw kan
     if(!file)return;
-    if(!["application/pdf","image/jpeg","image/png"].includes(file.type)){setErr(tr(lang,"sdsBadType"));return;}
+    if(file.type!=="application/pdf"){setErr(tr(lang,"sdsBadType"));return;}
     if(file.size>10*1024*1024){setErr(tr(lang,"sdsTooBig"));return;}
     setErr("");setBusy(true);
     try{
@@ -2138,7 +2138,7 @@ function SdsControl({product,locId,meta,canEdit=false,lang="nl",uploadedBy="",on
               <div style={{fontSize:13,fontWeight:700,color:"#8AAA7A",textAlign:"center",padding:"14px 0 18px"}}>{tr(lang,"sdsNone")}</div>
             )}
             {canEdit&&(<div style={{borderTop:has?"1px solid #DCEFCF":"none",paddingTop:has?14:0}}>
-              <input ref={fileRef} type="file" accept="application/pdf,image/jpeg,image/png" style={{display:"none"}} onChange={onFile}/>
+              <input ref={fileRef} type="file" accept="application/pdf" style={{display:"none"}} onChange={onFile}/>
               <span style={{...S.lbl,marginBottom:6}}>{tr(lang,"sdsKind")}</span>
               <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}}>
                 {SDS_KINDS.map(k=>{
