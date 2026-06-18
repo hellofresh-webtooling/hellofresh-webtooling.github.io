@@ -113,6 +113,16 @@ const TRANS = {
     activityLog:"Activiteitenlog", clearLog:"Wissen", confirmClearLog:"Hele logboek wissen? Dit kan niet ongedaan worden gemaakt.", noActivity:"Nog geen activiteit geregistreerd.", roleSystem:"Systeem",
     partNone:"geen", confirmEmptyTray:(label)=>`${label} volledig leeg melden? Dit zet alle producten op 0.`,
     targetLabel:"doel", confirmEmptyStock:"Normale voorraad volledig leeg melden? Dit zet alle artikelen op 0.",
+    enterPin:"Voer PIN in", wrongPin:"Onjuiste PIN",
+    tabProducts:"Producten", tabStock:"Voorraad", tabEmail:"E-mail", tabAccounts:"Accounts", tabSettings:"Instellingen",
+    admLabel:"Label", admSublabel:"Sublabel", admMaxLiters:"Max liters", admColor:"Kleur",
+    on:"AAN", off:"UIT", admGhsCategory:"GHS Categorie", admNone:"— Geen —",
+    save:"Opslaan", saved:"Opgeslagen!",
+    admNewProduct:"Nieuw product", admProduct:"Product", admName:"Naam", admUnit:"Eenheid",
+    admNewItem:"Nieuw artikel", admItem:"Artikel", admDept:"Afdeling", admRecipient:"Ontvanger",
+    admNewPw:"Nieuw wachtwoord", admLeaveEmpty:"Laat leeg = ongewijzigd", admRole:"Rol",
+    admNewPerson:"Nieuw persoon", admAccount:"Account",
+    admAppName:"App naam", admLocation:"Locatie", admNewPin:"Nieuwe PIN (4 cijfers)",
     langLabel:"🇳🇱 Nederlands",
   },
   en: {
@@ -153,6 +163,16 @@ const TRANS = {
     activityLog:"Activity log", clearLog:"Clear", confirmClearLog:"Clear the entire log? This cannot be undone.", noActivity:"No activity recorded yet.", roleSystem:"System",
     partNone:"none", confirmEmptyTray:(label)=>`Report ${label} completely empty? This sets all products to 0.`,
     targetLabel:"target", confirmEmptyStock:"Report normal stock completely empty? This sets all items to 0.",
+    enterPin:"Enter PIN", wrongPin:"Incorrect PIN",
+    tabProducts:"Products", tabStock:"Stock", tabEmail:"Email", tabAccounts:"Accounts", tabSettings:"Settings",
+    admLabel:"Label", admSublabel:"Sublabel", admMaxLiters:"Max litres", admColor:"Colour",
+    on:"ON", off:"OFF", admGhsCategory:"GHS Category", admNone:"— None —",
+    save:"Save", saved:"Saved!",
+    admNewProduct:"New product", admProduct:"Product", admName:"Name", admUnit:"Unit",
+    admNewItem:"New item", admItem:"Item", admDept:"Department", admRecipient:"Recipient",
+    admNewPw:"New password", admLeaveEmpty:"Leave empty = unchanged", admRole:"Role",
+    admNewPerson:"New person", admAccount:"Account",
+    admAppName:"App name", admLocation:"Location", admNewPin:"New PIN (4 digits)",
     langLabel:"🇬🇧 English",
   },
   ar: {
@@ -193,6 +213,16 @@ const TRANS = {
     activityLog:"سجل الأنشطة", clearLog:"مسح", confirmClearLog:"مسح السجل بالكامل؟ لا يمكن التراجع عن هذا.", noActivity:"لم يتم تسجيل أي نشاط بعد.", roleSystem:"النظام",
     partNone:"لا شيء", confirmEmptyTray:(label)=>`الإبلاغ عن أن ${label} فارغة تماماً؟ سيؤدي هذا إلى ضبط كل المنتجات على 0.`,
     targetLabel:"الهدف", confirmEmptyStock:"الإبلاغ عن أن المخزون العادي فارغ تماماً؟ سيؤدي هذا إلى ضبط كل العناصر على 0.",
+    enterPin:"أدخل رمز PIN", wrongPin:"رمز PIN غير صحيح",
+    tabProducts:"المنتجات", tabStock:"المخزون", tabEmail:"البريد الإلكتروني", tabAccounts:"الحسابات", tabSettings:"الإعدادات",
+    admLabel:"التسمية", admSublabel:"تسمية فرعية", admMaxLiters:"الحد الأقصى لِلِترات", admColor:"اللون",
+    on:"تشغيل", off:"إيقاف", admGhsCategory:"فئة GHS", admNone:"— لا شيء —",
+    save:"حفظ", saved:"تم الحفظ!",
+    admNewProduct:"منتج جديد", admProduct:"منتج", admName:"الاسم", admUnit:"الوحدة",
+    admNewItem:"عنصر جديد", admItem:"عنصر", admDept:"القسم", admRecipient:"مستلم",
+    admNewPw:"كلمة مرور جديدة", admLeaveEmpty:"اتركه فارغاً = دون تغيير", admRole:"الدور",
+    admNewPerson:"شخص جديد", admAccount:"حساب",
+    admAppName:"اسم التطبيق", admLocation:"الموقع", admNewPin:"رمز PIN جديد (4 أرقام)",
     langLabel:"🇸🇦 العربية",
   },
   fr: {
@@ -233,6 +263,16 @@ const TRANS = {
     activityLog:"Journal d'activité", clearLog:"Effacer", confirmClearLog:"Effacer tout le journal ? Cette action est irréversible.", noActivity:"Aucune activité enregistrée pour le moment.", roleSystem:"Système",
     partNone:"aucune", confirmEmptyTray:(label)=>`Signaler ${label} entièrement vide ? Cela met tous les produits à 0.`,
     targetLabel:"objectif", confirmEmptyStock:"Signaler le stock normal entièrement vide ? Cela met tous les articles à 0.",
+    enterPin:"Entrez le PIN", wrongPin:"PIN incorrect",
+    tabProducts:"Produits", tabStock:"Stock", tabEmail:"E-mail", tabAccounts:"Comptes", tabSettings:"Paramètres",
+    admLabel:"Libellé", admSublabel:"Sous-libellé", admMaxLiters:"Litres max", admColor:"Couleur",
+    on:"ON", off:"OFF", admGhsCategory:"Catégorie GHS", admNone:"— Aucune —",
+    save:"Enregistrer", saved:"Enregistré !",
+    admNewProduct:"Nouveau produit", admProduct:"Produit", admName:"Nom", admUnit:"Unité",
+    admNewItem:"Nouvel article", admItem:"Article", admDept:"Département", admRecipient:"Destinataire",
+    admNewPw:"Nouveau mot de passe", admLeaveEmpty:"Laisser vide = inchangé", admRole:"Rôle",
+    admNewPerson:"Nouvelle personne", admAccount:"Compte",
+    admAppName:"Nom de l'application", admLocation:"Emplacement", admNewPin:"Nouveau PIN (4 chiffres)",
     langLabel:"🇫🇷 Français",
   },
 };
@@ -480,17 +520,17 @@ export default function App() {
   if (showAdmin) return (
     <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#1A1A2E,#16213E)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
       <style>{GF}</style>
-      <Hdr cfg={cfg} isAdmin onBack={()=>{setShowAdmin(false);setAdminPin("");setAdminErr(false);}} backLabel="Terug"/>
+      <Hdr cfg={cfg} isAdmin lang={lang} onBack={()=>{setShowAdmin(false);setAdminPin("");setAdminErr(false);}} backLabel={tr(lang,"back")}/>
       <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
         <div style={{background:"#1A1A2E",border:"2px solid #7C5CBF",borderRadius:24,padding:32,width:"100%",maxWidth:300,textAlign:"center"}}>
           <div style={{fontSize:40,marginBottom:10}}>🔧</div>
-          <div style={{fontSize:20,fontWeight:900,color:"#A07EE0",marginBottom:4}}>Beheerder</div>
-          <div style={{fontSize:10,color:"#5A4A7A",letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Voer PIN in</div>
-          {adminErr&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:10}}>Onjuiste PIN</div>}
+          <div style={{fontSize:20,fontWeight:900,color:"#A07EE0",marginBottom:4}}>{tr(lang,"admin")}</div>
+          <div style={{fontSize:10,color:"#5A4A7A",letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>{tr(lang,"enterPin")}</div>
+          {adminErr&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:10}}>{tr(lang,"wrongPin")}</div>}
           <div style={{display:"flex",justifyContent:"center",gap:12,marginBottom:20}}>
             {[0,1,2,3].map(i=><div key={i} style={{width:16,height:16,borderRadius:"50%",border:`2.5px solid ${adminPin.length>i?"#7C5CBF":"#3D2A7A"}`,background:adminPin.length>i?"#7C5CBF":"transparent"}}/>)}
           </div>
-          {pinLocked&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:10}}>Geblokkeerd — wacht 30 seconden</div>}
+          {pinLocked&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:10}}>{tr(lang,"blockedMsg")}</div>}
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
             {[1,2,3,4,5,6,7,8,9].map(n=>(
               <button key={n} style={{height:52,background:"#16213E",border:"2px solid #3D2A7A",borderRadius:12,color:pinLocked?"#3D2A7A":"#C0B0E8",fontFamily:"Nunito,sans-serif",fontSize:20,fontWeight:700,cursor:pinLocked?"not-allowed":"pointer"}}
@@ -649,7 +689,7 @@ export default function App() {
     <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#1A1A2E,#0F3460)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
       <style>{GF}</style>
       <Hdr cfg={cfg} isAdmin role="admin" onBack={()=>{setRole(null);setCurrentUser(null);setLang("nl");}} backLabel={tr(lang,"logout")}/>
-      <AdminPanel cfg={cfg} onSave={saveCfg}/>
+      <AdminPanel cfg={cfg} onSave={saveCfg} lang={lang}/>
       <Ftr isAdmin/>
     </div>
   );
@@ -1124,7 +1164,7 @@ function ConsumptionView({inv,snaps,setSnaps,onSnap,cfg,lang="nl"}){
   );
 }
 
-function AdminPanel({cfg,onSave}){
+function AdminPanel({cfg,onSave,lang="nl"}){
   const [tab,setTab]=useState("lekbakken");
   const [local,setLocal]=useState(()=>JSON.parse(JSON.stringify(cfg)));
   const [saved,setSaved]=useState(false);
@@ -1148,13 +1188,13 @@ function AdminPanel({cfg,onSave}){
       return next;
     });
   };
-  const TABS=[{id:"lekbakken",l:"Lekbakken"},{id:"producten",l:"Producten"},{id:"voorraad",l:"Voorraad"},{id:"email",l:"E-mail"},{id:"accounts",l:"Accounts"},{id:"instellingen",l:"Instellingen"}];
+  const TABS=[{id:"lekbakken",l:tr(lang,"trays")},{id:"producten",l:tr(lang,"tabProducts")},{id:"voorraad",l:tr(lang,"tabStock")},{id:"email",l:tr(lang,"tabEmail")},{id:"accounts",l:tr(lang,"tabAccounts")},{id:"instellingen",l:tr(lang,"tabSettings")}];
   const ac={background:"rgba(255,255,255,0.05)",border:"1.5px solid #3D2A7A",borderRadius:12,padding:14,marginBottom:10};
   const ai={background:"#0D0D1A",border:"1.5px solid #3D2A7A",borderRadius:9,color:"#E0D8F8",fontFamily:"Nunito,sans-serif",fontSize:13,fontWeight:700,padding:"8px 10px",outline:"none",width:"100%"};
   const al={fontSize:9,fontWeight:800,color:"#7B6A9B",textTransform:"uppercase",letterSpacing:1,display:"block",marginBottom:4};
   const sv={...S.btn,width:"100%",background:"linear-gradient(135deg,#7C5CBF,#5A3A9F)",color:"#fff",letterSpacing:1};
   return(
-    <div style={{width:"100%"}}>
+    <div dir={lang==="ar"?"rtl":"ltr"} style={{width:"100%"}}>
       <div className="admin-tabs-bar resp-wide" style={{display:"flex",overflowX:"auto",gap:6,width:"100%",maxWidth:460,padding:"12px 14px 0",margin:"0 auto",scrollbarWidth:"none",WebkitOverflowScrolling:"touch"}}>
         {TABS.map(t=><button key={t.id} onClick={()=>setTab(t.id)} className="btn-hover" style={{flexShrink:0,padding:"9px 10px",border:`2px solid ${tab===t.id?"#7C5CBF":"#3D2A7A"}`,borderRadius:10,background:tab===t.id?"#7C5CBF":"#16213E",color:tab===t.id?"#fff":"#9B8EC4",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer",whiteSpace:"nowrap"}}>{t.l}</button>)}
       </div>
@@ -1163,29 +1203,29 @@ function AdminPanel({cfg,onSave}){
           {local.shelves.map((sh,si)=><div key={sh.id} style={ac}>
             <div className="admin-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8,alignItems:"end"}}>
               <div>
-                <label className="lbl-responsive" style={al}>Label</label>
+                <label className="lbl-responsive" style={al}>{tr(lang,"admLabel")}</label>
                 <input style={ai} value={sh.label} onChange={e=>upd(`shelves.${si}.label`,e.target.value)}/>
               </div>
               <div>
-                <label className="lbl-responsive" style={al}>Sublabel</label>
+                <label className="lbl-responsive" style={al}>{tr(lang,"admSublabel")}</label>
                 <input style={ai} value={sh.sublabel} onChange={e=>upd(`shelves.${si}.sublabel`,e.target.value)}/>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 52px 44px",gap:6,alignItems:"end"}}>
-                <div><label className="lbl-responsive" style={al}>Max liters</label><input style={{...ai,width:"100%"}} type="number" value={sh.maxLiters} onChange={e=>upd(`shelves.${si}.maxLiters`,parseFloat(e.target.value)||10)}/></div>
-                <div><label className="lbl-responsive" style={al}>Kleur</label><input type="color" value={sh.color} style={{width:"100%",height:36,border:"none",background:"transparent",cursor:"pointer"}} onChange={e=>upd(`shelves.${si}.color`,e.target.value)}/></div>
-                <div style={{paddingBottom:2}}><button style={{background:"none",border:`1.5px solid ${sh.active?"#2A5A1A":"#5A1A1A"}`,color:sh.active?"#7FE060":"#CC6666",borderRadius:8,width:"100%",height:36,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`shelves.${si}.active`,!sh.active)}>{sh.active?"AAN":"UIT"}</button></div>
+                <div><label className="lbl-responsive" style={al}>{tr(lang,"admMaxLiters")}</label><input style={{...ai,width:"100%"}} type="number" value={sh.maxLiters} onChange={e=>upd(`shelves.${si}.maxLiters`,parseFloat(e.target.value)||10)}/></div>
+                <div><label className="lbl-responsive" style={al}>{tr(lang,"admColor")}</label><input type="color" value={sh.color} style={{width:"100%",height:36,border:"none",background:"transparent",cursor:"pointer"}} onChange={e=>upd(`shelves.${si}.color`,e.target.value)}/></div>
+                <div style={{paddingBottom:2}}><button style={{background:"none",border:`1.5px solid ${sh.active?"#2A5A1A":"#5A1A1A"}`,color:sh.active?"#7FE060":"#CC6666",borderRadius:8,width:"100%",height:36,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`shelves.${si}.active`,!sh.active)}>{sh.active?tr(lang,"on"):tr(lang,"off")}</button></div>
               </div>
               <div style={{marginTop:6}}>
-                <label className="lbl-responsive" style={al}>GHS Categorie</label>
+                <label className="lbl-responsive" style={al}>{tr(lang,"admGhsCategory")}</label>
                 <select style={{...ai,width:"100%"}} value={sh.category||""} onChange={e=>upd(`shelves.${si}.category`,e.target.value||null)}>
-                  <option value="">— Geen —</option>
-                  <option value="flammable">🔥 GHS02 Ontvlambaar</option>
-                  <option value="corrosive">⚗️ GHS05 Corrosief</option>
+                  <option value="">{tr(lang,"admNone")}</option>
+                  <option value="flammable">🔥 GHS02 {tr(lang,"flammable")}</option>
+                  <option value="corrosive">⚗️ GHS05 {tr(lang,"corrosive")}</option>
                 </select>
               </div>
             </div>
           </div>)}
-          <button style={sv} onClick={save}>{saved?"Opgeslagen!":"Opslaan"}</button>
+          <button style={sv} onClick={save}>{saved?tr(lang,"saved"):tr(lang,"save")}</button>
         </div>}
         {tab==="producten"&&<div>
           {local.shelves.map((sh,si)=><div key={sh.id} style={{...ac,marginBottom:12}}>
@@ -1196,29 +1236,29 @@ function AdminPanel({cfg,onSave}){
               <input style={{...ai,textAlign:"center"}} type="number" value={p.target} min={1} onChange={e=>upd(`shelves.${si}.products.${pi}.target`,parseInt(e.target.value)||1)}/>
               <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.shelves[si].products.splice(pi,1);setLocal(n);}}>×</button>
             </div>)}
-            <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:11,marginTop:8,padding:8}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.shelves[si].products.push({id:`${sh.id}-${Date.now()}`,name:"Nieuw product",vol:1.0,target:3});setLocal(n);}}>+ Product</button>
+            <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:11,marginTop:8,padding:8}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.shelves[si].products.push({id:`${sh.id}-${Date.now()}`,name:tr(lang,"admNewProduct"),vol:1.0,target:3});setLocal(n);}}>+ {tr(lang,"admProduct")}</button>
           </div>)}
-          <button style={sv} onClick={save}>{saved?"Opgeslagen!":"Opslaan"}</button>
+          <button style={sv} onClick={save}>{saved?tr(lang,"saved"):tr(lang,"save")}</button>
         </div>}
         {tab==="voorraad"&&<div>
           {(local.voorraad||[]).map((p,pi)=>(
             <div key={p.id} style={ac}>
               <div style={{display:"grid",gridTemplateColumns:"1fr 80px 60px auto auto",gap:6,alignItems:"center"}}>
-                <input style={ai} value={p.name} placeholder="Naam" onChange={e=>upd(`voorraad.${pi}.name`,e.target.value)}/>
-                <input style={ai} value={p.unit} placeholder="Eenheid" onChange={e=>upd(`voorraad.${pi}.unit`,e.target.value)}/>
+                <input style={ai} value={p.name} placeholder={tr(lang,"admName")} onChange={e=>upd(`voorraad.${pi}.name`,e.target.value)}/>
+                <input style={ai} value={p.unit} placeholder={tr(lang,"admUnit")} onChange={e=>upd(`voorraad.${pi}.unit`,e.target.value)}/>
                 <input style={{...ai,textAlign:"center"}} type="number" min={1} value={p.target} onChange={e=>upd(`voorraad.${pi}.target`,parseInt(e.target.value)||1)}/>
-                <button style={{background:"none",border:`1.5px solid ${p.active!==false?"#2A5A1A":"#5A1A1A"}`,color:p.active!==false?"#7FE060":"#CC6666",borderRadius:8,width:38,height:32,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`voorraad.${pi}.active`,!(p.active!==false))}>{p.active!==false?"AAN":"UIT"}</button>
+                <button style={{background:"none",border:`1.5px solid ${p.active!==false?"#2A5A1A":"#5A1A1A"}`,color:p.active!==false?"#7FE060":"#CC6666",borderRadius:8,width:38,height:32,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`voorraad.${pi}.active`,!(p.active!==false))}>{p.active!==false?tr(lang,"on"):tr(lang,"off")}</button>
                 <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:28,height:32,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.voorraad.splice(pi,1);setLocal(n);}}>×</button>
               </div>
               <div style={{display:"flex",gap:10,marginTop:4}}>
-                <span style={{fontSize:9,color:"#7B6A9B",fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>naam</span>
-                <span style={{fontSize:9,color:"#7B6A9B",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginLeft:4}}>eenheid</span>
-                <span style={{fontSize:9,color:"#7B6A9B",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginLeft:20}}>doel</span>
+                <span style={{fontSize:9,color:"#7B6A9B",fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>{tr(lang,"admName")}</span>
+                <span style={{fontSize:9,color:"#7B6A9B",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginLeft:4}}>{tr(lang,"admUnit")}</span>
+                <span style={{fontSize:9,color:"#7B6A9B",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginLeft:20}}>{tr(lang,"targetLabel")}</span>
               </div>
             </div>
           ))}
-          <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:11,marginBottom:10,padding:9}} onClick={()=>setLocal(p=>({...p,voorraad:[...(p.voorraad||[]),{id:`v-${Date.now()}`,name:"Nieuw artikel",unit:"stuk",target:10,active:true}]}))}>+ Artikel</button>
-          <button style={sv} onClick={save}>{saved?"Opgeslagen!":"Opslaan"}</button>
+          <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:11,marginBottom:10,padding:9}} onClick={()=>setLocal(p=>({...p,voorraad:[...(p.voorraad||[]),{id:`v-${Date.now()}`,name:tr(lang,"admNewItem"),unit:tr(lang,"pieces"),target:10,active:true}]}))}>+ {tr(lang,"admItem")}</button>
+          <button style={sv} onClick={save}>{saved?tr(lang,"saved"):tr(lang,"save")}</button>
         </div>}
         {tab==="email"&&<div>
           <div style={ac}>
@@ -1227,43 +1267,43 @@ function AdminPanel({cfg,onSave}){
               <input style={{...ai,flex:1}} value={em.email} type="email" onChange={e=>upd(`emails.${ei}.email`,e.target.value)}/>
               <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.emails.splice(ei,1);setLocal(n);}}>×</button>
             </div>)}
-            <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:12,padding:9,marginTop:4}} onClick={()=>setLocal(p=>({...p,emails:[...p.emails,{id:Date.now(),dept:"Afdeling",email:"",active:true}]}))}>+ Ontvanger</button>
+            <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:12,padding:9,marginTop:4}} onClick={()=>setLocal(p=>({...p,emails:[...p.emails,{id:Date.now(),dept:tr(lang,"admDept"),email:"",active:true}]}))}>+ {tr(lang,"admRecipient")}</button>
           </div>
-          <button style={sv} onClick={save}>{saved?"Opgeslagen!":"Opslaan"}</button>
+          <button style={sv} onClick={save}>{saved?tr(lang,"saved"):tr(lang,"save")}</button>
         </div>}
         {tab==="accounts"&&<div>
           {(local.accounts||[]).map((acc,ai_)=><div key={acc.id} style={ac}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
               <span style={{fontSize:20}}>{acc.role==="manager"?"📊":"👥"}</span>
               <div style={{flex:1}}><div style={{fontSize:12,fontWeight:800,color:"#C0B0E8"}}>{acc.username}</div></div>
-              <button style={{background:"none",border:`1.5px solid ${acc.active?"#2A5A1A":"#5A1A1A"}`,color:acc.active?"#7FE060":"#CC6666",borderRadius:8,width:38,height:28,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`accounts.${ai_}.active`,!acc.active)}>{acc.active?"AAN":"UIT"}</button>
+              <button style={{background:"none",border:`1.5px solid ${acc.active?"#2A5A1A":"#5A1A1A"}`,color:acc.active?"#7FE060":"#CC6666",borderRadius:8,width:38,height:28,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`accounts.${ai_}.active`,!acc.active)}>{acc.active?tr(lang,"on"):tr(lang,"off")}</button>
               <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.accounts.splice(ai_,1);setLocal(n);}}>×</button>
             </div>
             <div className="admin-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:6}}>
-              <div><label className="lbl-responsive" style={al}>Naam</label><input style={ai} value={acc.username} onChange={e=>upd(`accounts.${ai_}.username`,e.target.value)}/></div>
-              <div><label className="lbl-responsive" style={al}>Nieuw wachtwoord</label><input style={ai} type="password" placeholder="Laat leeg = ongewijzigd" value={acc._newPw||""} onChange={e=>upd(`accounts.${ai_}._newPw`,e.target.value)}/></div>
-              <div><label className="lbl-responsive" style={al}>Rol</label>
+              <div><label className="lbl-responsive" style={al}>{tr(lang,"admName")}</label><input style={ai} value={acc.username} onChange={e=>upd(`accounts.${ai_}.username`,e.target.value)}/></div>
+              <div><label className="lbl-responsive" style={al}>{tr(lang,"admNewPw")}</label><input style={ai} type="password" placeholder={tr(lang,"admLeaveEmpty")} value={acc._newPw||""} onChange={e=>upd(`accounts.${ai_}._newPw`,e.target.value)}/></div>
+              <div><label className="lbl-responsive" style={al}>{tr(lang,"admRole")}</label>
                 <select style={{...ai,width:"100%"}} value={acc.role} onChange={e=>upd(`accounts.${ai_}.role`,e.target.value)}>
-                  <option value="worker">Medewerker</option>
-                  <option value="manager">Manager</option>
+                  <option value="worker">{tr(lang,"worker")}</option>
+                  <option value="manager">{tr(lang,"manager")}</option>
                 </select>
               </div>
             </div>
           </div>)}
-          <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:12,marginBottom:10,padding:9}} onClick={()=>setLocal(p=>({...p,accounts:[...(p.accounts||[]),{id:Date.now(),username:"Nieuw persoon",password:"wachtwoord",role:"worker",active:true}]}))}>+ Account</button>
-          <button style={sv} onClick={save}>{saved?"Opgeslagen!":"Opslaan"}</button>
+          <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:12,marginBottom:10,padding:9}} onClick={()=>setLocal(p=>({...p,accounts:[...(p.accounts||[]),{id:Date.now(),username:tr(lang,"admNewPerson"),password:"wachtwoord",role:"worker",active:true}]}))}>+ {tr(lang,"admAccount")}</button>
+          <button style={sv} onClick={save}>{saved?tr(lang,"saved"):tr(lang,"save")}</button>
         </div>}
         {tab==="instellingen"&&<div>
           <div style={ac}>
             <div className="admin-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
-              <div><label className="lbl-responsive" style={al}>App naam</label><input style={ai} value={local.appName} onChange={e=>upd("appName",e.target.value)}/></div>
-              <div><label className="lbl-responsive" style={al}>Locatie</label><input style={ai} value={local.location} onChange={e=>upd("location",e.target.value)}/></div>
-              <div><label className="lbl-responsive" style={al}>Nieuwe PIN (4 cijfers)</label><input style={{...ai,width:"100%"}} type="password" placeholder="Laat leeg = ongewijzigd" value={local._newPin||""} onChange={e=>upd("_newPin",e.target.value.replace(/\D/g,"").slice(0,4))}/></div>
+              <div><label className="lbl-responsive" style={al}>{tr(lang,"admAppName")}</label><input style={ai} value={local.appName} onChange={e=>upd("appName",e.target.value)}/></div>
+              <div><label className="lbl-responsive" style={al}>{tr(lang,"admLocation")}</label><input style={ai} value={local.location} onChange={e=>upd("location",e.target.value)}/></div>
+              <div><label className="lbl-responsive" style={al}>{tr(lang,"admNewPin")}</label><input style={{...ai,width:"100%"}} type="password" placeholder={tr(lang,"admLeaveEmpty")} value={local._newPin||""} onChange={e=>upd("_newPin",e.target.value.replace(/\D/g,"").slice(0,4))}/></div>
             </div>
           </div>
-          <button style={sv} onClick={save}>{saved?"Opgeslagen!":"Opslaan"}</button>
+          <button style={sv} onClick={save}>{saved?tr(lang,"saved"):tr(lang,"save")}</button>
         </div>}
-        {saved&&<div style={{color:"#7FE060",fontSize:12,fontWeight:800,textAlign:"center",letterSpacing:1,marginTop:8}}>✓ Opgeslagen</div>}
+        {saved&&<div style={{color:"#7FE060",fontSize:12,fontWeight:800,textAlign:"center",letterSpacing:1,marginTop:8}}>✓ {tr(lang,"saved")}</div>}
       </div>
     </div>
   );
