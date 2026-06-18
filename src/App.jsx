@@ -1430,7 +1430,7 @@ function ReportModal({cfg,inv,onClose,lang="nl"}){
   });
   (cfg.voorraad||[]).filter(p=>p.active!==false).forEach(p=>{
     const cnt=(inv[p.id]||{count:0}).count;const n=Math.max(0,p.target-cnt);
-    if(n>0){total+=n;const plur=p.unit==="rol"?"rollen":p.unit==="doos"?"dozen":`${p.unit}s`;normalNeeds.push(`${p.name} — ${n} ${n===1?p.unit:plur}`);}
+    if(n>0){total+=n;normalNeeds.push(`${p.name} — ${n} ${p.unit}${n===1?"":"s"}`);}
   });
   const L=[`*${tr(lang,"repShareTitle")} ${cfg.location}*`,`📅 ${dateStr}`,""];
   if(total===0){
@@ -1444,7 +1444,7 @@ function ReportModal({cfg,inv,onClose,lang="nl"}){
   }
   const report=L.join("\n");
   // PDF/print: zonder markdown-sterretjes en emoji (jsPDF-fonts tonen die niet).
-  const plain=report.replace(/\*/g,"").replace(/[🥕📅⚠️✅🧪📦•]/g,"").replace(/[ \t]+\n/g,"\n").split("\n").map(l=>l.replace(/^\s+/,(m)=>m.length>1?"  ":m)).join("\n");
+  const plain=report.replace(/\*/g,"").replace(/[🥕📅⚠️✅🧪📦🎉•]/g,"").replace(/[ \t]+\n/g,"\n").split("\n").map(l=>l.replace(/^\s+/,(m)=>m.length>1?"  ":m)).join("\n");
   return(
     <div className="modal-overlay" style={{position:"fixed",inset:0,background:"rgba(30,90,15,0.55)",zIndex:500,display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
       <div dir={lang==="ar"?"rtl":"ltr"} className="modal-box" style={{width:"100%",maxWidth:480,minHeight:"100vh",display:"flex",flexDirection:"column",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)"}}>
