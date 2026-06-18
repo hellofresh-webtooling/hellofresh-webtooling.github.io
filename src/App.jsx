@@ -124,6 +124,14 @@ const TRANS = {
     admNewPerson:"Nieuw persoon", admAccount:"Account",
     admAppName:"App naam", admLocation:"Locatie", admNewPin:"Nieuwe PIN (4 cijfers)",
     langLabel:"🇳🇱 Nederlands",
+    fbBtn:"Melding maken", fbTitle:"Melding of idee doorgeven",
+    fbIntro:"Iets kapot, een vraag of een verbeteridee? Geef het hier door — wij pakken het op.",
+    fbType:"Soort melding", fbProblem:"Probleem", fbProblemSub:"Iets werkt niet / is kapot",
+    fbChange:"Aanpassing / idee", fbChangeSub:"Voorstel of verbetering",
+    fbName:"Je naam (optioneel)", fbNamePlaceholder:"Bijv. Sanne",
+    fbMessage:"Omschrijving", fbMessagePlaceholder:"Omschrijf zo duidelijk mogelijk wat er aan de hand is of wat je voorstelt…",
+    fbSend:"Versturen", fbSending:"Versturen…", fbRequired:"Vul eerst een omschrijving in.",
+    fbThanksTitle:"Bedankt!", fbThanksMsg:"Je melding is doorgegeven. We pakken het op.", fbNew:"Nog een melding maken",
   },
   en: {
     welcome:"Welcome", chooseShelf:"Choose a cabinet", chooseSection:"Choose a tray",
@@ -174,6 +182,14 @@ const TRANS = {
     admNewPerson:"New person", admAccount:"Account",
     admAppName:"App name", admLocation:"Location", admNewPin:"New PIN (4 digits)",
     langLabel:"🇬🇧 English",
+    fbBtn:"Report an issue", fbTitle:"Report an issue or idea",
+    fbIntro:"Something broken, a question or an improvement idea? Let us know here — we'll pick it up.",
+    fbType:"Type of report", fbProblem:"Problem", fbProblemSub:"Something is broken / not working",
+    fbChange:"Change / idea", fbChangeSub:"Suggestion or improvement",
+    fbName:"Your name (optional)", fbNamePlaceholder:"E.g. Sanne",
+    fbMessage:"Description", fbMessagePlaceholder:"Describe as clearly as possible what is wrong or what you propose…",
+    fbSend:"Send", fbSending:"Sending…", fbRequired:"Please enter a description first.",
+    fbThanksTitle:"Thank you!", fbThanksMsg:"Your report has been sent. We'll pick it up.", fbNew:"Submit another report",
   },
   ar: {
     welcome:"مرحباً", chooseShelf:"اختر خزانة", chooseSection:"اختر صينية التسرب",
@@ -224,6 +240,14 @@ const TRANS = {
     admNewPerson:"شخص جديد", admAccount:"حساب",
     admAppName:"اسم التطبيق", admLocation:"الموقع", admNewPin:"رمز PIN جديد (4 أرقام)",
     langLabel:"🇸🇦 العربية",
+    fbBtn:"الإبلاغ عن مشكلة", fbTitle:"الإبلاغ عن مشكلة أو فكرة",
+    fbIntro:"هل هناك عطل أو سؤال أو فكرة للتحسين؟ أخبرنا هنا وسنتولى الأمر.",
+    fbType:"نوع البلاغ", fbProblem:"مشكلة", fbProblemSub:"شيء لا يعمل / معطل",
+    fbChange:"تعديل / فكرة", fbChangeSub:"اقتراح أو تحسين",
+    fbName:"اسمك (اختياري)", fbNamePlaceholder:"مثال: سارة",
+    fbMessage:"الوصف", fbMessagePlaceholder:"صف بأكبر قدر ممكن من الوضوح ما هي المشكلة أو ما تقترحه…",
+    fbSend:"إرسال", fbSending:"جارٍ الإرسال…", fbRequired:"يرجى إدخال وصف أولاً.",
+    fbThanksTitle:"شكراً لك!", fbThanksMsg:"تم إرسال بلاغك. سنتولى الأمر.", fbNew:"إرسال بلاغ آخر",
   },
   fr: {
     welcome:"Bienvenue", chooseShelf:"Choisissez une armoire", chooseSection:"Choisissez un bac",
@@ -274,6 +298,14 @@ const TRANS = {
     admNewPerson:"Nouvelle personne", admAccount:"Compte",
     admAppName:"Nom de l'application", admLocation:"Emplacement", admNewPin:"Nouveau PIN (4 chiffres)",
     langLabel:"🇫🇷 Français",
+    fbBtn:"Signaler un problème", fbTitle:"Signaler un problème ou une idée",
+    fbIntro:"Quelque chose de cassé, une question ou une idée d'amélioration ? Dites-le ici — nous nous en occupons.",
+    fbType:"Type de signalement", fbProblem:"Problème", fbProblemSub:"Quelque chose est cassé / ne marche pas",
+    fbChange:"Modification / idée", fbChangeSub:"Suggestion ou amélioration",
+    fbName:"Votre nom (facultatif)", fbNamePlaceholder:"Ex. Sanne",
+    fbMessage:"Description", fbMessagePlaceholder:"Décrivez le plus clairement possible le problème ou votre proposition…",
+    fbSend:"Envoyer", fbSending:"Envoi…", fbRequired:"Veuillez d'abord saisir une description.",
+    fbThanksTitle:"Merci !", fbThanksMsg:"Votre signalement a été envoyé. Nous nous en occupons.", fbNew:"Envoyer un autre signalement",
   },
 };
 const tr = (lang, key, ...args) => {
@@ -416,6 +448,7 @@ export default function App() {
   const [showAdmin,setShowAdmin] = useState(false);
   const [showReport,setShowReport] = useState(false);
   const [showQR,setShowQR] = useState(false);
+  const [showFeedback,setShowFeedback] = useState(false);
   const [pinAttempts,setPinAttempts] = useState(0);
   const [pinLocked,setPinLocked] = useState(false);
   const [auditLog,setAuditLog] = useState([]);
@@ -651,9 +684,19 @@ export default function App() {
               <span style={{fontSize:18}}>📱</span> {tr(lang,"qrPrint")}
             </button>
           </div>
+
+          {/* Melding / probleem doorgeven (geen login nodig) */}
+          <div style={{marginTop:12}}>
+            <button
+              onClick={()=>setShowFeedback(true)}
+              style={{background:"#fff",border:"2.5px solid #F3C98B",borderRadius:20,padding:"12px 28px",fontFamily:"Nunito,Arial,sans-serif",fontSize:14,fontWeight:800,color:"#C46A12",cursor:"pointer",display:"flex",alignItems:"center",gap:8,boxShadow:"0 3px 12px rgba(196,106,18,0.12)"}}>
+              <span style={{fontSize:18}}>📣</span> {tr(lang,"fbBtn")}
+            </button>
+          </div>
         </div>
         {showManual&&<ManualModal type={showManual} lang={lang} onClose={()=>setShowManual(null)}/>}
         {showQR&&<QRPrintModal cfg={cfg} locId={locId} lang={lang} onClose={()=>setShowQR(false)}/>}
+        {showFeedback&&<FeedbackModal locId={locId} lang={lang} onClose={()=>setShowFeedback(false)}/>}
         <Ftr/>
       </div>
     );
@@ -1948,6 +1991,92 @@ const orderSummary = (cfg,inv) => {
   return {order,low,items,shelfCount:shelves.length};
 };
 
+// Meldingen/ideeën van medewerkers per locatie. Opgeslagen in app_state onder
+// key "vkast-feedback:<locId>" (zelfde schrijfpad als de rest via dbSet).
+// In te zien door HQ via het "Meldingen"-tabblad in het HQ-overzicht.
+function FeedbackModal({locId,lang="nl",onClose}){
+  const [type,setType]=useState("probleem");
+  const [name,setName]=useState("");
+  const [msg,setMsg]=useState("");
+  const [err,setErr]=useState(false);
+  const [sending,setSending]=useState(false);
+  const [done,setDone]=useState(false);
+  const rtl=lang==="ar";
+
+  const submit=async()=>{
+    if(!msg.trim()){setErr(true);return;}
+    setSending(true);
+    const entry={id:crypto.randomUUID(),type,name:name.trim(),msg:msg.trim(),ts:Date.now(),status:"open"};
+    const k=keyFor("vkast-feedback",locId);
+    let cur=[];
+    try{
+      const {data}=await supabase.from("app_state").select("value").eq("key",k).maybeSingle();
+      cur=Array.isArray(data?.value)?data.value:[];
+    }catch{ cur=ls.get(k)||[]; }
+    if(!Array.isArray(cur))cur=[];
+    await dbSet(k,[entry,...cur].slice(0,300));
+    setSending(false);setDone(true);
+  };
+  const reset=()=>{setType("probleem");setName("");setMsg("");setErr(false);setDone(false);};
+
+  return(
+    <div className="modal-overlay" style={{position:"fixed",inset:0,background:"rgba(196,106,18,0.5)",zIndex:500,display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
+      <div dir={rtl?"rtl":"ltr"} className="modal-box" style={{width:"100%",maxWidth:460,minHeight:"100vh",display:"flex",flexDirection:"column",background:"linear-gradient(160deg,#FFF8EF,#FEFCF4)"}}>
+        <div style={{background:"#E8902A",padding:"13px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0}}>
+          <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:18}}>📣</span><div style={{fontSize:15,fontWeight:900,color:"#fff"}}>{tr(lang,"fbTitle")}</div></div>
+          <button style={{background:"rgba(255,255,255,0.15)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:16,width:36,height:36,borderRadius:10,cursor:"pointer",fontWeight:700}} onClick={onClose}>×</button>
+        </div>
+
+        {done?(
+          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 24px",textAlign:"center"}}>
+            <div style={{fontSize:54,marginBottom:12}}>✅</div>
+            <div style={{fontSize:22,fontWeight:900,color:"#C46A12",marginBottom:6}}>{tr(lang,"fbThanksTitle")}</div>
+            <div style={{fontSize:14,fontWeight:700,color:"#8A6A3A",marginBottom:28,maxWidth:300}}>{tr(lang,"fbThanksMsg")}</div>
+            <button onClick={reset} style={{...S.btn,background:"#fff",border:"2.5px solid #F3C98B",color:"#C46A12",marginBottom:10}}>{tr(lang,"fbNew")}</button>
+            <button onClick={onClose} style={{...S.btn,background:"linear-gradient(135deg,#E8902A,#C46A12)",color:"#fff"}}>{tr(lang,"close")}</button>
+          </div>
+        ):(
+          <div style={{flex:1,padding:16}}>
+            <div style={{fontSize:13,fontWeight:700,color:"#8A6A3A",lineHeight:1.5,marginBottom:16}}>{tr(lang,"fbIntro")}</div>
+
+            <div style={{marginBottom:16}}>
+              <span style={{...S.lbl,color:"#B5895A"}}>{tr(lang,"fbType")}</span>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                {[["probleem","⚠️","fbProblem","fbProblemSub"],["aanpassing","💡","fbChange","fbChangeSub"]].map(([t,ic,lbl,sub])=>(
+                  <div key={t} onClick={()=>setType(t)} className="card-hover"
+                    style={{cursor:"pointer",textAlign:"center",padding:"14px 8px",borderRadius:14,border:`2.5px solid ${type===t?"#E8902A":"#F0DFC4"}`,background:type===t?"#FFF1DE":"#fff"}}>
+                    <div style={{fontSize:24,marginBottom:4}}>{ic}</div>
+                    <div style={{fontSize:13,fontWeight:900,color:type===t?"#C46A12":"#8A6A3A"}}>{tr(lang,lbl)}</div>
+                    <div style={{fontSize:9,fontWeight:700,color:"#B5895A",marginTop:2}}>{tr(lang,sub)}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{marginBottom:16}}>
+              <span style={{...S.lbl,color:"#B5895A"}}>{tr(lang,"fbName")}</span>
+              <input value={name} onChange={e=>setName(e.target.value)} placeholder={tr(lang,"fbNamePlaceholder")}
+                style={{...S.inp,background:"#FFFDF8",border:"2px solid #F0DFC4",textAlign:rtl?"right":"left"}}/>
+            </div>
+
+            <div style={{marginBottom:8}}>
+              <span style={{...S.lbl,color:"#B5895A"}}>{tr(lang,"fbMessage")} *</span>
+              <textarea value={msg} onChange={e=>{setMsg(e.target.value);if(err)setErr(false);}} placeholder={tr(lang,"fbMessagePlaceholder")}
+                style={{...S.inp,background:"#FFFDF8",border:`2px solid ${err?"#e74c3c":"#F0DFC4"}`,height:120,resize:"vertical",lineHeight:1.5,textAlign:rtl?"right":"left"}}/>
+            </div>
+            {err&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:10}}>{tr(lang,"fbRequired")}</div>}
+
+            <button onClick={submit} disabled={sending}
+              style={{...S.btn,width:"100%",marginTop:8,background:sending?"#E8C49A":"linear-gradient(135deg,#E8902A,#C46A12)",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",gap:8,cursor:sending?"wait":"pointer"}}>
+              <span style={{fontSize:18}}>📨</span> {sending?tr(lang,"fbSending"):tr(lang,"fbSend")}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function LocationPicker({onPick,onHQ}){
   return(
     <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,Arial,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
@@ -2002,11 +2131,13 @@ function HQDashboard({onBack}){
   const [loading,setLoading]=useState(false);
   const [rows,setRows]=useState(null);
   const [open,setOpen]=useState(null);
+  const [tab,setTab]=useState("voorraad");
+  const [fb,setFb]=useState({}); // { locId: [ {id,type,name,msg,ts,status} ] }
 
   const load=useCallback(async()=>{
     setLoading(true);
-    const cfgK=(id)=>keyFor("vkast-cfg",id), invK=(id)=>keyFor("vkast-inv",id);
-    const allKeys=[...LOCATIONS.map(l=>cfgK(l.id)),...LOCATIONS.map(l=>invK(l.id))];
+    const cfgK=(id)=>keyFor("vkast-cfg",id), invK=(id)=>keyFor("vkast-inv",id), fbK=(id)=>keyFor("vkast-feedback",id);
+    const allKeys=[...LOCATIONS.map(l=>cfgK(l.id)),...LOCATIONS.map(l=>invK(l.id)),...LOCATIONS.map(l=>fbK(l.id))];
     const map={};
     try{
       const {data}=await supabase.from("app_state").select("key,value").in("key",allKeys);
@@ -2019,8 +2150,27 @@ function HQDashboard({onBack}){
       const inv=rawInv||{};
       return {loc:l,configured:!!rawCfg,...orderSummary(cfg,inv)};
     });
-    setRows(res);setLoading(false);
+    const fbMap={};
+    LOCATIONS.forEach(l=>{
+      const raw=map[fbK(l.id)]||ls.get(fbK(l.id));
+      fbMap[l.id]=Array.isArray(raw)?raw:[];
+    });
+    setRows(res);setFb(fbMap);setLoading(false);
   },[]);
+
+  // Markeer opgepakt / verwijder een melding; schrijft de hele lijst terug.
+  const updateFb=async(locId,nextList)=>{
+    setFb(prev=>({...prev,[locId]:nextList}));
+    await dbSet(keyFor("vkast-feedback",locId),nextList);
+  };
+  const toggleFb=(locId,id)=>{
+    const list=(fb[locId]||[]).map(m=>m.id===id?{...m,status:m.status==="done"?"open":"done"}:m);
+    updateFb(locId,list);
+  };
+  const deleteFb=(locId,id)=>{
+    if(!window.confirm("Deze melding verwijderen?"))return;
+    updateFb(locId,(fb[locId]||[]).filter(m=>m.id!==id));
+  };
 
   const submit=async(nx)=>{
     const h=await hashPw(nx);
@@ -2065,6 +2215,9 @@ function HQDashboard({onBack}){
 
   const totalOrder=(rows||[]).reduce((s,r)=>s+r.order,0);
   const activeLocs=(rows||[]).filter(r=>r.configured).length;
+  const allFb=Object.values(fb).flat();
+  const totalFb=allFb.length;
+  const openFb=allFb.filter(m=>m.status!=="done").length;
   return(
     <div style={wrap}>
       <style>{GF}</style>
@@ -2073,6 +2226,18 @@ function HQDashboard({onBack}){
         {loading&&<div style={{textAlign:"center",color:"#7BA8CC",fontWeight:700,padding:40,letterSpacing:2}}>LADEN...</div>}
         {!loading&&rows&&(
           <div>
+            <div style={{display:"flex",gap:8,marginBottom:14}}>
+              {[["voorraad","📦","Voorraad",0],["meldingen","📣","Meldingen",openFb]].map(([t,ic,lbl,badge])=>(
+                <button key={t} onClick={()=>setTab(t)}
+                  style={{flex:1,position:"relative",padding:"11px 6px",border:"2px solid",borderColor:tab===t?"#6FB4E8":"#1A3A5A",borderRadius:12,background:tab===t?"#16324E":"#0F2A47",color:tab===t?"#E0ECF8":"#5A8AB8",fontFamily:"Nunito,sans-serif",fontSize:12,fontWeight:800,cursor:"pointer"}}>
+                  {ic} {lbl}
+                  {badge>0&&<span style={{position:"absolute",top:-7,right:8,minWidth:18,height:18,padding:"0 5px",borderRadius:9,background:"#E8632A",color:"#fff",fontSize:10,fontWeight:900,display:"inline-flex",alignItems:"center",justifyContent:"center"}}>{badge}</span>}
+                </button>
+              ))}
+            </div>
+            <button onClick={load} style={{background:"#16324E",border:"2px solid #2E6FA8",color:"#A8D0F0",borderRadius:10,padding:"7px 14px",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer",marginBottom:14}}>↻ Vernieuwen</button>
+
+          {tab==="voorraad"&&(<div>
             <div style={{display:"flex",gap:10,marginBottom:16}}>
               <div style={{flex:1,background:"#0F2A47",border:"2px solid #2E6FA8",borderRadius:16,padding:"14px 12px",textAlign:"center"}}>
                 <div style={{fontSize:28,fontWeight:900,color:totalOrder>0?"#F5A623":"#5AD18A"}}>{totalOrder}</div>
@@ -2083,7 +2248,6 @@ function HQDashboard({onBack}){
                 <div style={{fontSize:9,color:"#7BA8CC",fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginTop:3}}>Ingericht</div>
               </div>
             </div>
-            <button onClick={load} style={{background:"#16324E",border:"2px solid #2E6FA8",color:"#A8D0F0",borderRadius:10,padding:"7px 14px",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer",marginBottom:14}}>↻ Vernieuwen</button>
             {COUNTRIES.map(c=>{
               const locRows=rows.filter(r=>r.loc.country===c.code);
               if(locRows.length===0)return null;
@@ -2132,6 +2296,61 @@ function HQDashboard({onBack}){
                 </div>
               );
             })}
+          </div>)}
+
+          {tab==="meldingen"&&(<div>
+            {openFb===0&&totalFb===0&&(
+              <div style={{textAlign:"center",color:"#5A8AB8",padding:"36px 16px"}}>
+                <div style={{fontSize:40,marginBottom:8}}>📭</div>
+                <div style={{fontSize:13,fontWeight:700}}>Nog geen meldingen binnengekomen.</div>
+              </div>
+            )}
+            {COUNTRIES.map(c=>{
+              const locsWithFb=LOCATIONS.filter(l=>l.country===c.code&&(fb[l.id]||[]).length>0);
+              if(locsWithFb.length===0)return null;
+              return(
+                <div key={c.code} style={{marginBottom:18}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+                    <span style={{fontSize:16}}>{c.flag}</span>
+                    <span style={{fontSize:11,fontWeight:800,color:"#7BA8CC",textTransform:"uppercase",letterSpacing:1}}>{c.label}</span>
+                  </div>
+                  {locsWithFb.map(l=>{
+                    const items=[...(fb[l.id]||[])].sort((a,b)=>(a.status==="done")-(b.status==="done")||b.ts-a.ts);
+                    const openN=items.filter(m=>m.status!=="done").length;
+                    return(
+                      <div key={l.id} style={{marginBottom:12}}>
+                        <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6,paddingLeft:2}}>
+                          <span style={{fontSize:14}}>📍</span>
+                          <span style={{fontSize:13,fontWeight:900,color:"#E0ECF8"}}>{l.name}</span>
+                          <span style={{fontSize:10,fontWeight:800,color:openN>0?"#F5A623":"#5AD18A"}}>{openN>0?`${openN} open`:"afgehandeld"}</span>
+                        </div>
+                        {items.map(m=>{
+                          const dn=m.status==="done";
+                          return(
+                            <div key={m.id} style={{background:"#0F2A47",border:`2px solid ${dn?"#1A3A5A":m.type==="probleem"?"#5A3520":"#3A4A20"}`,borderRadius:12,padding:"10px 12px",marginBottom:7,opacity:dn?0.55:1}}>
+                              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,marginBottom:5}}>
+                                <div style={{display:"flex",alignItems:"center",gap:7,minWidth:0}}>
+                                  <span style={{fontSize:14}}>{m.type==="probleem"?"⚠️":"💡"}</span>
+                                  <span style={{fontSize:11,fontWeight:800,color:m.type==="probleem"?"#F0A878":"#A8C870"}}>{m.type==="probleem"?"Probleem":"Aanpassing / idee"}</span>
+                                  {m.name&&<span style={{fontSize:11,fontWeight:700,color:"#7BA8CC",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>· {m.name}</span>}
+                                </div>
+                                <span style={{fontSize:10,color:"#4A7AA8",fontWeight:700,flexShrink:0}}>{new Date(m.ts).toLocaleDateString("nl-NL",{day:"2-digit",month:"short"})} {new Date(m.ts).toLocaleTimeString("nl-NL",{hour:"2-digit",minute:"2-digit"})}</span>
+                              </div>
+                              <div style={{fontSize:13,fontWeight:600,color:"#D0E2F4",lineHeight:1.45,whiteSpace:"pre-wrap",wordBreak:"break-word",marginBottom:8,textDecoration:dn?"line-through":"none"}}>{m.msg}</div>
+                              <div style={{display:"flex",gap:8}}>
+                                <button onClick={()=>toggleFb(l.id,m.id)} style={{flex:1,background:dn?"#16324E":"#1E5A3A",border:`1.5px solid ${dn?"#2E6FA8":"#2E8A52"}`,color:dn?"#A8D0F0":"#A8F0C8",borderRadius:9,padding:"7px 10px",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}}>{dn?"↩ Heropenen":"✓ Opgepakt"}</button>
+                                <button onClick={()=>deleteFb(l.id,m.id)} style={{background:"#16324E",border:"1.5px solid #5A2A2A",color:"#E08A8A",borderRadius:9,padding:"7px 12px",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}}>🗑</button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>)}
           </div>
         )}
       </div>
