@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
 import jsPDF from "jspdf";
 import { QRCodeSVG } from "qrcode.react";
@@ -132,6 +132,12 @@ const TRANS = {
     fbMessage:"Omschrijving", fbMessagePlaceholder:"Omschrijf zo duidelijk mogelijk wat er aan de hand is of wat je voorstelt…",
     fbSend:"Versturen", fbSending:"Versturen…", fbRequired:"Vul eerst een omschrijving in.",
     fbThanksTitle:"Bedankt!", fbThanksMsg:"Je melding is doorgegeven. We pakken het op.", fbNew:"Nog een melding maken",
+    sds:"VIB", sdsTitle:"Veiligheidsinformatieblad", sdsFor:"VIB voor",
+    sdsNone:"Nog geen VIB geüpload.", sdsView:"Bekijken", sdsDownload:"Downloaden",
+    sdsUpload:"VIB uploaden", sdsReplace:"VIB vervangen", sdsRemove:"VIB verwijderen",
+    sdsUploading:"Uploaden…", sdsUploadedBy:"Geüpload door", sdsUploadedOn:"op",
+    sdsTooBig:"Bestand te groot (max 10 MB).", sdsBadType:"Alleen PDF, JPG of PNG toegestaan.",
+    sdsError:"Upload mislukt. Probeer opnieuw.", sdsRemoveConfirm:"VIB verwijderen voor dit product?",
   },
   en: {
     welcome:"Welcome", chooseShelf:"Choose a cabinet", chooseSection:"Choose a tray",
@@ -190,6 +196,12 @@ const TRANS = {
     fbMessage:"Description", fbMessagePlaceholder:"Describe as clearly as possible what is wrong or what you propose…",
     fbSend:"Send", fbSending:"Sending…", fbRequired:"Please enter a description first.",
     fbThanksTitle:"Thank you!", fbThanksMsg:"Your report has been sent. We'll pick it up.", fbNew:"Submit another report",
+    sds:"SDS", sdsTitle:"Safety Data Sheet", sdsFor:"SDS for",
+    sdsNone:"No SDS uploaded yet.", sdsView:"View", sdsDownload:"Download",
+    sdsUpload:"Upload SDS", sdsReplace:"Replace SDS", sdsRemove:"Remove SDS",
+    sdsUploading:"Uploading…", sdsUploadedBy:"Uploaded by", sdsUploadedOn:"on",
+    sdsTooBig:"File too large (max 10 MB).", sdsBadType:"Only PDF, JPG or PNG allowed.",
+    sdsError:"Upload failed. Please try again.", sdsRemoveConfirm:"Remove SDS for this product?",
   },
   ar: {
     welcome:"مرحباً", chooseShelf:"اختر خزانة", chooseSection:"اختر صينية التسرب",
@@ -248,6 +260,12 @@ const TRANS = {
     fbMessage:"الوصف", fbMessagePlaceholder:"صف بأكبر قدر ممكن من الوضوح ما هي المشكلة أو ما تقترحه…",
     fbSend:"إرسال", fbSending:"جارٍ الإرسال…", fbRequired:"يرجى إدخال وصف أولاً.",
     fbThanksTitle:"شكراً لك!", fbThanksMsg:"تم إرسال بلاغك. سنتولى الأمر.", fbNew:"إرسال بلاغ آخر",
+    sds:"صحيفة السلامة", sdsTitle:"صحيفة بيانات السلامة", sdsFor:"صحيفة السلامة لـ",
+    sdsNone:"لم يتم رفع صحيفة سلامة بعد.", sdsView:"عرض", sdsDownload:"تنزيل",
+    sdsUpload:"رفع صحيفة السلامة", sdsReplace:"استبدال صحيفة السلامة", sdsRemove:"حذف صحيفة السلامة",
+    sdsUploading:"جارٍ الرفع…", sdsUploadedBy:"رفعها", sdsUploadedOn:"في",
+    sdsTooBig:"الملف كبير جداً (الحد 10 ميغابايت).", sdsBadType:"يُسمح فقط بملفات PDF أو JPG أو PNG.",
+    sdsError:"فشل الرفع. حاول مرة أخرى.", sdsRemoveConfirm:"حذف صحيفة السلامة لهذا المنتج؟",
   },
   fr: {
     welcome:"Bienvenue", chooseShelf:"Choisissez une armoire", chooseSection:"Choisissez un bac",
@@ -306,6 +324,12 @@ const TRANS = {
     fbMessage:"Description", fbMessagePlaceholder:"Décrivez le plus clairement possible le problème ou votre proposition…",
     fbSend:"Envoyer", fbSending:"Envoi…", fbRequired:"Veuillez d'abord saisir une description.",
     fbThanksTitle:"Merci !", fbThanksMsg:"Votre signalement a été envoyé. Nous nous en occupons.", fbNew:"Envoyer un autre signalement",
+    sds:"FDS", sdsTitle:"Fiche de données de sécurité", sdsFor:"FDS pour",
+    sdsNone:"Aucune FDS téléchargée.", sdsView:"Consulter", sdsDownload:"Télécharger",
+    sdsUpload:"Téléverser la FDS", sdsReplace:"Remplacer la FDS", sdsRemove:"Supprimer la FDS",
+    sdsUploading:"Téléversement…", sdsUploadedBy:"Téléversé par", sdsUploadedOn:"le",
+    sdsTooBig:"Fichier trop volumineux (max 10 Mo).", sdsBadType:"Seuls PDF, JPG ou PNG sont autorisés.",
+    sdsError:"Échec du téléversement. Réessayez.", sdsRemoveConfirm:"Supprimer la FDS pour ce produit ?",
   },
 };
 const tr = (lang, key, ...args) => {
@@ -452,6 +476,7 @@ export default function App() {
   const [pinAttempts,setPinAttempts] = useState(0);
   const [pinLocked,setPinLocked] = useState(false);
   const [auditLog,setAuditLog] = useState([]);
+  const [sdsMap,setSdsMap] = useState({});   // VIB/SDS per product-id (key vkast-sds:<locId>)
   // Deep-link: ?loc=<hub> in de URL (bijv. via een hub-specifieke QR) opent direct die locatie.
   const [locId,setLocId]   = useState(()=>{
     try{ const q=new URLSearchParams(window.location.search).get("loc"); return LOCATIONS.some(l=>l.id===q)?q:null; }catch{ return null; }
@@ -463,14 +488,15 @@ export default function App() {
     if(!locId)return;
     let cancelled=false;
     setLoading(true);
-    const kCfg=keyFor("vkast-cfg",locId), kInv=keyFor("vkast-inv",locId), kSnap=keyFor("vkast-snap",locId), kAudit=keyFor("vkast-audit",locId);
+    const kCfg=keyFor("vkast-cfg",locId), kInv=keyFor("vkast-inv",locId), kSnap=keyFor("vkast-snap",locId), kAudit=keyFor("vkast-audit",locId), kSds=keyFor("vkast-sds",locId);
     (async()=>{
       try{
-        const [{data:cd},{data:id_},{data:sd},{data:ad}]=await Promise.all([
+        const [{data:cd},{data:id_},{data:sd},{data:ad},{data:sds}]=await Promise.all([
           supabase.from("app_state").select("value").eq("key",kCfg).maybeSingle(),
           supabase.from("app_state").select("value").eq("key",kInv).maybeSingle(),
           supabase.from("app_state").select("value").eq("key",kSnap).maybeSingle(),
           supabase.from("app_state").select("value").eq("key",kAudit).maybeSingle(),
+          supabase.from("app_state").select("value").eq("key",kSds).maybeSingle(),
         ]);
         if(cancelled)return;
         const raw=cd?.value||ls.get(kCfg)||defCfgFor(locId);
@@ -479,6 +505,7 @@ export default function App() {
         setInv(id_?.value||ls.get(kInv)||defI(c));
         setSnaps(sd?.value||ls.get(kSnap)||[]);
         setAuditLog(ad?.value||ls.get(kAudit)||[]);
+        setSdsMap(sds?.value||ls.get(kSds)||{});
       }catch{
         if(cancelled)return;
         const raw=ls.get(kCfg)||defCfgFor(locId);
@@ -487,6 +514,7 @@ export default function App() {
         setInv(ls.get(kInv)||defI(c));
         setSnaps(ls.get(kSnap)||[]);
         setAuditLog(ls.get(kAudit)||[]);
+        setSdsMap(ls.get(kSds)||{});
       }
       if(!cancelled)setLoading(false);
     })();
@@ -498,6 +526,7 @@ export default function App() {
         else if(key===kInv)setInv(value);
         else if(key===kSnap)setSnaps(value);
         else if(key===kAudit)setAuditLog(value);
+        else if(key===kSds)setSdsMap(value);
       }).subscribe();
     return()=>{cancelled=true;supabase.removeChannel(ch);};
   },[locId]);
@@ -505,7 +534,7 @@ export default function App() {
   // Terug naar het locatiekeuzescherm: alle locatie-gebonden state wissen.
   const leaveLocation = ()=>{
     try{ window.history.replaceState(null,"",window.location.pathname); }catch{}
-    setLocId(null);setCfg(null);setInv(null);setSnaps([]);setAuditLog([]);
+    setLocId(null);setCfg(null);setInv(null);setSnaps([]);setAuditLog([]);setSdsMap({});
     setRole(null);setCurrentUser(null);setLang("nl");setLoginRole(null);setLoginErr("");
     setScreen("home");setMgrTab("status");setShowAdmin(false);setLoading(true);
   };
@@ -523,6 +552,16 @@ export default function App() {
     const entry={id:Date.now(),ts:new Date().toISOString(),role:role||"systeem",user:currentUser||"Onbekend",msg};
     setAuditLog(prev=>{ const next=[entry,...prev].slice(0,200); dbSet(keyFor("vkast-audit",locId),next); return next; });
   },[role,currentUser,locId]);
+
+  const saveSds = useCallback((productId,meta)=>{
+    setSdsMap(prev=>{ const next={...prev,[productId]:meta}; dbSet(keyFor("vkast-sds",locId),next); return next; });
+    addAudit(`VIB geüpload — ${meta.productName||productId} (${meta.fileName})`);
+  },[locId,addAudit]);
+
+  const removeSds = useCallback((productId,productName)=>{
+    setSdsMap(prev=>{ const next={...prev}; delete next[productId]; dbSet(keyFor("vkast-sds",locId),next); return next; });
+    addAudit(`VIB verwijderd — ${productName||productId}`);
+  },[locId,addAudit]);
 
   const saveCfg = useCallback((nc)=>{ setCfg(nc); dbSet(keyFor("vkast-cfg",locId),nc); addAudit("Configuratie opgeslagen"); },[addAudit,locId]);
   const takeSnap = useCallback((label)=>{
@@ -732,7 +771,7 @@ export default function App() {
     <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#1A1A2E,#0F3460)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
       <style>{GF}</style>
       <Hdr cfg={cfg} isAdmin role="admin" onBack={()=>{setRole(null);setCurrentUser(null);setLang("nl");}} backLabel={tr(lang,"logout")}/>
-      <AdminPanel cfg={cfg} onSave={saveCfg} lang={lang}/>
+      <AdminPanel cfg={cfg} onSave={saveCfg} lang={lang} sdsMap={sdsMap} locId={locId} onSdsSaved={saveSds} onSdsRemoved={removeSds} uploadedBy={currentUser}/>
       <Ftr isAdmin/>
     </div>
   );
@@ -806,7 +845,10 @@ export default function App() {
                         const uc=uCol(need,p.target);
                         return (
                           <div key={p.id} style={{display:"grid",gridTemplateColumns:"1fr auto",padding:"7px 10px",borderBottom:"1px solid #F5FBF0",alignItems:"center",gap:6}}>
-                            <div style={{fontSize:11,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.name}</div>
+                            <div style={{display:"flex",alignItems:"center",gap:6,minWidth:0}}>
+                              <span style={{fontSize:11,fontWeight:700,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{p.name}</span>
+                              <SdsControl product={p} locId={locId} meta={sdsMap[p.id]} canEdit lang={lang} uploadedBy={currentUser} onSaved={saveSds} onRemoved={removeSds}/>
+                            </div>
                             <div style={{textAlign:"right"}}>
                               <span style={{display:"inline-flex",alignItems:"center",justifyContent:"center",minWidth:32,padding:"2px 5px",borderRadius:6,fontSize:11,fontWeight:800,border:`2px solid ${uc}66`,background:`${uc}18`,color:uc}}>{need===0?"✓":`+${need}`}</span>
                             </div>
@@ -943,7 +985,7 @@ export default function App() {
         </div>
       )}
 
-      {activeShelf && <ShelfDetail shelf={activeShelf} inv={inv} onUpdate={updateInv} cfg={cfg} onAudit={addAudit} lang={lang}/>}
+      {activeShelf && <ShelfDetail shelf={activeShelf} inv={inv} onUpdate={updateInv} cfg={cfg} onAudit={addAudit} lang={lang} sdsMap={sdsMap} locId={locId}/>}
       {isVoorraad && <VoorraadView cfg={cfg} inv={inv} onUpdate={updateInv} onAudit={addAudit} lang={lang}/>}
 
       <Ftr/>
@@ -1071,7 +1113,7 @@ function Cabinet({shelves,inv,onSelect}){
   );
 }
 
-function ShelfDetail({shelf,inv,onUpdate,cfg,onAudit,lang="nl"}){
+function ShelfDetail({shelf,inv,onUpdate,cfg,onAudit,lang="nl",sdsMap={},locId}){
   const total=shL(shelf,inv);const pct=Math.min((total/shelf.maxLiters)*100,100);const col=fCol(pct);
   const cat=shelf.category?CAT[shelf.category]:null;
   const catLabel = cat ? (shelf.category==="flammable"?tr(lang,"flammable"):tr(lang,"corrosive")) : null;
@@ -1104,7 +1146,7 @@ function ShelfDetail({shelf,inv,onUpdate,cfg,onAudit,lang="nl"}){
         return(
           <div key={p.id} style={S.card}>
             <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:12}}>
-              <div><div style={{fontSize:14,fontWeight:800}}>{p.name}</div><div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:2}}>{p.vol}L · {tr(lang,"max")} {p.target}</div></div>
+              <div><div style={{fontSize:14,fontWeight:800}}>{p.name}</div><div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:2}}>{p.vol}L · {tr(lang,"max")} {p.target}</div><div style={{marginTop:6}}><SdsControl product={p} locId={locId} meta={sdsMap[p.id]} lang={lang}/></div></div>
               <div style={{textAlign:"right"}}><div style={{fontSize:14,fontWeight:800,color:curL>0?col:"#8AAA7A"}}>{curL.toFixed(2)}L</div></div>
             </div>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
@@ -1207,7 +1249,7 @@ function ConsumptionView({inv,snaps,setSnaps,onSnap,cfg,lang="nl"}){
   );
 }
 
-function AdminPanel({cfg,onSave,lang="nl"}){
+function AdminPanel({cfg,onSave,lang="nl",sdsMap={},locId,onSdsSaved,onSdsRemoved,uploadedBy=""}){
   const [tab,setTab]=useState("lekbakken");
   const [local,setLocal]=useState(()=>JSON.parse(JSON.stringify(cfg)));
   const [saved,setSaved]=useState(false);
@@ -1273,10 +1315,11 @@ function AdminPanel({cfg,onSave,lang="nl"}){
         {tab==="producten"&&<div>
           {local.shelves.map((sh,si)=><div key={sh.id} style={{...ac,marginBottom:12}}>
             <div style={{fontSize:12,fontWeight:800,color:"#A07EE0",marginBottom:10}}>{sh.label}</div>
-            {sh.products.map((p,pi)=><div key={p.id} style={{display:"grid",gridTemplateColumns:"1fr 70px 60px auto",gap:6,alignItems:"center",padding:"6px 0",borderBottom:"1px solid #1A1040"}}>
+            {sh.products.map((p,pi)=><div key={p.id} style={{display:"grid",gridTemplateColumns:"1fr 70px 60px auto auto",gap:6,alignItems:"center",padding:"6px 0",borderBottom:"1px solid #1A1040"}}>
               <input style={ai} value={p.name} onChange={e=>upd(`shelves.${si}.products.${pi}.name`,e.target.value)}/>
               <input style={{...ai,textAlign:"center"}} type="number" value={p.vol} min={0.1} step={0.25} onChange={e=>upd(`shelves.${si}.products.${pi}.vol`,parseFloat(e.target.value)||0.5)}/>
               <input style={{...ai,textAlign:"center"}} type="number" value={p.target} min={1} onChange={e=>upd(`shelves.${si}.products.${pi}.target`,parseInt(e.target.value)||1)}/>
+              <SdsControl product={p} locId={locId} meta={sdsMap[p.id]} canEdit lang={lang} uploadedBy={uploadedBy} onSaved={onSdsSaved} onRemoved={onSdsRemoved}/>
               <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.shelves[si].products.splice(pi,1);setLocal(n);}}>×</button>
             </div>)}
             <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:11,marginTop:8,padding:8}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.shelves[si].products.push({id:`${sh.id}-${Date.now()}`,name:tr(lang,"admNewProduct"),vol:1.0,target:3});setLocal(n);}}>+ {tr(lang,"admProduct")}</button>
@@ -1990,6 +2033,89 @@ const orderSummary = (cfg,inv) => {
   });
   return {order,low,items,shelfCount:shelves.length};
 };
+
+// VIB/SDS-document per product. Knop + modal: bekijken/downloaden altijd,
+// uploaden/vervangen/verwijderen alleen als canEdit (Beheer + Manager).
+// Bestand staat in Storage-bucket "sds" onder <locId>/<productId>.<ext>; de
+// metadata (fileName/path/url/...) staat per product-id in sdsMap (key
+// "vkast-sds:<locId>"). Werkt voor zowel lekbak-producten als normale voorraad.
+function SdsControl({product,locId,meta,canEdit=false,lang="nl",uploadedBy="",onSaved,onRemoved}){
+  const [open,setOpen]=useState(false);
+  const [busy,setBusy]=useState(false);
+  const [err,setErr]=useState("");
+  const fileRef=useRef(null);
+  const rtl=lang==="ar";
+  const has=!!(meta&&meta.url);
+
+  const onFile=async(e)=>{
+    const file=e.target.files?.[0];
+    if(e.target)e.target.value="";   // reset zodat hetzelfde bestand opnieuw kan
+    if(!file)return;
+    if(!["application/pdf","image/jpeg","image/png"].includes(file.type)){setErr(tr(lang,"sdsBadType"));return;}
+    if(file.size>10*1024*1024){setErr(tr(lang,"sdsTooBig"));return;}
+    setErr("");setBusy(true);
+    try{
+      const ext=(file.name.split(".").pop()||"pdf").toLowerCase();
+      const path=`${locId}/${product.id}.${ext}`;
+      const {error}=await supabase.storage.from("sds").upload(path,file,{upsert:true,contentType:file.type});
+      if(error)throw error;
+      const {data}=supabase.storage.from("sds").getPublicUrl(path);
+      onSaved?.(product.id,{fileName:file.name,path,url:`${data.publicUrl}?t=${Date.now()}`,size:file.size,type:file.type,uploadedAt:new Date().toISOString(),uploadedBy,productName:product.name});
+    }catch{ setErr(tr(lang,"sdsError")); }
+    setBusy(false);
+  };
+
+  const remove=()=>{
+    if(!window.confirm(tr(lang,"sdsRemoveConfirm")))return;
+    if(meta?.path)supabase.storage.from("sds").remove([meta.path]).catch(()=>{});
+    onRemoved?.(product.id,product.name);
+  };
+
+  const dt=meta?.uploadedAt?new Date(meta.uploadedAt).toLocaleDateString(dloc(lang)):"";
+
+  return(<>
+    <button title={tr(lang,"sds")} onClick={()=>setOpen(true)}
+      style={{flexShrink:0,display:"inline-flex",alignItems:"center",gap:3,background:has?"#EEF9E6":"#F3F3F3",border:`1.5px solid ${has?"#3D8B2E":"#D6D6D6"}`,borderRadius:8,padding:"3px 7px",cursor:"pointer",fontFamily:"Nunito,sans-serif",fontSize:10,fontWeight:800,color:has?"#3D8B2E":"#9A9A9A",lineHeight:1}}>
+      <span style={{fontSize:12}}>📄</span>{tr(lang,"sds")}
+    </button>
+    {open&&(
+      <div className="modal-overlay" style={{position:"fixed",inset:0,background:"rgba(61,139,46,0.45)",zIndex:600,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={()=>!busy&&setOpen(false)}>
+        <div dir={rtl?"rtl":"ltr"} onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:420,background:"linear-gradient(160deg,#F7FCF2,#FEFEFB)",borderRadius:18,overflow:"hidden",boxShadow:"0 12px 40px rgba(0,0,0,0.25)"}}>
+          <div style={{background:"#3D8B2E",padding:"13px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}><span style={{fontSize:18}}>📄</span><div style={{minWidth:0}}>
+              <div style={{fontSize:14,fontWeight:900,color:"#fff"}}>{tr(lang,"sdsTitle")}</div>
+              <div style={{fontSize:11,fontWeight:700,color:"#D6F0C8",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{product.name}</div>
+            </div></div>
+            <button onClick={()=>!busy&&setOpen(false)} style={{background:"rgba(255,255,255,0.15)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:16,width:34,height:34,borderRadius:9,cursor:"pointer",fontWeight:700,flexShrink:0}}>×</button>
+          </div>
+          <div style={{padding:16}}>
+            {has?(
+              <div style={{marginBottom:14}}>
+                <div style={{fontSize:13,fontWeight:800,color:"#1A3A0A",wordBreak:"break-all",marginBottom:4}}>{meta.fileName}</div>
+                {(meta.uploadedBy||dt)&&<div style={{fontSize:11,fontWeight:700,color:"#8AAA7A"}}>{tr(lang,"sdsUploadedBy")} {meta.uploadedBy||"—"}{dt&&` ${tr(lang,"sdsUploadedOn")} ${dt}`}</div>}
+                <div style={{display:"flex",gap:8,marginTop:12}}>
+                  <a href={meta.url} target="_blank" rel="noreferrer" style={{...S.btn,flex:1,textAlign:"center",textDecoration:"none",background:"linear-gradient(135deg,#4DA035,#3D8B2E)",color:"#fff",padding:"11px 12px"}}>👁 {tr(lang,"sdsView")}</a>
+                  <a href={meta.url} download={meta.fileName} style={{...S.btn,flex:1,textAlign:"center",textDecoration:"none",background:"#fff",border:"2px solid #C8E6B0",color:"#3D8B2E",padding:"11px 12px"}}>⬇ {tr(lang,"sdsDownload")}</a>
+                </div>
+              </div>
+            ):(
+              <div style={{fontSize:13,fontWeight:700,color:"#8AAA7A",textAlign:"center",padding:"14px 0 18px"}}>{tr(lang,"sdsNone")}</div>
+            )}
+            {canEdit&&(<div>
+              <input ref={fileRef} type="file" accept="application/pdf,image/jpeg,image/png" style={{display:"none"}} onChange={onFile}/>
+              {err&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:8,textAlign:"center"}}>{err}</div>}
+              <button onClick={()=>fileRef.current?.click()} disabled={busy}
+                style={{...S.btn,width:"100%",background:busy?"#B8D9A8":"linear-gradient(135deg,#4DA035,#3D8B2E)",color:"#fff",cursor:busy?"wait":"pointer",marginBottom:has?8:0}}>
+                {busy?tr(lang,"sdsUploading"):`⬆ ${has?tr(lang,"sdsReplace"):tr(lang,"sdsUpload")}`}
+              </button>
+              {has&&<button onClick={remove} disabled={busy} style={{...S.btn,width:"100%",background:"#fff",border:"2px solid #E8C0C0",color:"#C0392B",cursor:busy?"wait":"pointer"}}>🗑 {tr(lang,"sdsRemove")}</button>}
+            </div>)}
+          </div>
+        </div>
+      </div>
+    )}
+  </>);
+}
 
 // Meldingen/ideeën van medewerkers per locatie. Opgeslagen in app_state onder
 // key "vkast-feedback:<locId>" (zelfde schrijfpad als de rest via dbSet).
