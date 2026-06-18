@@ -138,6 +138,7 @@ const TRANS = {
     sdsUploading:"Uploaden…", sdsUploadedBy:"Geüpload door", sdsUploadedOn:"op",
     sdsTooBig:"Bestand te groot (max 10 MB).", sdsBadType:"Alleen PDF, JPG of PNG toegestaan.",
     sdsError:"Upload mislukt. Probeer opnieuw.", sdsRemoveConfirm:"Dit document verwijderen?",
+    sdsKind:"Documenttype", sdsKindVib:"VIB", sdsKindTech:"Technisch blad", sdsKindManual:"Gebruiksinstructie", sdsKindOther:"Overig",
   },
   en: {
     welcome:"Welcome", chooseShelf:"Choose a cabinet", chooseSection:"Choose a tray",
@@ -202,6 +203,7 @@ const TRANS = {
     sdsUploading:"Uploading…", sdsUploadedBy:"Uploaded by", sdsUploadedOn:"on",
     sdsTooBig:"File too large (max 10 MB).", sdsBadType:"Only PDF, JPG or PNG allowed.",
     sdsError:"Upload failed. Please try again.", sdsRemoveConfirm:"Remove this document?",
+    sdsKind:"Document type", sdsKindVib:"SDS", sdsKindTech:"Technical sheet", sdsKindManual:"Instructions", sdsKindOther:"Other",
   },
   ar: {
     welcome:"مرحباً", chooseShelf:"اختر خزانة", chooseSection:"اختر صينية التسرب",
@@ -266,6 +268,7 @@ const TRANS = {
     sdsUploading:"جارٍ الرفع…", sdsUploadedBy:"رفعها", sdsUploadedOn:"في",
     sdsTooBig:"الملف كبير جداً (الحد 10 ميغابايت).", sdsBadType:"يُسمح فقط بملفات PDF أو JPG أو PNG.",
     sdsError:"فشل الرفع. حاول مرة أخرى.", sdsRemoveConfirm:"حذف هذا المستند؟",
+    sdsKind:"نوع المستند", sdsKindVib:"صحيفة السلامة", sdsKindTech:"الورقة الفنية", sdsKindManual:"تعليمات الاستخدام", sdsKindOther:"أخرى",
   },
   fr: {
     welcome:"Bienvenue", chooseShelf:"Choisissez une armoire", chooseSection:"Choisissez un bac",
@@ -330,6 +333,7 @@ const TRANS = {
     sdsUploading:"Téléversement…", sdsUploadedBy:"Téléversé par", sdsUploadedOn:"le",
     sdsTooBig:"Fichier trop volumineux (max 10 Mo).", sdsBadType:"Seuls PDF, JPG ou PNG sont autorisés.",
     sdsError:"Échec du téléversement. Réessayez.", sdsRemoveConfirm:"Supprimer ce document ?",
+    sdsKind:"Type de document", sdsKindVib:"FDS", sdsKindTech:"Fiche technique", sdsKindManual:"Instructions", sdsKindOther:"Autre",
   },
 };
 const tr = (lang, key, ...args) => {
@@ -2051,10 +2055,20 @@ const orderSummary = (cfg,inv) => {
 // Bestand staat in Storage-bucket "sds" onder <locId>/<productId>.<ext>; de
 // metadata (fileName/path/url/...) staat per product-id in sdsMap (key
 // "vkast-sds:<locId>"). Werkt voor zowel lekbak-producten als normale voorraad.
+// Documenttypes. `id` wordt opgeslagen (taalonafhankelijk), label via tr().
+const SDS_KINDS=[
+  {id:"vib",   icon:"⚠️", key:"sdsKindVib"},
+  {id:"tech",  icon:"🔧", key:"sdsKindTech"},
+  {id:"manual",icon:"📘", key:"sdsKindManual"},
+  {id:"other", icon:"📎", key:"sdsKindOther"},
+];
+const sdsKindOf=(id)=>SDS_KINDS.find(k=>k.id===id)||SDS_KINDS[0];   // fallback = VIB (ook voor oude docs zonder kind)
+
 function SdsControl({product,locId,meta,canEdit=false,lang="nl",uploadedBy="",onSaved,onRemoved}){
   const [open,setOpen]=useState(false);
   const [busy,setBusy]=useState(false);
   const [err,setErr]=useState("");
+  const [kind,setKind]=useState("vib");
   const fileRef=useRef(null);
   const rtl=lang==="ar";
   // meta kan een array (nieuw) of één object (oude data) zijn — normaliseren.
@@ -2074,7 +2088,7 @@ function SdsControl({product,locId,meta,canEdit=false,lang="nl",uploadedBy="",on
       const {error}=await supabase.storage.from("sds").upload(path,file,{upsert:true,contentType:file.type});
       if(error)throw error;
       const {data}=supabase.storage.from("sds").getPublicUrl(path);
-      onSaved?.(product.id,{fileName:file.name,path,url:data.publicUrl,size:file.size,type:file.type,uploadedAt:new Date().toISOString(),uploadedBy,productName:product.name});
+      onSaved?.(product.id,{fileName:file.name,path,url:data.publicUrl,size:file.size,type:file.type,kind,uploadedAt:new Date().toISOString(),uploadedBy,productName:product.name});
     }catch{ setErr(tr(lang,"sdsError")); }
     setBusy(false);
   };
@@ -2105,8 +2119,10 @@ function SdsControl({product,locId,meta,canEdit=false,lang="nl",uploadedBy="",on
               <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:14}}>
                 {docs.map((doc,i)=>{
                   const dt=doc.uploadedAt?new Date(doc.uploadedAt).toLocaleDateString(dloc(lang)):"";
+                  const dk=sdsKindOf(doc.kind);
                   return(
                     <div key={doc.path||i} style={{border:"2px solid #DCEFCF",borderRadius:12,padding:"10px 12px",background:"#fff"}}>
+                      <span style={{display:"inline-flex",alignItems:"center",gap:4,background:"#EEF9E6",border:"1.5px solid #3D8B2E55",borderRadius:20,padding:"2px 9px",fontSize:10,fontWeight:800,color:"#3D8B2E",marginBottom:6}}>{dk.icon} {tr(lang,dk.key)}</span>
                       <div style={{fontSize:13,fontWeight:800,color:"#1A3A0A",wordBreak:"break-all",marginBottom:4}}>{doc.fileName}</div>
                       {(doc.uploadedBy||dt)&&<div style={{fontSize:11,fontWeight:700,color:"#8AAA7A",marginBottom:8}}>{tr(lang,"sdsUploadedBy")} {doc.uploadedBy||"—"}{dt&&` ${tr(lang,"sdsUploadedOn")} ${dt}`}</div>}
                       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
@@ -2121,8 +2137,20 @@ function SdsControl({product,locId,meta,canEdit=false,lang="nl",uploadedBy="",on
             ):(
               <div style={{fontSize:13,fontWeight:700,color:"#8AAA7A",textAlign:"center",padding:"14px 0 18px"}}>{tr(lang,"sdsNone")}</div>
             )}
-            {canEdit&&(<div>
+            {canEdit&&(<div style={{borderTop:has?"1px solid #DCEFCF":"none",paddingTop:has?14:0}}>
               <input ref={fileRef} type="file" accept="application/pdf,image/jpeg,image/png" style={{display:"none"}} onChange={onFile}/>
+              <span style={{...S.lbl,marginBottom:6}}>{tr(lang,"sdsKind")}</span>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}}>
+                {SDS_KINDS.map(k=>{
+                  const active=kind===k.id;
+                  return(
+                    <button key={k.id} onClick={()=>setKind(k.id)} disabled={busy}
+                      style={{display:"inline-flex",alignItems:"center",gap:4,background:active?"#EEF9E6":"#fff",border:`2px solid ${active?"#3D8B2E":"#C8E6B0"}`,borderRadius:20,padding:"5px 11px",cursor:busy?"wait":"pointer",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,color:active?"#3D8B2E":"#8AAA7A"}}>
+                      {k.icon} {tr(lang,k.key)}
+                    </button>
+                  );
+                })}
+              </div>
               {err&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:8,textAlign:"center"}}>{err}</div>}
               <button onClick={()=>fileRef.current?.click()} disabled={busy}
                 style={{...S.btn,width:"100%",background:busy?"#B8D9A8":"linear-gradient(135deg,#4DA035,#3D8B2E)",color:"#fff",cursor:busy?"wait":"pointer"}}>
