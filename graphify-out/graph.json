@@ -88,7 +88,7 @@
       "label": "tr()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L339",
+      "source_location": "L343",
       "id": "src_app_tr",
       "community": 1,
       "norm_label": "tr()"
@@ -97,7 +97,7 @@
       "label": "dloc()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L344",
+      "source_location": "L348",
       "id": "src_app_dloc",
       "community": 2,
       "norm_label": "dloc()"
@@ -106,7 +106,7 @@
       "label": "defCfgFor()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L388",
+      "source_location": "L392",
       "id": "src_app_defcfgfor",
       "community": 5,
       "norm_label": "defcfgfor()"
@@ -115,7 +115,7 @@
       "label": "aSh()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L395",
+      "source_location": "L399",
       "id": "src_app_ash",
       "community": 2,
       "norm_label": "ash()"
@@ -124,7 +124,7 @@
       "label": "aPr()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L396",
+      "source_location": "L400",
       "id": "src_app_apr",
       "community": 4,
       "norm_label": "apr()"
@@ -133,7 +133,7 @@
       "label": "defI()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L397",
+      "source_location": "L401",
       "id": "src_app_defi",
       "community": 0,
       "norm_label": "defi()"
@@ -142,7 +142,7 @@
       "label": "pL()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L403",
+      "source_location": "L407",
       "id": "src_app_pl",
       "community": 0,
       "norm_label": "pl()"
@@ -151,7 +151,7 @@
       "label": "shL()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L404",
+      "source_location": "L408",
       "id": "src_app_shl",
       "community": 4,
       "norm_label": "shl()"
@@ -160,7 +160,7 @@
       "label": "shP()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L405",
+      "source_location": "L409",
       "id": "src_app_shp",
       "community": 4,
       "norm_label": "shp()"
@@ -169,7 +169,7 @@
       "label": "fCol()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L406",
+      "source_location": "L410",
       "id": "src_app_fcol",
       "community": 4,
       "norm_label": "fcol()"
@@ -178,7 +178,7 @@
       "label": "uCol()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L407",
+      "source_location": "L411",
       "id": "src_app_ucol",
       "community": 0,
       "norm_label": "ucol()"
@@ -187,7 +187,7 @@
       "label": "HelloFreshLogo()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L453",
+      "source_location": "L457",
       "id": "src_app_hellofreshlogo",
       "community": 0,
       "norm_label": "hellofreshlogo()"
@@ -196,7 +196,7 @@
       "label": "App()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L459",
+      "source_location": "L463",
       "id": "src_app_app",
       "community": 2,
       "norm_label": "app()"
@@ -205,7 +205,7 @@
       "label": "Hdr()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1012",
+      "source_location": "L1016",
       "id": "src_app_hdr",
       "community": 1,
       "norm_label": "hdr()"
@@ -214,7 +214,7 @@
       "label": "AccountLoginPanel()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1031",
+      "source_location": "L1035",
       "id": "src_app_accountloginpanel",
       "community": 1,
       "norm_label": "accountloginpanel()"
@@ -223,7 +223,7 @@
       "label": "LoginCard()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1055",
+      "source_location": "L1059",
       "id": "src_app_logincard",
       "community": 1,
       "norm_label": "logincard()"
@@ -232,7 +232,7 @@
       "label": "Cabinet()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1108",
+      "source_location": "L1112",
       "id": "src_app_cabinet",
       "community": 0,
       "norm_label": "cabinet()"
@@ -241,7 +241,7 @@
       "label": "ShelfDetail()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1132",
+      "source_location": "L1136",
       "id": "src_app_shelfdetail",
       "community": 4,
       "norm_label": "shelfdetail()"
@@ -250,7 +250,7 @@
       "label": "ConsumptionView()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1202",
+      "source_location": "L1206",
       "id": "src_app_consumptionview",
       "community": 2,
       "norm_label": "consumptionview()"
@@ -259,7 +259,7 @@
       "label": "AdminPanel()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1268",
+      "source_location": "L1272",
       "id": "src_app_adminpanel",
       "community": 1,
       "norm_label": "adminpanel()"
@@ -268,7 +268,7 @@
       "label": "ReportModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1414",
+      "source_location": "L1418",
       "id": "src_app_reportmodal",
       "community": 2,
       "norm_label": "reportmodal()"
@@ -277,7 +277,7 @@
       "label": "VoorraadView()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1481",
+      "source_location": "L1516",
       "id": "src_app_voorraadview",
       "community": 1,
       "norm_label": "voorraadview()"
@@ -286,7 +286,7 @@
       "label": "ManualModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1659",
+      "source_location": "L1694",
       "id": "src_app_manualmodal",
       "community": 1,
       "norm_label": "manualmodal()"
@@ -295,7 +295,7 @@
       "label": "AuditView()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1876",
+      "source_location": "L1911",
       "id": "src_app_auditview",
       "community": 1,
       "norm_label": "auditview()"
@@ -304,7 +304,7 @@
       "label": "QRPrintModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1913",
+      "source_location": "L1948",
       "id": "src_app_qrprintmodal",
       "community": 5,
       "norm_label": "qrprintmodal()"
@@ -313,7 +313,7 @@
       "label": "orderSummary()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2038",
+      "source_location": "L2073",
       "id": "src_app_ordersummary",
       "community": 2,
       "norm_label": "ordersummary()"
@@ -322,7 +322,7 @@
       "label": "sdsKindOf()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2065",
+      "source_location": "L2100",
       "id": "src_app_sdskindof",
       "community": 0,
       "norm_label": "sdskindof()"
@@ -331,7 +331,7 @@
       "label": "SdsControl()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2067",
+      "source_location": "L2102",
       "id": "src_app_sdscontrol",
       "community": 2,
       "norm_label": "sdscontrol()"
@@ -340,7 +340,7 @@
       "label": "FeedbackModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2170",
+      "source_location": "L2205",
       "id": "src_app_feedbackmodal",
       "community": 1,
       "norm_label": "feedbackmodal()"
@@ -349,7 +349,7 @@
       "label": "LocationPicker()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2253",
+      "source_location": "L2288",
       "id": "src_app_locationpicker",
       "community": 0,
       "norm_label": "locationpicker()"
@@ -358,7 +358,7 @@
       "label": "HQDashboard()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2298",
+      "source_location": "L2333",
       "id": "src_app_hqdashboard",
       "community": 0,
       "norm_label": "hqdashboard()"
@@ -367,7 +367,7 @@
       "label": "Ftr()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2535",
+      "source_location": "L2570",
       "id": "src_app_ftr",
       "community": 0,
       "norm_label": "ftr()"
@@ -1119,5 +1119,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "b0deea355cb54ef0104cb03cd5237d6d32f2b05c"
+  "built_at_commit": "a07a2e304b0503b90a7a428fa8da36ebecfeb2b3"
 }

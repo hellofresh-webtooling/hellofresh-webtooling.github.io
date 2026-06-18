@@ -110,6 +110,7 @@ const TRANS = {
     recipients:"Ontvangers", noRecipients:"Geen ontvangers. Stel in via Beheerder.",
     sendByEmail:"Verstuur per e-mail", copyReport:"Kopieer rapport", copied:"Gekopieerd!", downloadPdf:"Download PDF",
     repTitle:"BESTELRAPPORTAGE", repDate:"Datum", repLocation:"Locatie", repNormalStock:"NORMALE VOORRAAD", repTotal:"TOTAAL TE BESTELLEN", repBottles:"flessen", repOk:"ok", repTarget:"doel",
+    repShareTitle:"Bestelrapport", repBottle:"fles", repToOrder:(n)=>`Te bestellen (${n}):`, repAllOk:"Alle voorraad op peil — niets te bestellen 🎉", repRestOk:"Overige voorraad op peil", shareWhatsapp:"Deel via WhatsApp", repSecLiquids:"Vloeistoffenkast", repSecNormal:"Normale voorraad",
     activityLog:"Activiteitenlog", clearLog:"Wissen", confirmClearLog:"Hele logboek wissen? Dit kan niet ongedaan worden gemaakt.", noActivity:"Nog geen activiteit geregistreerd.", roleSystem:"Systeem",
     partNone:"geen", confirmEmptyTray:(label)=>`${label} volledig leeg melden? Dit zet alle producten op 0.`,
     targetLabel:"doel", confirmEmptyStock:"Normale voorraad volledig leeg melden? Dit zet alle artikelen op 0.",
@@ -175,6 +176,7 @@ const TRANS = {
     recipients:"Recipients", noRecipients:"No recipients. Set them up via Admin.",
     sendByEmail:"Send by email", copyReport:"Copy report", copied:"Copied!", downloadPdf:"Download PDF",
     repTitle:"ORDER REPORT", repDate:"Date", repLocation:"Location", repNormalStock:"NORMAL STOCK", repTotal:"TOTAL TO ORDER", repBottles:"bottles", repOk:"ok", repTarget:"target",
+    repShareTitle:"Order report", repBottle:"bottle", repToOrder:(n)=>`To order (${n}):`, repAllOk:"All stock at target — nothing to order 🎉", repRestOk:"Other stock at target", shareWhatsapp:"Share via WhatsApp", repSecLiquids:"Liquids cabinet", repSecNormal:"Normal stock",
     activityLog:"Activity log", clearLog:"Clear", confirmClearLog:"Clear the entire log? This cannot be undone.", noActivity:"No activity recorded yet.", roleSystem:"System",
     partNone:"none", confirmEmptyTray:(label)=>`Report ${label} completely empty? This sets all products to 0.`,
     targetLabel:"target", confirmEmptyStock:"Report normal stock completely empty? This sets all items to 0.",
@@ -240,6 +242,7 @@ const TRANS = {
     recipients:"المستلمون", noRecipients:"لا يوجد مستلمون. قم بإعدادهم عبر المسؤول.",
     sendByEmail:"إرسال بالبريد الإلكتروني", copyReport:"نسخ التقرير", copied:"تم النسخ!", downloadPdf:"تنزيل PDF",
     repTitle:"تقرير الطلب", repDate:"التاريخ", repLocation:"الموقع", repNormalStock:"المخزون العادي", repTotal:"الإجمالي للطلب", repBottles:"زجاجات", repOk:"تمام", repTarget:"الهدف",
+    repShareTitle:"تقرير الطلب", repBottle:"زجاجة", repToOrder:(n)=>`للطلب (${n}):`, repAllOk:"كل المخزون على المستوى — لا شيء للطلب 🎉", repRestOk:"باقي المخزون على المستوى", shareWhatsapp:"مشاركة عبر واتساب", repSecLiquids:"خزانة السوائل", repSecNormal:"المخزون العادي",
     activityLog:"سجل الأنشطة", clearLog:"مسح", confirmClearLog:"مسح السجل بالكامل؟ لا يمكن التراجع عن هذا.", noActivity:"لم يتم تسجيل أي نشاط بعد.", roleSystem:"النظام",
     partNone:"لا شيء", confirmEmptyTray:(label)=>`الإبلاغ عن أن ${label} فارغة تماماً؟ سيؤدي هذا إلى ضبط كل المنتجات على 0.`,
     targetLabel:"الهدف", confirmEmptyStock:"الإبلاغ عن أن المخزون العادي فارغ تماماً؟ سيؤدي هذا إلى ضبط كل العناصر على 0.",
@@ -305,6 +308,7 @@ const TRANS = {
     recipients:"Destinataires", noRecipients:"Aucun destinataire. Configurez-les via Administration.",
     sendByEmail:"Envoyer par e-mail", copyReport:"Copier le rapport", copied:"Copié !", downloadPdf:"Télécharger le PDF",
     repTitle:"RAPPORT DE COMMANDE", repDate:"Date", repLocation:"Emplacement", repNormalStock:"STOCK NORMAL", repTotal:"TOTAL À COMMANDER", repBottles:"bouteilles", repOk:"ok", repTarget:"objectif",
+    repShareTitle:"Rapport de commande", repBottle:"bouteille", repToOrder:(n)=>`À commander (${n}):`, repAllOk:"Tout le stock au niveau — rien à commander 🎉", repRestOk:"Reste du stock au niveau", shareWhatsapp:"Partager via WhatsApp", repSecLiquids:"Armoire à liquides", repSecNormal:"Stock normal",
     activityLog:"Journal d'activité", clearLog:"Effacer", confirmClearLog:"Effacer tout le journal ? Cette action est irréversible.", noActivity:"Aucune activité enregistrée pour le moment.", roleSystem:"Système",
     partNone:"aucune", confirmEmptyTray:(label)=>`Signaler ${label} entièrement vide ? Cela met tous les produits à 0.`,
     targetLabel:"objectif", confirmEmptyStock:"Signaler le stock normal entièrement vide ? Cela met tous les articles à 0.",
@@ -1414,61 +1418,92 @@ function AdminPanel({cfg,onSave,lang="nl",sdsMap={},locId,onSdsSaved,onSdsRemove
 function ReportModal({cfg,inv,onClose,lang="nl"}){
   const [copied,setCopied]=useState(false);
   const emails=(cfg.emails||[]).filter(e=>e.active&&e.email.includes("@"));
-  const lines=[`${cfg.appName.toUpperCase()} — ${tr(lang,"repTitle")}`,`${tr(lang,"repDate")}: ${new Date().toLocaleDateString(dloc(lang),{weekday:"long",day:"2-digit",month:"long",year:"numeric"})}`,`${tr(lang,"repLocation")}: ${cfg.location}`,""];
-  let total=0;
+  // Compacte HelloFresh-stijl: alleen de tekorten, mobiel deelbaar (WhatsApp/Teams).
+  const dateStr=new Date().toLocaleDateString(dloc(lang),{day:"numeric",month:"long",year:"numeric"});
+  // Vloeistoffenkast (lekbakken) en normale voorraad apart houden in het rapport.
+  const liquidNeeds=[],normalNeeds=[];let total=0;
   aSh(cfg).forEach(sh=>{
-    lines.push(`${sh.label} (${shL(sh,inv).toFixed(1)}L / ${sh.maxLiters}L)`);
     aPr(sh).forEach(p=>{
-      const s=inv[p.id]||{full:0,partial:0};const need=Math.max(0,p.target-s.full);total+=need;
-      const curr=s.partial>0?`${s.full}+${s.partial}%`:`${s.full}`;
-      lines.push(`  ${p.name.padEnd(24)} ${curr.padEnd(8)} ${tr(lang,"repTarget")}:${p.target}  ${need>0?`+${need} ${tr(lang,"repBottles")}`:tr(lang,"repOk")}`);
-    });lines.push("");
-  });
-  const vp=(cfg.voorraad||[]).filter(p=>p.active!==false);
-  if(vp.length>0){
-    lines.push(tr(lang,"repNormalStock"));
-    vp.forEach(p=>{
-      const cnt=(inv[p.id]||{count:0}).count;const need=Math.max(0,p.target-cnt);total+=need;
-      const mv=p.unit==="rol"?"rollen":p.unit==="doos"?"dozen":`${p.unit}s`;
-      lines.push(`  ${p.name.padEnd(24)} ${String(cnt).padEnd(8)} ${tr(lang,"repTarget")}:${p.target}  ${need>0?`+${need} ${mv}`:tr(lang,"repOk")}`);
+      const s=inv[p.id]||{full:0,partial:0};const n=Math.max(0,p.target-s.full);
+      if(n>0){total+=n;liquidNeeds.push(`${p.name} — ${n} ${n===1?tr(lang,"repBottle"):tr(lang,"repBottles")}`);}
     });
-    lines.push("");
+  });
+  (cfg.voorraad||[]).filter(p=>p.active!==false).forEach(p=>{
+    const cnt=(inv[p.id]||{count:0}).count;const n=Math.max(0,p.target-cnt);
+    if(n>0){total+=n;const plur=p.unit==="rol"?"rollen":p.unit==="doos"?"dozen":`${p.unit}s`;normalNeeds.push(`${p.name} — ${n} ${n===1?p.unit:plur}`);}
+  });
+  const L=[`*${tr(lang,"repShareTitle")} ${cfg.location}*`,`📅 ${dateStr}`,""];
+  if(total===0){
+    L.push(`✅ ${tr(lang,"repAllOk")}`);
+  }else{
+    L.push(`⚠️ *${tr(lang,"repToOrder",total)}*`);
+    if(liquidNeeds.length){L.push("");L.push(`*🧪 ${tr(lang,"repSecLiquids")}*`);liquidNeeds.forEach(t=>L.push(` • ${t}`));}
+    if(normalNeeds.length){L.push("");L.push(`*📦 ${tr(lang,"repSecNormal")}*`);normalNeeds.forEach(t=>L.push(` • ${t}`));}
+    L.push("");
+    L.push(`✅ ${tr(lang,"repRestOk")}`);
   }
-  lines.push(`${tr(lang,"repTotal")}: ${total}`);
-  const report=lines.join("\n");
+  const report=L.join("\n");
+  // PDF/print: zonder markdown-sterretjes en emoji (jsPDF-fonts tonen die niet).
+  const plain=report.replace(/\*/g,"").replace(/[🥕📅⚠️✅🧪📦•]/g,"").replace(/[ \t]+\n/g,"\n").split("\n").map(l=>l.replace(/^\s+/,(m)=>m.length>1?"  ":m)).join("\n");
   return(
     <div className="modal-overlay" style={{position:"fixed",inset:0,background:"rgba(30,90,15,0.55)",zIndex:500,display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
       <div dir={lang==="ar"?"rtl":"ltr"} className="modal-box" style={{width:"100%",maxWidth:480,minHeight:"100vh",display:"flex",flexDirection:"column",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)"}}>
-        <div style={{background:"#3D8B2E",padding:"13px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0}}>
-          <div style={{fontSize:15,fontWeight:900,color:"#fff"}}>{tr(lang,"monthlyReport")}</div>
-          <button style={{background:"rgba(255,255,255,0.15)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:16,width:36,height:36,borderRadius:10,cursor:"pointer",fontWeight:700}} onClick={onClose}>×</button>
+        <div style={{background:"linear-gradient(135deg,#91C11E,#79A516)",padding:"13px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,boxShadow:"0 2px 10px rgba(121,165,22,0.35)"}}>
+          <div style={{display:"flex",alignItems:"center",gap:11}}>
+            <span style={{background:"#fff",borderRadius:12,padding:"5px 9px",display:"inline-flex",alignItems:"center",boxShadow:"0 2px 8px rgba(0,0,0,0.12)"}}><HelloFreshLogo size={26}/></span>
+            <div style={{fontSize:15,fontWeight:900,color:"#fff",letterSpacing:0.3}}>{tr(lang,"monthlyReport")}</div>
+          </div>
+          <button style={{background:"rgba(255,255,255,0.18)",border:"1.5px solid rgba(255,255,255,0.4)",color:"#fff",fontSize:16,width:36,height:36,borderRadius:10,cursor:"pointer",fontWeight:700}} onClick={onClose}>×</button>
         </div>
-        <div style={{flex:1,padding:16,background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)"}}>
-          <div style={{background:total>0?"#FFFBEA":"#EEF9E6",border:`2px solid ${total>0?"#F5C842":"#9FCC80"}`,borderRadius:14,padding:"14px 16px",marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
+        <div style={{flex:1,padding:16,background:"linear-gradient(160deg,#F4FBE6,#FEFCF4)"}}>
+          <div style={{background:total>0?"#FFFBEA":"#F0FAE0",border:`2px solid ${total>0?"#F5C842":"#A8D44E"}`,borderRadius:14,padding:"14px 16px",marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
             <span style={{fontSize:28}}>{total>0?"📦":"🎉"}</span>
-            <div style={{fontSize:14,fontWeight:900,color:total>0?"#A06A00":"#3D8B2E"}}>{total>0?tr(lang,"productsToReorder",total):tr(lang,"allStockOk")}</div>
+            <div style={{fontSize:14,fontWeight:900,color:total>0?"#A06A00":"#5E8A0E"}}>{total>0?tr(lang,"productsToReorder",total):tr(lang,"allStockOk")}</div>
+          </div>
+          {/* Live voorbeeld van het deelbericht — zoals het in WhatsApp/Teams aankomt */}
+          <div style={{background:"#fff",border:"2.5px solid #C8E6B0",borderRadius:16,padding:"14px 16px",marginBottom:14,boxShadow:"0 4px 16px rgba(121,165,22,0.14)"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,paddingBottom:10,marginBottom:10,borderBottom:"1.5px solid #EAF4DC"}}><HelloFreshLogo size={30}/></div>
+            <div dir={lang==="ar"?"rtl":"ltr"} style={{whiteSpace:"pre-wrap",wordBreak:"break-word",fontSize:13.5,lineHeight:1.7,color:"#2B3A1A",fontWeight:600}}>{report.replace(/\*/g,"")}</div>
           </div>
           <div style={{...S.card,marginBottom:14}}>
             <div style={{fontSize:11,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:2,marginBottom:8}}>{tr(lang,"recipients")} ({emails.length})</div>
             {emails.length===0&&<div style={{fontSize:12,color:"#8AAA7A"}}>{tr(lang,"noRecipients")}</div>}
             {emails.map(e=><div key={e.id} style={{fontSize:12,fontWeight:700,color:"#4A6A3A",padding:"4px 0"}}>📬 {e.dept} — {e.email}</div>)}
           </div>
-          <textarea readOnly value={report} style={{width:"100%",height:200,background:"#F5FBF0",border:"2px solid #C8E6B0",borderRadius:10,padding:12,fontFamily:"monospace",fontSize:10,color:"#4A6A3A",lineHeight:1.7,resize:"none",outline:"none",marginBottom:12}}/>
+          <button style={{...S.btn,width:"100%",background:"linear-gradient(135deg,#25D366,#1EBE5A)",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:10}}
+            onClick={()=>{window.open(`https://wa.me/?text=${encodeURIComponent(report)}`,"_blank");}}>
+            <span style={{fontSize:20}}>💬</span> {tr(lang,"shareWhatsapp")}
+          </button>
           <button style={{...S.btn,width:"100%",background:"linear-gradient(135deg,#E8632A,#D44A20)",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",gap:10,marginBottom:10,opacity:emails.length===0?0.5:1,cursor:emails.length===0?"not-allowed":"pointer"}}
-            onClick={()=>{const to=emails.map(e=>e.email).join(",");const subj=encodeURIComponent(`${cfg.appName} — Bestelrapport`);window.location.href=`mailto:${to}?subject=${subj}&body=${encodeURIComponent(report)}`;}} disabled={emails.length===0}>
+            onClick={()=>{const to=emails.map(e=>e.email).join(",");const subj=encodeURIComponent(`${cfg.appName} — ${tr(lang,"repShareTitle")} ${cfg.location}`);window.location.href=`mailto:${to}?subject=${subj}&body=${encodeURIComponent(report.replace(/\*/g,""))}`;}} disabled={emails.length===0}>
             <span style={{fontSize:20}}>📧</span> {tr(lang,"sendByEmail")}
           </button>
-          <button style={{...S.btn,width:"100%",background:"#fff",border:"2.5px solid #C8E6B0",color:copied?"#3D8B2E":"#4A6A3A",display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:8}}
+          <button style={{...S.btn,width:"100%",background:"#fff",border:"2.5px solid #C8E6B0",color:copied?"#5E8A0E":"#4A6A3A",display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:8}}
             onClick={async()=>{try{await navigator.clipboard.writeText(report);}catch{}setCopied(true);setTimeout(()=>setCopied(false),2500);}}>
             {copied?`✅ ${tr(lang,"copied")}`:`⧉ ${tr(lang,"copyReport")}`}
           </button>
           <button style={{...S.btn,width:"100%",background:"#fff",border:"2.5px solid #C8E6B0",color:"#4A6A3A",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}
-            onClick={()=>{
+            onClick={async()=>{
               const doc=new jsPDF();
-              doc.setFont("courier","normal");doc.setFontSize(9);
-              const ph=doc.internal.pageSize.height;let y=14;
-              report.split("\n").forEach(line=>{if(y>ph-12){doc.addPage();y=14;}doc.text(line||" ",12,y);y+=4.8;});
-              doc.save(`bestelrapport-${new Date().toISOString().slice(0,10)}.pdf`);
+              const ph=doc.internal.pageSize.height,pw=doc.internal.pageSize.width;let y=28;
+              // HelloFresh-balk met het echte logo (op witte pill voor contrast)
+              doc.setFillColor(145,193,30);doc.rect(0,0,pw,18,"F");
+              doc.setFillColor(255,255,255);doc.roundedRect(10,4,32,10,2.5,2.5,"F");
+              try{
+                const img=new Image();img.src=`${import.meta.env.BASE_URL}hellofresh-logo.svg`;
+                await new Promise((res,rej)=>{img.onload=res;img.onerror=rej;setTimeout(rej,3000);});
+                const cv=document.createElement("canvas");cv.width=300;cv.height=200;
+                cv.getContext("2d").drawImage(img,0,0,300,200);
+                doc.addImage(cv.toDataURL("image/png"),"PNG",12.5,5,27,8);
+              }catch{
+                doc.setFont("helvetica","bold");doc.setFontSize(12);doc.setTextColor(105,153,51);doc.text("HelloFresh",13,11);
+              }
+              doc.setTextColor(43,58,26);doc.setFontSize(11);doc.setFont("helvetica","normal");
+              plain.split("\n").forEach(line=>{
+                if(y>ph-14){doc.addPage();y=20;}
+                doc.text(line||" ",12,y);y+=6.4;
+              });
+              doc.save(`bestelrapport-${cfg.location.toLowerCase().replace(/\s+/g,"-")}-${new Date().toISOString().slice(0,10)}.pdf`);
             }}>
             📄 {tr(lang,"downloadPdf")}
           </button>
