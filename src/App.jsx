@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense } from "react";
 const QRCodeSVG = lazy(() => import("qrcode.react").then(m => ({ default: m.QRCodeSVG })));
-import { supabase, ls, dbSet, verifyPw, isHashed, LOCATIONS, COUNTRIES, locName, LEGACY_LOC, keyFor, HQ_PIN_HASH, migrateHashes } from "./lib/db.js";
+import { supabase, ls, dbSet, hashPw, verifyPw, isHashed, LOCATIONS, COUNTRIES, locName, LEGACY_LOC, keyFor, HQ_PIN_HASH, migrateHashes } from "./lib/db.js";
 import { TRANS, tr, LOCALE, dloc } from "./i18n/trans.js";
 import { DEF, defCfgFor, CAT, aSh, aPr, defI, pL, shL, shP, fCol, uCol, orderSummary } from "./constants.js";
 import { S, GF } from "./styles.js";
