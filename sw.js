@@ -32,13 +32,16 @@ self.addEventListener("fetch", e => {
     return;
   }
 
-  // Navigatie en overige verzoeken: netwerk-eerst, fallback op cache
+  // Navigatie en overige verzoeken: stale-while-revalidate (cache direct, netwerk update op achtergrond)
   e.respondWith(
-    fetch(e.request)
-      .then(res => {
-        if (res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone()));
-        return res;
+    caches.open(CACHE).then(cache =>
+      cache.match(e.request).then(cached => {
+        const fresh = fetch(e.request).then(res => {
+          if (res.ok) cache.put(e.request, res.clone());
+          return res;
+        });
+        return cached || fresh;
       })
-      .catch(() => caches.match(e.request))
+    )
   );
 });
