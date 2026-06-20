@@ -1,464 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { createClient } from "@supabase/supabase-js";
-import jsPDF from "jspdf";
-import { QRCodeSVG } from "qrcode.react";
-
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_KEY,
-);
-
-const ls = {
-  get: (k) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch { return null; } },
-  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
-};
-
-const dbSet = async (key, value) => {
-  ls.set(key, value);
-  try {
-    await fetch(import.meta.env.VITE_EDGE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-app-secret": import.meta.env.VITE_EDGE_SECRET,
-      },
-      body: JSON.stringify({ key, value }),
-    });
-  } catch {}
-};
-
-const hashPw = async (str) => {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
-};
-const isHashed = (s) => typeof s==="string" && /^[0-9a-f]{64}$/.test(s);
-
-// === Multi-locatie ===
-// Vaste lijst van vestigingen. Volgorde bepaalt weergave in het keuzescherm.
-// Per land gesorteerd van noord naar zuid (op breedtegraad).
-const LOCATIONS = [
-  { id:"groningen",   name:"Groningen",   country:"NL" },
-  { id:"ruinerwold",  name:"Ruinerwold",  country:"NL" },
-  { id:"diemen",      name:"Diemen",      country:"NL" },
-  { id:"nieuwegein",  name:"Nieuwegein",  country:"NL" },
-  { id:"bleiswijk",   name:"Bleiswijk",   country:"NL" },
-  { id:"duiven",      name:"Duiven",      country:"NL" },
-  { id:"etten-leur",  name:"Etten-Leur",  country:"NL" },
-  { id:"maastricht",  name:"Maastricht",  country:"NL" },
-  { id:"antwerpen",   name:"Antwerpen",   country:"BE" },
-  { id:"gent",        name:"Gent",        country:"BE" },
-  { id:"houthalen",   name:"Houthalen",   country:"BE" },
-  { id:"brussel",     name:"Brussel",     country:"BE" },
-  { id:"kluisbergen", name:"Kluisbergen", country:"BE" },
-  { id:"namen",       name:"Namen",       country:"BE" },
-];
-const COUNTRIES = [{ code:"NL", flag:"🇳🇱", label:"Nederland" },{ code:"BE", flag:"🇧🇪", label:"België" }];
-const locName = (locId) => LOCATIONS.find(l=>l.id===locId)?.name || locId;
-// Ruinerwold houdt de oorspronkelijke keys (vkast-cfg, …) zodat de bestaande live data behouden blijft.
-const LEGACY_LOC = "ruinerwold";
-const keyFor = (base, locId) => locId===LEGACY_LOC ? base : `${base}:${locId}`;
-
-// HQ-overzicht master-PIN. Standaard "2580".
-// Wijzigen? Genereer een nieuwe hash:  node -e "console.log(require('crypto').createHash('sha256').update('XXXX').digest('hex'))"
-const HQ_PIN_HASH = "ed946f65d2c785d90e827c5ffd879ce3b49c68d4c88013074176a7e73bc58bcf";
-
-const migrateHashes = async (cfg, locId=LEGACY_LOC) => {
-  let changed=false;
-  const c=JSON.parse(JSON.stringify(cfg));
-  for(const acc of c.accounts||[]){
-    if(!isHashed(acc.password)){acc.password=await hashPw(acc.password);changed=true;}
-  }
-  if(c.adminPin&&!isHashed(c.adminPin)){c.adminPin=await hashPw(c.adminPin);changed=true;}
-  if(c.appName==="Vloeistoffenkast"){c.appName="Voorraadbeheer";changed=true;}
-  if(changed)dbSet(keyFor("vkast-cfg",locId),c);
-  return c;
-};
-
-const TRANS = {
-  nl: {
-    welcome:"Welkom", chooseShelf:"Kies een kast", chooseSection:"Kies een lekbak",
-    chemicals:"Vloeistoffenkast", flammables:"Brandbare stoffen",
-    normalStock:"Normale Voorraad", consumables:"Verbruiksartikelen",
-    worker:"Medewerker", manager:"Manager", admin:"Beheerder",
-    logout:"Uitloggen", back:"Terug", close:"Sluiten",
-    password:"Wachtwoord", enterPw:"Voer wachtwoord in",
-    wrongPw:"Onjuist wachtwoord", blockedMsg:"Geblokkeerd — wacht 30 seconden", blockedBtn:"Geblokkeerd...",
-    loginWorker:"Medewerker inloggen", loginManager:"Manager inloggen",
-    full:"vol", none:"--",
-    maxExceeded:"Maximum overschreden!", almostFull:"Bijna vol — check voordat je bijvult",
-    toOrder:"te bestellen", inStock:"op voorraad", present:"aanwezig",
-    reportEmpty:"Lekbak leeg melden", reportStockEmpty:"Voorraad leeg melden",
-    sectionFill:"Lekbak bezetting", per:"per", reorder:"bijbestellen",
-    bottles:"flessen", bottlesSingle:"fles", max:"max", pieces:"stuks",
-    ofTarget:(done,total)=>`${done} van ${total} producten op doelstelling`,
-    flammable:"Ontvlambaar", corrosive:"Corrosief",
-    persons:"personen", person:"persoon", pinRequired:"PIN vereist",
-    manualBtn:"Handleiding", manualWorker:"Voor Medewerkers", manualWorkerSub:"Voorraad bijwerken & inloggen",
-    manualManager:"Voor Managers", manualManagerSub:"Overzicht, rapportage & beheer",
-    qrPrint:"QR-code afdrukken", qrPrintBtn:"Afdrukken",
-    qrAccessVia:"Toegang via QR-code", qrScanToOpen:"Scan om de app te openen", qrAppName:"Voorraadbeheer App",
-    qrStep1:"Open de camera-app op je telefoon", qrStep2:"Richt de camera op de QR-code", qrStep3:"Tik op de melding om in te loggen",
-    stockManagement:"Voorraadbeheer",
-    selectName:"Selecteer je naam", noAccounts:"Geen accounts beschikbaar.",
-    tabStatus:"Status", tabConsumption:"Verbruik", tabLog:"Logboek",
-    trays:"Lekbakken", monthlyReport:"Maandelijkse Uitdraai", createOrderReport:"Bestelrapport aanmaken",
-    colProduct:"Product", colOrder:"Bestel",
-    monthlyConsumption:"Maandverbruik", recordMonthly:"Maandstand vastleggen", saving:"Opslaan...",
-    recordMonthlyHint:"Druk op maandstand vastleggen aan het begin van de maand.",
-    consumptionVs:"Verbruik t.o.v.", noConsumption:"Geen verbruik", monthlyRecords:"Maandstanden",
-    productsToReorder:(n)=>`${n} producten bijbestellen`, allStockOk:"Alle voorraden op peil!",
-    recipients:"Ontvangers", noRecipients:"Geen ontvangers. Stel in via Beheerder.",
-    sendByEmail:"Verstuur per e-mail", copyReport:"Kopieer rapport", copied:"Gekopieerd!", downloadPdf:"Download PDF",
-    repTitle:"BESTELRAPPORTAGE", repDate:"Datum", repLocation:"Locatie", repNormalStock:"NORMALE VOORRAAD", repTotal:"TOTAAL TE BESTELLEN", repBottles:"flessen", repOk:"ok", repTarget:"doel",
-    repShareTitle:"Bestelrapport", repBottle:"fles", repToOrder:(n)=>`Te bestellen (${n}):`, repAllOk:"Alle voorraad op peil — niets te bestellen 🎉", repRestOk:"Overige voorraad op peil", shareWhatsapp:"Deel via WhatsApp", repSecLiquids:"Vloeistoffenkast", repSecNormal:"Normale voorraad",
-    activityLog:"Activiteitenlog", clearLog:"Wissen", confirmClearLog:"Hele logboek wissen? Dit kan niet ongedaan worden gemaakt.", noActivity:"Nog geen activiteit geregistreerd.", roleSystem:"Systeem",
-    partNone:"geen", confirmEmptyTray:(label)=>`${label} volledig leeg melden? Dit zet alle producten op 0.`,
-    targetLabel:"doel", confirmEmptyStock:"Normale voorraad volledig leeg melden? Dit zet alle artikelen op 0.",
-    enterPin:"Voer PIN in", wrongPin:"Onjuiste PIN",
-    tabProducts:"Producten", tabStock:"Voorraad", tabEmail:"E-mail", tabAccounts:"Accounts", tabSettings:"Instellingen",
-    admLabel:"Label", admSublabel:"Sublabel", admMaxLiters:"Max liters", admColor:"Kleur",
-    on:"AAN", off:"UIT", admGhsCategory:"GHS Categorie", admNone:"— Geen —",
-    save:"Opslaan", saved:"Opgeslagen!",
-    admNewProduct:"Nieuw product", admProduct:"Product", admName:"Naam", admUnit:"Eenheid",
-    admNewItem:"Nieuw artikel", admItem:"Artikel", admDept:"Afdeling", admRecipient:"Ontvanger",
-    admNewPw:"Nieuw wachtwoord", admLeaveEmpty:"Laat leeg = ongewijzigd", admRole:"Rol",
-    admNewPerson:"Nieuw persoon", admAccount:"Account",
-    admAppName:"App naam", admLocation:"Locatie", admNewPin:"Nieuwe PIN (4 cijfers)",
-    langLabel:"🇳🇱 Nederlands",
-    fbBtn:"Melding maken", fbTitle:"Melding of idee doorgeven",
-    fbIntro:"Iets kapot, een vraag of een verbeteridee? Geef het hier door — wij pakken het op.",
-    fbType:"Soort melding", fbProblem:"Probleem", fbProblemSub:"Iets werkt niet / is kapot",
-    fbChange:"Aanpassing / idee", fbChangeSub:"Voorstel of verbetering",
-    fbName:"Je naam (optioneel)", fbNamePlaceholder:"Bijv. Sanne",
-    fbMessage:"Omschrijving", fbMessagePlaceholder:"Omschrijf zo duidelijk mogelijk wat er aan de hand is of wat je voorstelt…",
-    fbSend:"Versturen", fbSending:"Versturen…", fbRequired:"Vul eerst een omschrijving in.",
-    fbThanksTitle:"Bedankt!", fbThanksMsg:"Je melding is doorgegeven. We pakken het op.", fbNew:"Nog een melding maken",
-    sds:"VIB", sdsTitle:"Veiligheidsinformatieblad", sdsFor:"VIB voor",
-    sdsNone:"Nog geen VIB geüpload.", sdsView:"Bekijken", sdsDownload:"Downloaden",
-    sdsUpload:"VIB uploaden", sdsAdd:"VIB toevoegen", sdsReplace:"VIB vervangen", sdsRemove:"VIB verwijderen",
-    sdsUploading:"Uploaden…", sdsUploadedBy:"Geüpload door", sdsUploadedOn:"op",
-    sdsTooBig:"Bestand te groot (max 10 MB).", sdsBadType:"Alleen PDF-bestanden toegestaan.",
-    sdsError:"Upload mislukt. Probeer opnieuw.", sdsRemoveConfirm:"Dit document verwijderen?",
-    sdsKind:"Documenttype", sdsKindVib:"VIB", sdsKindTech:"Technisch blad", sdsKindManual:"Gebruiksinstructie", sdsKindOther:"Overig",
-  },
-  en: {
-    welcome:"Welcome", chooseShelf:"Choose a cabinet", chooseSection:"Choose a tray",
-    chemicals:"Chemical Cabinet", flammables:"Flammable substances",
-    normalStock:"Normal Stock", consumables:"Consumables",
-    worker:"Employee", manager:"Manager", admin:"Administrator",
-    logout:"Log out", back:"Back", close:"Close",
-    password:"Password", enterPw:"Enter password",
-    wrongPw:"Incorrect password", blockedMsg:"Blocked — wait 30 seconds", blockedBtn:"Blocked...",
-    loginWorker:"Employee login", loginManager:"Manager login",
-    full:"full", none:"--",
-    maxExceeded:"Maximum exceeded!", almostFull:"Almost full — check before refilling",
-    toOrder:"to order", inStock:"in stock", present:"present",
-    reportEmpty:"Report tray empty", reportStockEmpty:"Report stock empty",
-    sectionFill:"Tray occupancy", per:"per", reorder:"reorder",
-    bottles:"bottles", bottlesSingle:"bottle", max:"max", pieces:"pieces",
-    ofTarget:(done,total)=>`${done} of ${total} products at target`,
-    flammable:"Flammable", corrosive:"Corrosive",
-    persons:"persons", person:"person", pinRequired:"PIN required",
-    manualBtn:"Manual", manualWorker:"For Employees", manualWorkerSub:"Update stock & log in",
-    manualManager:"For Managers", manualManagerSub:"Overview, reporting & management",
-    qrPrint:"Print QR code", qrPrintBtn:"Print",
-    qrAccessVia:"Access via QR code", qrScanToOpen:"Scan to open the app", qrAppName:"Stock Management App",
-    qrStep1:"Open the camera app on your phone", qrStep2:"Point the camera at the QR code", qrStep3:"Tap the notification to log in",
-    stockManagement:"Stock Management",
-    selectName:"Select your name", noAccounts:"No accounts available.",
-    tabStatus:"Status", tabConsumption:"Consumption", tabLog:"Log",
-    trays:"Trays", monthlyReport:"Monthly Report", createOrderReport:"Create order report",
-    colProduct:"Product", colOrder:"Order",
-    monthlyConsumption:"Monthly consumption", recordMonthly:"Record monthly stock", saving:"Saving...",
-    recordMonthlyHint:"Tap record monthly stock at the start of the month.",
-    consumptionVs:"Consumption vs", noConsumption:"No consumption", monthlyRecords:"Monthly records",
-    productsToReorder:(n)=>`${n} products to reorder`, allStockOk:"All stock at target!",
-    recipients:"Recipients", noRecipients:"No recipients. Set them up via Admin.",
-    sendByEmail:"Send by email", copyReport:"Copy report", copied:"Copied!", downloadPdf:"Download PDF",
-    repTitle:"ORDER REPORT", repDate:"Date", repLocation:"Location", repNormalStock:"NORMAL STOCK", repTotal:"TOTAL TO ORDER", repBottles:"bottles", repOk:"ok", repTarget:"target",
-    repShareTitle:"Order report", repBottle:"bottle", repToOrder:(n)=>`To order (${n}):`, repAllOk:"All stock at target — nothing to order 🎉", repRestOk:"Other stock at target", shareWhatsapp:"Share via WhatsApp", repSecLiquids:"Liquids cabinet", repSecNormal:"Normal stock",
-    activityLog:"Activity log", clearLog:"Clear", confirmClearLog:"Clear the entire log? This cannot be undone.", noActivity:"No activity recorded yet.", roleSystem:"System",
-    partNone:"none", confirmEmptyTray:(label)=>`Report ${label} completely empty? This sets all products to 0.`,
-    targetLabel:"target", confirmEmptyStock:"Report normal stock completely empty? This sets all items to 0.",
-    enterPin:"Enter PIN", wrongPin:"Incorrect PIN",
-    tabProducts:"Products", tabStock:"Stock", tabEmail:"Email", tabAccounts:"Accounts", tabSettings:"Settings",
-    admLabel:"Label", admSublabel:"Sublabel", admMaxLiters:"Max litres", admColor:"Colour",
-    on:"ON", off:"OFF", admGhsCategory:"GHS Category", admNone:"— None —",
-    save:"Save", saved:"Saved!",
-    admNewProduct:"New product", admProduct:"Product", admName:"Name", admUnit:"Unit",
-    admNewItem:"New item", admItem:"Item", admDept:"Department", admRecipient:"Recipient",
-    admNewPw:"New password", admLeaveEmpty:"Leave empty = unchanged", admRole:"Role",
-    admNewPerson:"New person", admAccount:"Account",
-    admAppName:"App name", admLocation:"Location", admNewPin:"New PIN (4 digits)",
-    langLabel:"🇬🇧 English",
-    fbBtn:"Report an issue", fbTitle:"Report an issue or idea",
-    fbIntro:"Something broken, a question or an improvement idea? Let us know here — we'll pick it up.",
-    fbType:"Type of report", fbProblem:"Problem", fbProblemSub:"Something is broken / not working",
-    fbChange:"Change / idea", fbChangeSub:"Suggestion or improvement",
-    fbName:"Your name (optional)", fbNamePlaceholder:"E.g. Sanne",
-    fbMessage:"Description", fbMessagePlaceholder:"Describe as clearly as possible what is wrong or what you propose…",
-    fbSend:"Send", fbSending:"Sending…", fbRequired:"Please enter a description first.",
-    fbThanksTitle:"Thank you!", fbThanksMsg:"Your report has been sent. We'll pick it up.", fbNew:"Submit another report",
-    sds:"SDS", sdsTitle:"Safety Data Sheet", sdsFor:"SDS for",
-    sdsNone:"No SDS uploaded yet.", sdsView:"View", sdsDownload:"Download",
-    sdsUpload:"Upload SDS", sdsAdd:"Add SDS", sdsReplace:"Replace SDS", sdsRemove:"Remove SDS",
-    sdsUploading:"Uploading…", sdsUploadedBy:"Uploaded by", sdsUploadedOn:"on",
-    sdsTooBig:"File too large (max 10 MB).", sdsBadType:"Only PDF files allowed.",
-    sdsError:"Upload failed. Please try again.", sdsRemoveConfirm:"Remove this document?",
-    sdsKind:"Document type", sdsKindVib:"SDS", sdsKindTech:"Technical sheet", sdsKindManual:"Instructions", sdsKindOther:"Other",
-  },
-  ar: {
-    welcome:"مرحباً", chooseShelf:"اختر خزانة", chooseSection:"اختر صينية التسرب",
-    chemicals:"خزانة السوائل", flammables:"مواد قابلة للاشتعال",
-    normalStock:"المخزون العادي", consumables:"مواد الاستهلاك",
-    worker:"موظف", manager:"مدير", admin:"مسؤول",
-    logout:"خروج", back:"رجوع", close:"إغلاق",
-    password:"كلمة المرور", enterPw:"أدخل كلمة المرور",
-    wrongPw:"كلمة مرور خاطئة", blockedMsg:"محظور — انتظر 30 ثانية", blockedBtn:"محظور...",
-    loginWorker:"تسجيل الدخول", loginManager:"تسجيل دخول المدير",
-    full:"ممتلئ", none:"--",
-    maxExceeded:"تم تجاوز الحد الأقصى!", almostFull:"شبه ممتلئ — تحقق قبل الإضافة",
-    toOrder:"للطلب", inStock:"متوفر", present:"موجود",
-    reportEmpty:"الإبلاغ عن صينية فارغة", reportStockEmpty:"الإبلاغ عن نفاد المخزون",
-    sectionFill:"إشغال الصينية", per:"لكل", reorder:"إعادة الطلب",
-    bottles:"قطع", bottlesSingle:"قطعة", max:"حد أقصى", pieces:"قطع",
-    ofTarget:(done,total)=>`${done} من ${total} منتجات عند الهدف`,
-    flammable:"قابل للاشتعال", corrosive:"آكل",
-    persons:"أشخاص", person:"شخص", pinRequired:"يتطلب رمز PIN",
-    manualBtn:"الدليل", manualWorker:"للموظفين", manualWorkerSub:"تحديث المخزون وتسجيل الدخول",
-    manualManager:"للمدراء", manualManagerSub:"نظرة عامة، تقارير وإدارة",
-    qrPrint:"طباعة رمز QR", qrPrintBtn:"طباعة",
-    qrAccessVia:"الدخول عبر رمز QR", qrScanToOpen:"امسح لفتح التطبيق", qrAppName:"تطبيق إدارة المخزون",
-    qrStep1:"افتح تطبيق الكاميرا على هاتفك", qrStep2:"وجّه الكاميرا نحو رمز QR", qrStep3:"اضغط على الإشعار لتسجيل الدخول",
-    stockManagement:"إدارة المخزون",
-    selectName:"اختر اسمك", noAccounts:"لا توجد حسابات متاحة.",
-    tabStatus:"الحالة", tabConsumption:"الاستهلاك", tabLog:"السجل",
-    trays:"صواني التسرب", monthlyReport:"التقرير الشهري", createOrderReport:"إنشاء تقرير الطلب",
-    colProduct:"المنتج", colOrder:"اطلب",
-    monthlyConsumption:"الاستهلاك الشهري", recordMonthly:"تسجيل الحالة الشهرية", saving:"جارٍ الحفظ...",
-    recordMonthlyHint:"اضغط على تسجيل الحالة الشهرية في بداية الشهر.",
-    consumptionVs:"الاستهلاك مقارنةً بـ", noConsumption:"لا يوجد استهلاك", monthlyRecords:"السجلات الشهرية",
-    productsToReorder:(n)=>`${n} منتجات لإعادة الطلب`, allStockOk:"كل المخزون عند الهدف!",
-    recipients:"المستلمون", noRecipients:"لا يوجد مستلمون. قم بإعدادهم عبر المسؤول.",
-    sendByEmail:"إرسال بالبريد الإلكتروني", copyReport:"نسخ التقرير", copied:"تم النسخ!", downloadPdf:"تنزيل PDF",
-    repTitle:"تقرير الطلب", repDate:"التاريخ", repLocation:"الموقع", repNormalStock:"المخزون العادي", repTotal:"الإجمالي للطلب", repBottles:"زجاجات", repOk:"تمام", repTarget:"الهدف",
-    repShareTitle:"تقرير الطلب", repBottle:"زجاجة", repToOrder:(n)=>`للطلب (${n}):`, repAllOk:"كل المخزون على المستوى — لا شيء للطلب 🎉", repRestOk:"باقي المخزون على المستوى", shareWhatsapp:"مشاركة عبر واتساب", repSecLiquids:"خزانة السوائل", repSecNormal:"المخزون العادي",
-    activityLog:"سجل الأنشطة", clearLog:"مسح", confirmClearLog:"مسح السجل بالكامل؟ لا يمكن التراجع عن هذا.", noActivity:"لم يتم تسجيل أي نشاط بعد.", roleSystem:"النظام",
-    partNone:"لا شيء", confirmEmptyTray:(label)=>`الإبلاغ عن أن ${label} فارغة تماماً؟ سيؤدي هذا إلى ضبط كل المنتجات على 0.`,
-    targetLabel:"الهدف", confirmEmptyStock:"الإبلاغ عن أن المخزون العادي فارغ تماماً؟ سيؤدي هذا إلى ضبط كل العناصر على 0.",
-    enterPin:"أدخل رمز PIN", wrongPin:"رمز PIN غير صحيح",
-    tabProducts:"المنتجات", tabStock:"المخزون", tabEmail:"البريد الإلكتروني", tabAccounts:"الحسابات", tabSettings:"الإعدادات",
-    admLabel:"التسمية", admSublabel:"تسمية فرعية", admMaxLiters:"الحد الأقصى لِلِترات", admColor:"اللون",
-    on:"تشغيل", off:"إيقاف", admGhsCategory:"فئة GHS", admNone:"— لا شيء —",
-    save:"حفظ", saved:"تم الحفظ!",
-    admNewProduct:"منتج جديد", admProduct:"منتج", admName:"الاسم", admUnit:"الوحدة",
-    admNewItem:"عنصر جديد", admItem:"عنصر", admDept:"القسم", admRecipient:"مستلم",
-    admNewPw:"كلمة مرور جديدة", admLeaveEmpty:"اتركه فارغاً = دون تغيير", admRole:"الدور",
-    admNewPerson:"شخص جديد", admAccount:"حساب",
-    admAppName:"اسم التطبيق", admLocation:"الموقع", admNewPin:"رمز PIN جديد (4 أرقام)",
-    langLabel:"🇸🇦 العربية",
-    fbBtn:"الإبلاغ عن مشكلة", fbTitle:"الإبلاغ عن مشكلة أو فكرة",
-    fbIntro:"هل هناك عطل أو سؤال أو فكرة للتحسين؟ أخبرنا هنا وسنتولى الأمر.",
-    fbType:"نوع البلاغ", fbProblem:"مشكلة", fbProblemSub:"شيء لا يعمل / معطل",
-    fbChange:"تعديل / فكرة", fbChangeSub:"اقتراح أو تحسين",
-    fbName:"اسمك (اختياري)", fbNamePlaceholder:"مثال: سارة",
-    fbMessage:"الوصف", fbMessagePlaceholder:"صف بأكبر قدر ممكن من الوضوح ما هي المشكلة أو ما تقترحه…",
-    fbSend:"إرسال", fbSending:"جارٍ الإرسال…", fbRequired:"يرجى إدخال وصف أولاً.",
-    fbThanksTitle:"شكراً لك!", fbThanksMsg:"تم إرسال بلاغك. سنتولى الأمر.", fbNew:"إرسال بلاغ آخر",
-    sds:"صحيفة السلامة", sdsTitle:"صحيفة بيانات السلامة", sdsFor:"صحيفة السلامة لـ",
-    sdsNone:"لم يتم رفع صحيفة سلامة بعد.", sdsView:"عرض", sdsDownload:"تنزيل",
-    sdsUpload:"رفع صحيفة السلامة", sdsAdd:"إضافة مستند", sdsReplace:"استبدال صحيفة السلامة", sdsRemove:"حذف صحيفة السلامة",
-    sdsUploading:"جارٍ الرفع…", sdsUploadedBy:"رفعها", sdsUploadedOn:"في",
-    sdsTooBig:"الملف كبير جداً (الحد 10 ميغابايت).", sdsBadType:"يُسمح فقط بملفات PDF.",
-    sdsError:"فشل الرفع. حاول مرة أخرى.", sdsRemoveConfirm:"حذف هذا المستند؟",
-    sdsKind:"نوع المستند", sdsKindVib:"صحيفة السلامة", sdsKindTech:"الورقة الفنية", sdsKindManual:"تعليمات الاستخدام", sdsKindOther:"أخرى",
-  },
-  fr: {
-    welcome:"Bienvenue", chooseShelf:"Choisissez une armoire", chooseSection:"Choisissez un bac",
-    chemicals:"Armoire à liquides", flammables:"Substances inflammables",
-    normalStock:"Stock normal", consumables:"Consommables",
-    worker:"Employé", manager:"Manager", admin:"Administrateur",
-    logout:"Déconnexion", back:"Retour", close:"Fermer",
-    password:"Mot de passe", enterPw:"Entrez le mot de passe",
-    wrongPw:"Mot de passe incorrect", blockedMsg:"Bloqué — attendez 30 secondes", blockedBtn:"Bloqué...",
-    loginWorker:"Connexion employé", loginManager:"Connexion manager",
-    full:"plein", none:"--",
-    maxExceeded:"Maximum dépassé !", almostFull:"Presque plein — vérifiez avant de remplir",
-    toOrder:"à commander", inStock:"en stock", present:"présent",
-    reportEmpty:"Signaler bac vide", reportStockEmpty:"Signaler stock vide",
-    sectionFill:"Occupation du bac", per:"par", reorder:"recommander",
-    bottles:"bouteilles", bottlesSingle:"bouteille", max:"max", pieces:"pièces",
-    ofTarget:(done,total)=>`${done} sur ${total} produits à l'objectif`,
-    flammable:"Inflammable", corrosive:"Corrosif",
-    persons:"personnes", person:"personne", pinRequired:"PIN requis",
-    manualBtn:"Manuel", manualWorker:"Pour les employés", manualWorkerSub:"Mettre à jour le stock & se connecter",
-    manualManager:"Pour les managers", manualManagerSub:"Aperçu, rapports & gestion",
-    qrPrint:"Imprimer le code QR", qrPrintBtn:"Imprimer",
-    qrAccessVia:"Accès via code QR", qrScanToOpen:"Scannez pour ouvrir l'application", qrAppName:"Application de gestion des stocks",
-    qrStep1:"Ouvrez l'appareil photo de votre téléphone", qrStep2:"Dirigez la caméra vers le code QR", qrStep3:"Appuyez sur la notification pour vous connecter",
-    stockManagement:"Gestion des stocks",
-    selectName:"Sélectionnez votre nom", noAccounts:"Aucun compte disponible.",
-    tabStatus:"Statut", tabConsumption:"Consommation", tabLog:"Journal",
-    trays:"Bacs", monthlyReport:"Récapitulatif mensuel", createOrderReport:"Créer un rapport de commande",
-    colProduct:"Produit", colOrder:"Commander",
-    monthlyConsumption:"Consommation mensuelle", recordMonthly:"Enregistrer le relevé mensuel", saving:"Enregistrement...",
-    recordMonthlyHint:"Appuyez sur enregistrer le relevé mensuel au début du mois.",
-    consumptionVs:"Consommation par rapport à", noConsumption:"Aucune consommation", monthlyRecords:"Relevés mensuels",
-    productsToReorder:(n)=>`${n} produits à recommander`, allStockOk:"Tous les stocks à l'objectif !",
-    recipients:"Destinataires", noRecipients:"Aucun destinataire. Configurez-les via Administration.",
-    sendByEmail:"Envoyer par e-mail", copyReport:"Copier le rapport", copied:"Copié !", downloadPdf:"Télécharger le PDF",
-    repTitle:"RAPPORT DE COMMANDE", repDate:"Date", repLocation:"Emplacement", repNormalStock:"STOCK NORMAL", repTotal:"TOTAL À COMMANDER", repBottles:"bouteilles", repOk:"ok", repTarget:"objectif",
-    repShareTitle:"Rapport de commande", repBottle:"bouteille", repToOrder:(n)=>`À commander (${n}):`, repAllOk:"Tout le stock au niveau — rien à commander 🎉", repRestOk:"Reste du stock au niveau", shareWhatsapp:"Partager via WhatsApp", repSecLiquids:"Armoire à liquides", repSecNormal:"Stock normal",
-    activityLog:"Journal d'activité", clearLog:"Effacer", confirmClearLog:"Effacer tout le journal ? Cette action est irréversible.", noActivity:"Aucune activité enregistrée pour le moment.", roleSystem:"Système",
-    partNone:"aucune", confirmEmptyTray:(label)=>`Signaler ${label} entièrement vide ? Cela met tous les produits à 0.`,
-    targetLabel:"objectif", confirmEmptyStock:"Signaler le stock normal entièrement vide ? Cela met tous les articles à 0.",
-    enterPin:"Entrez le PIN", wrongPin:"PIN incorrect",
-    tabProducts:"Produits", tabStock:"Stock", tabEmail:"E-mail", tabAccounts:"Comptes", tabSettings:"Paramètres",
-    admLabel:"Libellé", admSublabel:"Sous-libellé", admMaxLiters:"Litres max", admColor:"Couleur",
-    on:"ON", off:"OFF", admGhsCategory:"Catégorie GHS", admNone:"— Aucune —",
-    save:"Enregistrer", saved:"Enregistré !",
-    admNewProduct:"Nouveau produit", admProduct:"Produit", admName:"Nom", admUnit:"Unité",
-    admNewItem:"Nouvel article", admItem:"Article", admDept:"Département", admRecipient:"Destinataire",
-    admNewPw:"Nouveau mot de passe", admLeaveEmpty:"Laisser vide = inchangé", admRole:"Rôle",
-    admNewPerson:"Nouvelle personne", admAccount:"Compte",
-    admAppName:"Nom de l'application", admLocation:"Emplacement", admNewPin:"Nouveau PIN (4 chiffres)",
-    langLabel:"🇫🇷 Français",
-    fbBtn:"Signaler un problème", fbTitle:"Signaler un problème ou une idée",
-    fbIntro:"Quelque chose de cassé, une question ou une idée d'amélioration ? Dites-le ici — nous nous en occupons.",
-    fbType:"Type de signalement", fbProblem:"Problème", fbProblemSub:"Quelque chose est cassé / ne marche pas",
-    fbChange:"Modification / idée", fbChangeSub:"Suggestion ou amélioration",
-    fbName:"Votre nom (facultatif)", fbNamePlaceholder:"Ex. Sanne",
-    fbMessage:"Description", fbMessagePlaceholder:"Décrivez le plus clairement possible le problème ou votre proposition…",
-    fbSend:"Envoyer", fbSending:"Envoi…", fbRequired:"Veuillez d'abord saisir une description.",
-    fbThanksTitle:"Merci !", fbThanksMsg:"Votre signalement a été envoyé. Nous nous en occupons.", fbNew:"Envoyer un autre signalement",
-    sds:"FDS", sdsTitle:"Fiche de données de sécurité", sdsFor:"FDS pour",
-    sdsNone:"Aucune FDS téléchargée.", sdsView:"Consulter", sdsDownload:"Télécharger",
-    sdsUpload:"Téléverser la FDS", sdsAdd:"Ajouter une FDS", sdsReplace:"Remplacer la FDS", sdsRemove:"Supprimer la FDS",
-    sdsUploading:"Téléversement…", sdsUploadedBy:"Téléversé par", sdsUploadedOn:"le",
-    sdsTooBig:"Fichier trop volumineux (max 10 Mo).", sdsBadType:"Seuls les fichiers PDF sont autorisés.",
-    sdsError:"Échec du téléversement. Réessayez.", sdsRemoveConfirm:"Supprimer ce document ?",
-    sdsKind:"Type de document", sdsKindVib:"FDS", sdsKindTech:"Fiche technique", sdsKindManual:"Instructions", sdsKindOther:"Autre",
-  },
-};
-const tr = (lang, key, ...args) => {
-  const v = TRANS[lang]?.[key] ?? TRANS.nl[key] ?? key;
-  return typeof v === "function" ? v(...args) : v;
-};
-const LOCALE = {nl:"nl-NL", en:"en-GB", ar:"ar-EG", fr:"fr-FR"};
-const dloc = (lang) => LOCALE[lang] || "nl-NL";
-
-const DEF = {
-  appName: "Voorraadbeheer", location: "Ruinerwold",
-  adminPin: "9999", checkAlertDays: 14, shelfAlertPct: 80,
-  features: { consumptionTracking: true, emailReports: true, partialBottles: true },
-  accounts: [
-    { id:1, username:"Medewerker 1", password:"123456", role:"worker",  active:true },
-    { id:2, username:"Manager",      password:"654321", role:"manager", active:true },
-  ],
-  emails: [
-    { id:1, dept:"Inkoop",     email:"inkoop@bedrijf.nl",     active:true },
-    { id:2, dept:"Facilitair", email:"facilitair@bedrijf.nl", active:true },
-  ],
-  shelves: [
-    { id:1, label:"Lekbak 1", sublabel:"Bovenste lekbak",  maxLiters:30, color:"#3D8B2E", category:"flammable", active:true, products:[
-      {id:"1-1",name:"Glasreiniger",vol:0.75,target:5},{id:"1-2",name:"Ontvetter spray",vol:1.0,target:4},
-      {id:"1-3",name:"Desinfectie middel",vol:1.0,target:4},{id:"1-4",name:"Badkamerreiniger",vol:2.0,target:3},{id:"1-5",name:"RVS reiniger",vol:0.5,target:5},
-    ]},
-    { id:2, label:"Lekbak 2", sublabel:"Middelste lekbak", maxLiters:30, color:"#5AAE3C", category:"flammable", active:true, products:[
-      {id:"2-1",name:"Allesreiniger",vol:5.0,target:2},{id:"2-2",name:"Vloeibare zeep",vol:2.0,target:3},
-      {id:"2-3",name:"Handzeep",vol:1.0,target:3},{id:"2-4",name:"Schuurmiddel",vol:1.0,target:3},{id:"2-5",name:"Sanitairreiniger",vol:2.0,target:2},
-    ]},
-    { id:3, label:"Lekbak 3", sublabel:"Derde lekbak",    maxLiters:26, color:"#78C74E", category:"corrosive", active:true, products:[
-      {id:"3-1",name:"Green'r Indus",vol:5.0,target:1},{id:"3-2",name:"Green'r Hand dish",vol:1.0,target:4},
-      {id:"3-3",name:"Green'r Wind",vol:0.75,target:8},{id:"3-4",name:"Green'r Easy All",vol:0.75,target:3},
-      {id:"3-5",name:"Green'r Sanit",vol:0.75,target:2},{id:"3-6",name:"Green'r WC",vol:0.75,target:3},{id:"3-7",name:"Phago'derm Sensitive",vol:5.0,target:1},
-    ]},
-    { id:4, label:"Lekbak 4", sublabel:"Onderste lekbak", maxLiters:33, color:"#A8DE52", category:"corrosive", active:true, products:[
-      {id:"4-1",name:"Keukenreiniger",vol:1.0,target:4},{id:"4-2",name:"Vetoplosser",vol:2.0,target:3},
-      {id:"4-3",name:"Roestvrijstaal spray",vol:0.5,target:5},{id:"4-4",name:"Ontkalker",vol:1.0,target:3},{id:"4-5",name:"Multireiniger",vol:5.0,target:2},
-    ]},
-  ],
-  // Normale voorraad — op stuks, geen lekbakken
-  voorraad: [
-    { id:"v-1", name:"WC papier",           unit:"rol",  target:48, active:true },
-    { id:"v-2", name:"Handdoekrollen",      unit:"rol",  target:20, active:true },
-    { id:"v-3", name:"Latex handschoenen",  unit:"doos", target:10, active:true },
-    { id:"v-4", name:"Haarnetjes",          unit:"doos", target:5,  active:true },
-    { id:"v-5", name:"Baardnetjes",         unit:"doos", target:5,  active:true },
-  ],
-};
-
-// Verse config voor een nog niet ingerichte locatie: kopie van DEF met de juiste locatienaam.
-const defCfgFor = (locId) => { const c=JSON.parse(JSON.stringify(DEF)); c.location=locName(locId); return c; };
-
-const CAT = {
-  flammable:{label:"Ontvlambaar",icon:"🔥",ghs:"GHS02",color:"#E8632A",bg:"#FDF0EB"},
-  corrosive:{label:"Corrosief",icon:"⚗️",ghs:"GHS05",color:"#7C3A9A",bg:"#F5EEFF"},
-};
-
-const aSh  = (cfg) => cfg.shelves.filter(s=>s.active);
-const aPr  = (sh)  => sh.products;
-const defI = (cfg) => {
-  const i={};
-  cfg.shelves.forEach(s=>s.products.forEach(p=>{i[p.id]={full:0,partial:0};}));
-  (cfg.voorraad||[]).forEach(p=>{i[p.id]={count:0};});
-  return i;
-};
-const pL   = (p,inv) => { const s=inv[p.id]||{full:0,partial:0}; return s.full*p.vol+(s.partial>0?p.vol*s.partial/100:0); };
-const shL  = (sh,inv) => aPr(sh).reduce((s,p)=>s+pL(p,inv),0);
-const shP  = (sh,inv) => Math.min((shL(sh,inv)/sh.maxLiters)*100,100);
-const fCol = (pct) => pct>=90?"#D44A2A":pct>=70?"#E8A020":pct>=30?"#3D8B2E":"#5AB8E8";
-const uCol = (n,t) => n===0?"#3D8B2E":n/t>=1?"#D44A2A":n/t>=0.5?"#E8A020":"#F5C842";
-
-const S = {
-  card:{background:"#fff",border:"2.5px solid #C8E6B0",borderRadius:18,padding:16,boxShadow:"0 4px 16px rgba(61,139,46,0.12)",marginBottom:12},
-  btn:{border:"none",borderRadius:14,cursor:"pointer",fontFamily:"Nunito,sans-serif",fontWeight:800,padding:"13px 20px",fontSize:14},
-  inp:{background:"#F5FBF0",border:"2px solid #C8E6B0",borderRadius:10,padding:"10px 12px",fontFamily:"Nunito,sans-serif",fontSize:13,fontWeight:700,color:"#1A3A0A",outline:"none",width:"100%",boxSizing:"border-box"},
-  lbl:{fontSize:10,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:1,display:"block",marginBottom:4},
-};
-const GF=`@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap');
-.mgr-grid{display:grid;grid-template-columns:1fr;gap:10px;}
-@media(min-width:600px){.mgr-grid{grid-template-columns:1fr 1fr;}}
-/* Fix 3 — Responsive containers */
-.resp-wide{width:100%;margin:0 auto;}
-@media(min-width:640px){
-  .resp-wide{max-width:760px!important;padding-left:20px!important;padding-right:20px!important;}
-  /* Fix 2 — Admin tabs: wrap op desktop i.p.v. scrollen */
-  .admin-tabs-bar{overflow-x:visible!important;flex-wrap:wrap!important;}
-  /* Fix 1 — Modals: floating dialog op desktop */
-  .modal-overlay{justify-content:center!important;padding:32px 16px!important;overflow-y:auto!important;align-items:flex-start!important;}
-  .modal-box{min-height:0!important;border-radius:20px!important;box-shadow:0 28px 64px rgba(0,0,0,0.5)!important;overflow-y:auto!important;max-height:90vh!important;}
-}
-/* Fix 5 — Grotere labels op desktop */
-@media(min-width:640px){
-  .lbl-responsive{font-size:11px!important;letter-spacing:0.5px!important;}
-  .text-sm-responsive{font-size:12px!important;}
-}
-/* Fix 6 — Admin formulieren: 3 kolommen op desktop */
-@media(min-width:640px){
-  .admin-grid-2{grid-template-columns:1fr 1fr!important;}
-  .admin-grid-3{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:8px!important;}
-}
-/* Fix 4 — Hover effecten (desktop) */
-.card-hover{transition:transform .15s ease,filter .15s ease;}
-.card-hover:hover{transform:translateY(-4px);filter:brightness(1.07);}
-.btn-hover{transition:opacity .12s ease,transform .12s ease;}
-.btn-hover:hover{opacity:.88;transform:translateY(-1px);}
-.login-card-hover{transition:box-shadow .15s ease,border-color .15s ease;}
-.login-card-hover:hover{box-shadow:0 8px 28px rgba(61,139,46,0.2)!important;}
-@page{size:A4;margin:0;}
-@media print{
-  body{visibility:hidden!important;}
-  #qr-a4-print,#qr-a4-print *{visibility:visible!important;}
-  #qr-a4-print{position:absolute!important;left:0!important;top:0!important;width:210mm!important;min-height:297mm!important;box-shadow:none!important;}
-  .qr-no-print{display:none!important;}
-}`;
-
-function HelloFreshLogo({size=32}){
-  return(
-    <img src={`${import.meta.env.BASE_URL}hellofresh-logo.svg`} height={size} width={size*1.5} style={{display:"inline-block",flexShrink:0,objectFit:"contain"}} alt="HelloFresh"/>
-  );
-}
+import { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense } from "react";
+const QRCodeSVG = lazy(() => import("qrcode.react").then(m => ({ default: m.QRCodeSVG })));
+import { supabase, ls, dbSet, verifyPw, isHashed, LOCATIONS, COUNTRIES, locName, LEGACY_LOC, keyFor, HQ_PIN_HASH, migrateHashes } from "./lib/db.js";
+import { TRANS, tr, LOCALE, dloc } from "./i18n/trans.js";
+import { DEF, defCfgFor, CAT, aSh, aPr, defI, pL, shL, shP, fCol, uCol, orderSummary } from "./constants.js";
+import { S, GF } from "./styles.js";
+import { useFocusTrap, ConfirmModal, HelloFreshLogo, PinPad, Hdr, Ftr } from "./components/shared.jsx";
+import SdsControl from "./components/SdsControl.jsx";
+import FeedbackModal from "./components/FeedbackModal.jsx";
+import LocationPicker from "./components/LocationPicker.jsx";
 
 export default function App() {
   const [cfg,setCfg]       = useState(null);
@@ -490,6 +39,7 @@ export default function App() {
     try{ const q=new URLSearchParams(window.location.search).get("loc"); return LOCATIONS.some(l=>l.id===q)?q:null; }catch{ return null; }
   });
   const [showHQ,setShowHQ] = useState(false);   // HQ-overzicht (alle locaties)
+  const [supabaseOffline,setSupabaseOffline] = useState(false);
 
   // Data laden per locatie. Draait opnieuw zodra een andere locatie wordt gekozen.
   useEffect(()=>{
@@ -516,6 +66,7 @@ export default function App() {
         setSdsMap(sds?.value||ls.get(kSds)||{});
       }catch{
         if(cancelled)return;
+        setSupabaseOffline(true);
         const raw=ls.get(kCfg)||defCfgFor(locId);
         const c=await migrateHashes(raw,locId);
         setCfg(c);
@@ -524,10 +75,11 @@ export default function App() {
         setAuditLog(ls.get(kAudit)||[]);
         setSdsMap(ls.get(kSds)||{});
       }
-      if(!cancelled)setLoading(false);
+      if(!cancelled){setLoading(false);setSupabaseOffline(false);}
     })();
+    const rtKeys=[kCfg,kInv,kSnap,kAudit,kSds].join(",");
     const ch=supabase.channel("app_state_rt_"+locId)
-      .on("postgres_changes",{event:"*",schema:"public",table:"app_state"},(p)=>{
+      .on("postgres_changes",{event:"*",schema:"public",table:"app_state",filter:`key=in.(${rtKeys})`},(p)=>{
         if(!p.new)return;
         const {key,value}=p.new;
         if(key===kCfg)setCfg(value);
@@ -551,7 +103,14 @@ export default function App() {
     setInv(prev=>{
       const current = prev[pid] || (field==="count" ? {count:0} : {full:0,partial:0});
       const next={...prev,[pid]:{...current,[field]:val}};
-      dbSet(keyFor("vkast-inv",locId),next);
+      // localStorage direct bijwerken (offline fallback)
+      ls.set(keyFor("vkast-inv",locId),next);
+      // atomische patch: alleen het gewijzigde veld naar Supabase
+      fetch(import.meta.env.VITE_EDGE_URL,{
+        method:"POST",
+        headers:{"Content-Type":"application/json","x-app-secret":import.meta.env.VITE_EDGE_SECRET,"x-action":"inventory-patch"},
+        body:JSON.stringify({key:keyFor("vkast-inv",locId),productId:pid,field,value:val}),
+      }).catch(()=>{});
       return next;
     });
   },[locId]);
@@ -592,6 +151,15 @@ export default function App() {
   const saveSnaps = useCallback((n)=>{ setSnaps(n); dbSet(keyFor("vkast-snap",locId),n); },[locId]);
   const clearAudit = useCallback(()=>{ setAuditLog([]); dbSet(keyFor("vkast-audit",locId),[]); },[locId]);
 
+  const shelvesMemo   = useMemo(() => cfg ? aSh(cfg) : [], [cfg]);
+  const vProductsMemo = useMemo(() => (cfg?.voorraad||[]).filter(p=>p.active!==false), [cfg]);
+  const totalOrderMemo = useMemo(() => {
+    if (!shelvesMemo.length || !inv) return 0;
+    const shOrder = shelvesMemo.reduce((s,sh)=>s+aPr(sh).reduce((ss,p)=>ss+Math.max(0,p.target-(inv[p.id]||{full:0}).full),0),0);
+    const voOrder = vProductsMemo.reduce((s,p)=>s+Math.max(0,p.target-(inv[p.id]||{count:0}).count),0);
+    return shOrder+voOrder;
+  }, [shelvesMemo, vProductsMemo, inv]);
+
   const openCab  = ()=>{ setScreen("open"); };
   const closeCab = ()=>{ setScreen("home"); };
   const activeShelf = screen.startsWith("shelf-")?aSh(cfg||DEF).find(s=>s.id===parseInt(screen.split("-")[1])):null;
@@ -612,44 +180,29 @@ export default function App() {
   if (showAdmin) return (
     <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#1A1A2E,#16213E)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
       <style>{GF}</style>
-      <Hdr cfg={cfg} isAdmin lang={lang} onBack={()=>{setShowAdmin(false);setAdminPin("");setAdminErr(false);}} backLabel={tr(lang,"back")}/>
+      <Hdr cfg={cfg} isAdmin lang={lang} onBack={()=>{setShowAdmin(false);setAdminPin("");setAdminErr(false);}} backLabel={tr(lang,"back")} offline={supabaseOffline}/>
       <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
         <div style={{background:"#1A1A2E",border:"2px solid #7C5CBF",borderRadius:24,padding:32,width:"100%",maxWidth:300,textAlign:"center"}}>
           <div style={{fontSize:40,marginBottom:10}}>🔧</div>
           <div style={{fontSize:20,fontWeight:900,color:"#A07EE0",marginBottom:4}}>{tr(lang,"admin")}</div>
           <div style={{fontSize:10,color:"#5A4A7A",letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>{tr(lang,"enterPin")}</div>
-          {adminErr&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:10}}>{tr(lang,"wrongPin")}</div>}
-          <div style={{display:"flex",justifyContent:"center",gap:12,marginBottom:20}}>
-            {[0,1,2,3].map(i=><div key={i} style={{width:16,height:16,borderRadius:"50%",border:`2.5px solid ${adminPin.length>i?"#7C5CBF":"#3D2A7A"}`,background:adminPin.length>i?"#7C5CBF":"transparent"}}/>)}
-          </div>
-          {pinLocked&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:10}}>{tr(lang,"blockedMsg")}</div>}
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
-            {[1,2,3,4,5,6,7,8,9].map(n=>(
-              <button key={n} style={{height:52,background:"#16213E",border:"2px solid #3D2A7A",borderRadius:12,color:pinLocked?"#3D2A7A":"#C0B0E8",fontFamily:"Nunito,sans-serif",fontSize:20,fontWeight:700,cursor:pinLocked?"not-allowed":"pointer"}}
-                onClick={()=>{
-                  if(adminPin.length>=4||pinLocked)return;
-                  const nx=adminPin+n; setAdminPin(nx);
-                  if(nx.length===4)setTimeout(async()=>{
-                    const h=await hashPw(nx);
-                    if(h===cfg.adminPin){setRole("admin");setCurrentUser("Beheerder");setShowAdmin(false);setAdminPin("");setAdminErr(false);setPinAttempts(0);}
-                    else{const a=pinAttempts+1;setPinAttempts(a);if(a>=3){setPinLocked(true);setTimeout(()=>{setPinLocked(false);setPinAttempts(0);},30000);}setAdminErr(true);setAdminPin("");}
-                  },150);
-                }}>{n}</button>
-            ))}
-            <div/>
-            <button style={{height:52,background:"#16213E",border:"2px solid #3D2A7A",borderRadius:12,color:pinLocked?"#3D2A7A":"#C0B0E8",fontFamily:"Nunito,sans-serif",fontSize:20,fontWeight:700,cursor:pinLocked?"not-allowed":"pointer"}}
-              onClick={()=>{
-                if(adminPin.length>=4||pinLocked)return;
-                const nx=adminPin+"0"; setAdminPin(nx);
-                if(nx.length===4)setTimeout(async()=>{
-                  const h=await hashPw(nx);
-                  if(h===cfg.adminPin){setRole("admin");setCurrentUser("Beheerder");setShowAdmin(false);setAdminPin("");setAdminErr(false);setPinAttempts(0);}
-                  else{const a=pinAttempts+1;setPinAttempts(a);if(a>=3){setPinLocked(true);setTimeout(()=>{setPinLocked(false);setPinAttempts(0);},30000);}setAdminErr(true);setAdminPin("");}
-                },150);
-              }}>0</button>
-            <button style={{height:52,background:"#16213E",border:"2px solid #3D2A7A",borderRadius:12,color:"#9B8EC4",fontFamily:"Nunito,sans-serif",fontSize:16,cursor:"pointer"}}
-              onClick={()=>{setAdminPin(p=>p.slice(0,-1));setAdminErr(false);}}>DEL</button>
-          </div>
+          <PinPad
+            pin={adminPin}
+            locked={pinLocked}
+            err={adminErr}
+            errMsg={tr(lang,"wrongPin")}
+            lockedMsg={tr(lang,"blockedMsg")}
+            theme="admin"
+            onDel={()=>{setAdminPin(p=>p.slice(0,-1));setAdminErr(false);}}
+            onDigit={(d)=>{
+              if(adminPin.length>=4||pinLocked)return;
+              const nx=adminPin+d; setAdminPin(nx);
+              if(nx.length===4)setTimeout(async()=>{
+                if(await verifyPw(nx,cfg.adminPin)){setRole("admin");setCurrentUser("Beheerder");setShowAdmin(false);setAdminPin("");setAdminErr(false);setPinAttempts(0);}
+                else{const a=pinAttempts+1;setPinAttempts(a);if(a>=3){setPinLocked(true);setTimeout(()=>{setPinLocked(false);setPinAttempts(0);},30000);}setAdminErr(true);setAdminPin("");}
+              },150);
+            }}
+          />
         </div>
       </div>
       <Ftr isAdmin/>
@@ -689,21 +242,21 @@ export default function App() {
 
           {/* Rolknoppen */}
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,width:"100%",maxWidth:420}}>
-            <div className="card-hover" onClick={()=>{setLoginRole("worker");setLoginErr("");}} style={{cursor:"pointer",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(61,139,46,0.28)"}}>
+            <button type="button" className="card-hover" onClick={()=>{setLoginRole("worker");setLoginErr("");}} style={{font:"inherit",width:"100%",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(61,139,46,0.28)"}}>
               <div style={{fontSize:34,marginBottom:8}}>👥</div>
               <div style={{fontSize:13,fontWeight:900,color:"#fff",lineHeight:1.2}}>{tr(lang,"worker")}</div>
               <div style={{fontSize:10,color:"rgba(255,255,255,0.75)",marginTop:4}}>{workerAccs.length} {workerAccs.length===1?tr(lang,"person"):tr(lang,"persons")}</div>
-            </div>
-            <div className="card-hover" onClick={()=>{setLoginRole("manager");setLoginErr("");}} style={{cursor:"pointer",background:"linear-gradient(160deg,#E8632A,#C44820)",border:"3px solid #A03010",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(232,99,42,0.28)"}}>
+            </button>
+            <button type="button" className="card-hover" onClick={()=>{setLoginRole("manager");setLoginErr("");}} style={{font:"inherit",width:"100%",background:"linear-gradient(160deg,#E8632A,#C44820)",border:"3px solid #A03010",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(232,99,42,0.28)"}}>
               <div style={{fontSize:34,marginBottom:8}}>📊</div>
               <div style={{fontSize:13,fontWeight:900,color:"#fff",lineHeight:1.2}}>{tr(lang,"manager")}</div>
               <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:4}}>{managerAccs.length} {managerAccs.length===1?tr(lang,"person"):tr(lang,"persons")}</div>
-            </div>
-            <div className="card-hover" onClick={()=>setShowAdmin(true)} style={{cursor:"pointer",background:"linear-gradient(160deg,#6A4ABF,#5A3A9F)",border:"3px solid #4A2A8F",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(106,74,191,0.28)"}}>
+            </button>
+            <button type="button" className="card-hover" onClick={()=>setShowAdmin(true)} style={{font:"inherit",width:"100%",background:"linear-gradient(160deg,#6A4ABF,#5A3A9F)",border:"3px solid #4A2A8F",borderRadius:18,padding:"22px 8px",textAlign:"center",boxShadow:"0 6px 20px rgba(106,74,191,0.28)"}}>
               <div style={{fontSize:34,marginBottom:8}}>🔧</div>
               <div style={{fontSize:13,fontWeight:900,color:"#fff",lineHeight:1.2}}>{tr(lang,"admin")}</div>
               <div style={{fontSize:11,color:"rgba(255,255,255,0.75)",marginTop:4}}>{tr(lang,"pinRequired")}</div>
-            </div>
+            </button>
           </div>
 
           {/* Handleiding knop */}
@@ -790,22 +343,20 @@ export default function App() {
   if (role==="admin") return (
     <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#1A1A2E,#0F3460)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
       <style>{GF}</style>
-      <Hdr cfg={cfg} isAdmin role="admin" onBack={()=>{setRole(null);setCurrentUser(null);setLang("nl");}} backLabel={tr(lang,"logout")}/>
+      <Hdr cfg={cfg} isAdmin role="admin" onBack={()=>{setRole(null);setCurrentUser(null);setLang("nl");}} backLabel={tr(lang,"logout")} offline={supabaseOffline}/>
       <AdminPanel cfg={cfg} onSave={saveCfg} lang={lang} sdsMap={sdsMap} locId={locId} onSdsSaved={saveSds} onSdsRemoved={removeSds} uploadedBy={currentUser}/>
       <Ftr isAdmin/>
     </div>
   );
 
   if (role==="manager") {
-    const shelves=aSh(cfg);
-    const vProducts=(cfg.voorraad||[]).filter(p=>p.active!==false);
-    const totalOrderShelves=shelves.reduce((s,sh)=>s+aPr(sh).reduce((ss,p)=>ss+Math.max(0,p.target-(inv[p.id]||{full:0}).full),0),0);
-    const totalOrderVoorraad=vProducts.reduce((s,p)=>s+Math.max(0,p.target-(inv[p.id]||{count:0}).count),0);
-    const totalOrder=totalOrderShelves+totalOrderVoorraad;
+    const shelves=shelvesMemo;
+    const vProducts=vProductsMemo;
+    const totalOrder=totalOrderMemo;
     return (
       <div dir={lang==="ar"?"rtl":"ltr"} style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center",paddingBottom:40}}>
         <style>{GF}</style>
-        <Hdr cfg={cfg} role="manager" userName={currentUser} lang={lang} onBack={()=>{setRole(null);setCurrentUser(null);setLang("nl");}} backLabel={tr(lang,"logout")}/>
+        <Hdr cfg={cfg} role="manager" userName={currentUser} lang={lang} onBack={()=>{setRole(null);setCurrentUser(null);setLang("nl");}} backLabel={tr(lang,"logout")} offline={supabaseOffline}/>
         <div className="resp-wide" style={{display:"flex",gap:8,width:"100%",maxWidth:440,padding:"12px 14px 0",margin:"0 auto"}}>
           {[["status",tr(lang,"tabStatus")],["verbruik",tr(lang,"tabConsumption")],["logboek",tr(lang,"tabLog")]].map(([t,l])=>(
             <button key={t} onClick={()=>setMgrTab(t)}
@@ -933,7 +484,7 @@ export default function App() {
     );
   }
 
-  const wSh=aSh(cfg);
+  const wSh=shelvesMemo;
   const isVoorraad = screen==="voorraad";
   const backLabel = activeShelf ? tr(lang,"close") : (screen==="open") ? tr(lang,"close") : isVoorraad ? tr(lang,"close") : null;
   const onBack    = activeShelf ? ()=>setScreen("open")
@@ -944,7 +495,7 @@ export default function App() {
   return (
     <div dir={lang==="ar"?"rtl":"ltr"} style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,Arial,sans-serif",display:"flex",flexDirection:"column",alignItems:"center",paddingBottom:40}}>
       <style>{GF}</style>
-      <Hdr cfg={cfg} role="worker" userName={currentUser} lang={lang} onBack={onBack} backLabel={backLabel} onSwitch={()=>{setRole(null);setCurrentUser(null);setLang("nl");}}/>
+      <Hdr cfg={cfg} role="worker" userName={currentUser} lang={lang} onBack={onBack} backLabel={backLabel} onSwitch={()=>{setRole(null);setCurrentUser(null);setLang("nl");}} offline={supabaseOffline}/>
 
       {screen==="home" && (
         <div style={{display:"flex",flexDirection:"column",alignItems:"center",padding:"22px 16px 0",width:"100%",gap:20}}>
@@ -952,7 +503,7 @@ export default function App() {
             {tr(lang,"chooseShelf")}
           </div>
           <div style={{display:"flex",gap:14,width:"100%",maxWidth:420,justifyContent:"center",flexWrap:"wrap"}}>
-            <div className="card-hover" onClick={openCab} style={{flex:"1 1 160px",maxWidth:200,cursor:"pointer",background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:16,padding:"20px 16px",textAlign:"center",boxShadow:"0 8px 28px rgba(61,139,46,0.25)"}}>
+            <button type="button" className="card-hover" onClick={openCab} style={{font:"inherit",flex:"1 1 160px",maxWidth:200,background:"linear-gradient(160deg,#4DA035,#3D8B2E)",border:"3px solid #2D7020",borderRadius:16,padding:"20px 16px",textAlign:"center",boxShadow:"0 8px 28px rgba(61,139,46,0.25)"}}>
               <div style={{marginBottom:8}}><HelloFreshLogo size={36}/></div>
               <div style={{fontSize:15,fontWeight:900,color:"#fff",letterSpacing:1}}>{tr(lang,"chemicals")}</div>
               <div style={{fontSize:9,color:"rgba(255,255,255,0.65)",marginTop:4,letterSpacing:1,textTransform:"uppercase"}}>{tr(lang,"flammables")}</div>
@@ -963,8 +514,8 @@ export default function App() {
                   </div>
                 );})}
               </div>
-            </div>
-            <div className="card-hover" onClick={()=>setScreen("voorraad")} style={{flex:"1 1 160px",maxWidth:200,cursor:"pointer",background:"linear-gradient(160deg,#4A80C4,#2D5FA0)",border:"3px solid #1E4A80",borderRadius:16,padding:"20px 16px",textAlign:"center",boxShadow:"0 8px 28px rgba(45,95,160,0.25)"}}>
+            </button>
+            <button type="button" className="card-hover" onClick={()=>setScreen("voorraad")} style={{font:"inherit",flex:"1 1 160px",maxWidth:200,background:"linear-gradient(160deg,#4A80C4,#2D5FA0)",border:"3px solid #1E4A80",borderRadius:16,padding:"20px 16px",textAlign:"center",boxShadow:"0 8px 28px rgba(45,95,160,0.25)"}}>
               <div style={{fontSize:36,marginBottom:8}}>📦</div>
               <div style={{fontSize:15,fontWeight:900,color:"#fff",letterSpacing:1}}>{tr(lang,"normalStock")}</div>
               <div style={{fontSize:9,color:"rgba(255,255,255,0.65)",marginTop:4,letterSpacing:1,textTransform:"uppercase"}}>{tr(lang,"consumables")}</div>
@@ -979,7 +530,7 @@ export default function App() {
                   );
                 })}
               </div>
-            </div>
+            </button>
           </div>
         </div>
       )}
@@ -1013,25 +564,6 @@ export default function App() {
   );
 }
 
-function Hdr({cfg,role,isAdmin,onBack,backLabel,onSwitch,userName,lang="nl"}){
-  const roleLabel = role==="admin"?tr(lang,"admin"):role==="manager"?tr(lang,"manager"):tr(lang,"worker");
-  return(
-    <div style={{width:"100%",background:isAdmin?"#0D0D1A":"#3D8B2E",padding:"11px 14px",display:"flex",alignItems:"center",gap:10,position:"sticky",top:0,zIndex:200,boxShadow:"0 3px 14px rgba(61,139,46,0.25)",overflowX:"auto",scrollbarWidth:"none"}}>
-      <span style={{flexShrink:0}}>{isAdmin?"🔧":<HelloFreshLogo size={36}/>}</span>
-      <div style={{flexShrink:0}}>
-        <div style={{fontSize:15,fontWeight:900,color:"#fff",whiteSpace:"nowrap"}}>{isAdmin?"Masterfile":cfg?.appName||"Voorraadbeheer"}</div>
-        <div style={{fontSize:9,color:"rgba(255,255,255,0.6)",whiteSpace:"nowrap"}}>{cfg?.location||""}</div>
-      </div>
-      <div style={{marginLeft:"auto",display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
-        {userName&&<div style={{fontSize:10,fontWeight:800,color:"#fff",whiteSpace:"nowrap",maxWidth:100,overflow:"hidden",textOverflow:"ellipsis"}}>{userName}</div>}
-        {role&&<div style={{fontSize:9,fontWeight:700,color:"rgba(255,255,255,0.85)",padding:"4px 8px",border:"1.5px solid rgba(255,255,255,0.3)",borderRadius:20,background:"rgba(255,255,255,0.12)",textTransform:"uppercase",whiteSpace:"nowrap"}}>{roleLabel}</div>}
-        {onBack&&<button style={{background:"rgba(255,255,255,0.15)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontFamily:"Nunito,Arial,sans-serif",fontSize:11,fontWeight:700,padding:"5px 11px",borderRadius:20,cursor:"pointer",whiteSpace:"nowrap"}} onClick={onBack}>{backLabel||tr(lang,"back")}</button>}
-        {!onBack&&role&&onSwitch&&<button style={{background:"rgba(255,255,255,0.15)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontFamily:"Nunito,Arial,sans-serif",fontSize:11,fontWeight:700,padding:"5px 11px",borderRadius:20,cursor:"pointer",whiteSpace:"nowrap"}} onClick={onSwitch}>{tr(lang,"logout")}</button>}
-      </div>
-    </div>
-  );
-}
-
 function AccountLoginPanel({accounts,onSuccess,onFail,loginErr,onClear,roleColor,lang="nl"}){
   const [selectedId,setSelectedId]=useState(accounts[0]?.id??null);
   const acc=accounts.find(a=>a.id===selectedId)||accounts[0];
@@ -1061,13 +593,14 @@ function LoginCard({acc,onSuccess,onFail,hasErr,onClear,hideRole,lang="nl"}){
   const [showPw,setShowPw]=useState(false);
   const [attempts,setAttempts]=useState(0);
   const [lockedUntil,setLockedUntil]=useState(0);
+  const lockTimerRef=useRef();
+  useEffect(()=>()=>clearTimeout(lockTimerRef.current),[]);
   const isMgr=acc.role==="manager";
   const isLocked=Date.now()<lockedUntil;
 
   const tryLogin=async()=>{
     if(isLocked)return;
-    const h=await hashPw(pass);
-    if(h===acc.password){
+    if(await verifyPw(pass,acc.password)){
       onSuccess();
     } else {
       const a=attempts+1;
@@ -1075,7 +608,8 @@ function LoginCard({acc,onSuccess,onFail,hasErr,onClear,hideRole,lang="nl"}){
       if(a>=3){
         const until=Date.now()+30000;
         setLockedUntil(until);
-        setTimeout(()=>{setAttempts(0);setLockedUntil(0);},30000);
+        clearTimeout(lockTimerRef.current);
+        lockTimerRef.current=setTimeout(()=>{setAttempts(0);setLockedUntil(0);},30000);
       }
       onFail();
     }
@@ -1093,14 +627,15 @@ function LoginCard({acc,onSuccess,onFail,hasErr,onClear,hideRole,lang="nl"}){
       {hideRole&&<div style={{fontSize:15,fontWeight:900,color:isMgr?"#E8632A":"#3D8B2E",marginBottom:14}}>{acc.username}</div>}
       {isLocked&&<div style={{background:"#FDEDEA",border:"1.5px solid #D44A2A",borderRadius:10,padding:"9px 12px",fontSize:12,fontWeight:700,color:"#D44A2A",marginBottom:10}}>{tr(lang,"blockedMsg")}</div>}
       {!isLocked&&hasErr&&<div style={{background:"#FDEDEA",border:"1.5px solid #D44A2A",borderRadius:10,padding:"9px 12px",fontSize:12,fontWeight:700,color:"#D44A2A",marginBottom:10}}>{tr(lang,"wrongPw")}{attempts>0?` (${attempts}/3)`:""}</div>}
-      <label className="lbl-responsive" style={S.lbl}>{tr(lang,"password")}</label>
+      <label htmlFor={"pw-"+acc.id} className="lbl-responsive" style={S.lbl}>{tr(lang,"password")}</label>
       <div style={{position:"relative",width:"100%"}}>
-        <input style={{...S.inp,paddingRight:44,marginBottom:12,borderColor:hasErr?"#D44A2A":"#C8E6B0"}}
+        <input id={"pw-"+acc.id} style={{...S.inp,paddingRight:44,marginBottom:12,borderColor:hasErr?"#D44A2A":"#C8E6B0"}}
           type={showPw?"text":"password"} placeholder={tr(lang,"enterPw")} value={pass}
+          autoComplete="current-password"
           disabled={isLocked}
           onChange={e=>{setPass(e.target.value);if(hasErr)onClear();}}
           onKeyDown={e=>e.key==="Enter"&&tryLogin()}/>
-        <button style={{position:"absolute",insetInlineEnd:8,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",fontSize:18,color:"#8AAA7A",padding:"8px",lineHeight:1}} onClick={()=>setShowPw(p=>!p)}>{showPw?"🙈":"👁"}</button>
+        <button aria-label={showPw?tr(lang,"hidePw"):tr(lang,"showPw")} style={{position:"absolute",insetInlineEnd:8,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",fontSize:18,color:"#8AAA7A",padding:"8px",lineHeight:1}} onClick={()=>setShowPw(p=>!p)}>{showPw?"🙈":"👁"}</button>
       </div>
       <button style={{...S.btn,width:"100%",background:isLocked?"#ccc":isMgr?"linear-gradient(135deg,#E8632A,#D44A20)":"linear-gradient(135deg,#3D8B2E,#5AAE3C)",color:"#fff",letterSpacing:1,textTransform:"uppercase",cursor:isLocked?"not-allowed":"pointer"}} onClick={tryLogin} disabled={isLocked}>
         {isLocked?tr(lang,"blockedBtn"):isMgr?tr(lang,"loginManager"):tr(lang,"loginWorker")}
@@ -1115,7 +650,7 @@ function Cabinet({shelves,inv,onSelect}){
       {shelves.map(sh=>{
         const pct=shP(sh,inv);const col=fCol(pct);
         return(
-          <div className="btn-hover" key={sh.id} style={{display:"flex",alignItems:"stretch",height:84,borderBottom:"3px solid #C8E6B0",position:"relative",cursor:"pointer"}} onClick={()=>onSelect(sh)}>
+          <button type="button" className="btn-hover" key={sh.id} style={{font:"inherit",width:"100%",display:"flex",alignItems:"stretch",height:84,borderBottom:"3px solid #C8E6B0",position:"relative",background:"none"}} onClick={()=>onSelect(sh)}>
             <div style={{position:"absolute",bottom:0,left:0,right:0,height:`${pct}%`,background:col,opacity:0.25,transition:"height 0.8s"}}/>
             <div style={{position:"relative",zIndex:2,flex:1,display:"flex",flexDirection:"column",justifyContent:"center",padding:"8px 10px",gap:2}}>
               <div style={{fontSize:8,letterSpacing:2,color:"#8AAA7A",fontWeight:700,textTransform:"uppercase"}}>{sh.label}</div>
@@ -1126,7 +661,7 @@ function Cabinet({shelves,inv,onSelect}){
               <div style={{position:"absolute",bottom:0,left:0,right:0,height:`${pct}%`,background:col,borderRadius:"6px 6px 0 0",transition:"height 0.8s"}}/>
             </div>
             <div style={{position:"absolute",right:7,bottom:6,fontSize:8,letterSpacing:1,color:"#8AAA7A",fontWeight:700,zIndex:2}}>TAP</div>
-          </div>
+          </button>
         );
       })}
     </div>
@@ -1134,9 +669,12 @@ function Cabinet({shelves,inv,onSelect}){
 }
 
 function ShelfDetail({shelf,inv,onUpdate,cfg,onAudit,lang="nl",sdsMap={},locId}){
+  const [q,setQ]=useState("");
+  const [confirm,setConfirm]=useState(null);
   const total=shL(shelf,inv);const pct=Math.min((total/shelf.maxLiters)*100,100);const col=fCol(pct);
   const cat=shelf.category?CAT[shelf.category]:null;
   const catLabel = cat ? (shelf.category==="flammable"?tr(lang,"flammable"):tr(lang,"corrosive")) : null;
+  const prods=q?aPr(shelf).filter(p=>p.name.toLowerCase().includes(q.toLowerCase())):aPr(shelf);
   return(
     <div style={{width:"100%",maxWidth:420,padding:"14px 14px 0",margin:"0 auto"}}>
       <div style={S.card}>
@@ -1157,16 +695,30 @@ function ShelfDetail({shelf,inv,onUpdate,cfg,onAudit,lang="nl",sdsMap={},locId})
       </div>
       {pct>=100&&<div style={{background:"#FDEDEA",border:"2px solid #D44A2A",borderRadius:12,padding:"10px 14px",fontSize:13,fontWeight:800,color:"#D44A2A",marginBottom:12}}>{tr(lang,"maxExceeded")}</div>}
       {pct>=80&&pct<100&&<div style={{background:"#FFFBEA",border:"2px solid #F5C842",borderRadius:12,padding:"10px 14px",fontSize:13,fontWeight:800,color:"#A06A00",marginBottom:12}}>{tr(lang,"almostFull")}</div>}
-      {aPr(shelf).map(p=>{
+      <input
+        type="search" value={q} onChange={e=>setQ(e.target.value)}
+        placeholder={tr(lang,"searchQ")}
+        style={{width:"100%",boxSizing:"border-box",padding:"10px 14px",borderRadius:12,border:"2px solid #C8E6B0",fontFamily:"Nunito,sans-serif",fontSize:14,marginBottom:8,outline:"none",background:"#F5FBF0"}}
+      />
+      {prods.map(p=>{
         const st=inv[p.id]||{full:0,partial:0};
         const curL=pL(p,inv);
         const partL=st.partial>0?p.vol*st.partial/100:0;
         const remaining=shelf.maxLiters-(total-st.full*p.vol-partL);
         const maxFull=Math.min(p.target,Math.floor(remaining/p.vol));
+        const lowPct=p.target>0?Math.min((st.full/p.target)*100,100):100;
+        const critical=lowPct<30;
         return(
-          <div key={p.id} style={S.card}>
+          <div key={p.id} style={{...S.card,border:`2px solid ${critical?"#D44A2A":"#C8E6B0"}`,background:critical?"#FFF8F6":"#fff"}}>
             <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:12}}>
-              <div><div style={{fontSize:14,fontWeight:800}}>{p.name}</div><div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:2}}>{p.vol}L · {tr(lang,"max")} {p.target}</div><div style={{marginTop:6}}><SdsControl product={p} locId={locId} meta={sdsMap[p.id]} lang={lang}/></div></div>
+              <div>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <div style={{fontSize:14,fontWeight:800}}>{p.name}</div>
+                  {critical&&<span style={{fontSize:9,fontWeight:900,color:"#D44A2A",background:"#FDEDEA",padding:"2px 6px",borderRadius:8}}>⚠ {tr(lang,"lowStock")}</span>}
+                </div>
+                <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:2}}>{p.vol}L · {tr(lang,"max")} {p.target}</div>
+                <div style={{marginTop:6}}><SdsControl product={p} locId={locId} meta={sdsMap[p.id]} lang={lang}/></div>
+              </div>
               <div style={{textAlign:"right"}}><div style={{fontSize:14,fontWeight:800,color:curL>0?col:"#8AAA7A"}}>{curL.toFixed(2)}L</div></div>
             </div>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,flexWrap:"wrap"}}>
@@ -1178,6 +730,10 @@ function ShelfDetail({shelf,inv,onUpdate,cfg,onAudit,lang="nl",sdsMap={},locId})
                 </div>
                 <span style={{fontSize:11,color:"#8AAA7A",fontWeight:700}}>{tr(lang,"full")}</span>
               </div>
+              {st.full<maxFull&&<button style={{padding:"6px 12px",background:"#EEF9E6",border:"2px solid #3D8B2E",borderRadius:10,color:"#3D8B2E",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}}
+                onClick={()=>{onUpdate(p.id,"full",maxFull);onAudit?.(`${shelf.label} — ${p.name}: aangevuld naar doel ${maxFull} vol`);}}>
+                {tr(lang,"setToTarget")}
+              </button>}
               {cfg.features.partialBottles!==false&&(
                 <div style={{display:"flex",gap:5}}>
                   {[0,25,50,75].map(v=>{
@@ -1196,9 +752,11 @@ function ShelfDetail({shelf,inv,onUpdate,cfg,onAudit,lang="nl",sdsMap={},locId})
           </div>
         );
       })}
-      <button style={{width:"100%",padding:13,background:"#FDEDEA",border:"2px solid #D44A2A55",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}} onClick={()=>{if(!window.confirm(tr(lang,"confirmEmptyTray",shelf.label)))return;aPr(shelf).forEach(p=>{onUpdate(p.id,"full",0);onUpdate(p.id,"partial",0);});onAudit?.(`${shelf.label} leeg gemeld`)}}>
+      <button style={{width:"100%",padding:13,background:"#FDEDEA",border:"2px solid #D44A2A55",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}}
+        onClick={()=>setConfirm({msg:tr(lang,"confirmEmptyTray",shelf.label),fn:()=>{aPr(shelf).forEach(p=>{onUpdate(p.id,"full",0);onUpdate(p.id,"partial",0);});onAudit?.(`${shelf.label} leeg gemeld`);}})}>
         {tr(lang,"reportEmpty")}
       </button>
+      {confirm&&<ConfirmModal msg={confirm.msg} onConfirm={()=>{confirm.fn();setConfirm(null);}} onCancel={()=>setConfirm(null)}/>}
     </div>
   );
 }
@@ -1260,7 +818,7 @@ function ConsumptionView({inv,snaps,setSnaps,onSnap,cfg,lang="nl"}){
           {snaps.map(snap=>(
             <div key={snap.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid #EEF9E6"}}>
               <div><div style={{fontSize:13,fontWeight:700,color:"#4A6A3A"}}>{snap.label}</div><div style={{fontSize:10,color:"#8AAA7A",marginTop:1}}>{new Date(snap.date).toLocaleDateString(dloc(lang),{day:"2-digit",month:"short"})}</div></div>
-              <button style={{background:"#FDEDEA",border:"none",color:"#D44A2A",borderRadius:7,width:36,height:36,cursor:"pointer",fontSize:15}} onClick={()=>{const n=snaps.filter(s=>s.id!==snap.id);setSnaps(n);}}>×</button>
+              <button aria-label={tr(lang,"deleteSnap")} style={{background:"#FDEDEA",border:"none",color:"#D44A2A",borderRadius:7,width:36,height:36,cursor:"pointer",fontSize:15}} onClick={()=>{const n=snaps.filter(s=>s.id!==snap.id);setSnaps(n);}}>×</button>
             </div>
           ))}
         </div>
@@ -1273,6 +831,8 @@ function AdminPanel({cfg,onSave,lang="nl",sdsMap={},locId,onSdsSaved,onSdsRemove
   const [tab,setTab]=useState("lekbakken");
   const [local,setLocal]=useState(()=>JSON.parse(JSON.stringify(cfg)));
   const [saved,setSaved]=useState(false);
+  const savedTimerRef=useRef();
+  useEffect(()=>()=>clearTimeout(savedTimerRef.current),[]);
   const save=async()=>{
     const next=JSON.parse(JSON.stringify(local));
     for(const acc of next.accounts||[]){
@@ -1281,7 +841,7 @@ function AdminPanel({cfg,onSave,lang="nl",sdsMap={},locId,onSdsSaved,onSdsRemove
     }
     if(next._newPin&&next._newPin.trim()){next.adminPin=await hashPw(next._newPin.trim());}
     delete next._newPin;
-    onSave(next);setSaved(true);setTimeout(()=>setSaved(false),2500);
+    onSave(next);setSaved(true);clearTimeout(savedTimerRef.current);savedTimerRef.current=setTimeout(()=>setSaved(false),2500);
   };
   const upd=(path,val)=>{
     setLocal(prev=>{
@@ -1340,7 +900,7 @@ function AdminPanel({cfg,onSave,lang="nl",sdsMap={},locId,onSdsSaved,onSdsRemove
               <input style={{...ai,textAlign:"center"}} type="number" value={p.vol} min={0.1} step={0.25} onChange={e=>upd(`shelves.${si}.products.${pi}.vol`,parseFloat(e.target.value)||0.5)}/>
               <input style={{...ai,textAlign:"center"}} type="number" value={p.target} min={1} onChange={e=>upd(`shelves.${si}.products.${pi}.target`,parseInt(e.target.value)||1)}/>
               <SdsControl product={p} locId={locId} meta={sdsMap[p.id]} canEdit lang={lang} uploadedBy={uploadedBy} onSaved={onSdsSaved} onRemoved={onSdsRemoved}/>
-              <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.shelves[si].products.splice(pi,1);setLocal(n);}}>×</button>
+              <button aria-label={tr(lang,"removeProduct")} style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.shelves[si].products.splice(pi,1);setLocal(n);}}>×</button>
             </div>)}
             <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:11,marginTop:8,padding:8}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.shelves[si].products.push({id:`${sh.id}-${Date.now()}`,name:tr(lang,"admNewProduct"),vol:1.0,target:3});setLocal(n);}}>+ {tr(lang,"admProduct")}</button>
           </div>)}
@@ -1354,7 +914,7 @@ function AdminPanel({cfg,onSave,lang="nl",sdsMap={},locId,onSdsSaved,onSdsRemove
                 <input style={ai} value={p.unit} placeholder={tr(lang,"admUnit")} onChange={e=>upd(`voorraad.${pi}.unit`,e.target.value)}/>
                 <input style={{...ai,textAlign:"center"}} type="number" min={1} value={p.target} onChange={e=>upd(`voorraad.${pi}.target`,parseInt(e.target.value)||1)}/>
                 <button style={{background:"none",border:`1.5px solid ${p.active!==false?"#2A5A1A":"#5A1A1A"}`,color:p.active!==false?"#7FE060":"#CC6666",borderRadius:8,width:38,height:32,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`voorraad.${pi}.active`,!(p.active!==false))}>{p.active!==false?tr(lang,"on"):tr(lang,"off")}</button>
-                <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:28,height:32,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.voorraad.splice(pi,1);setLocal(n);}}>×</button>
+                <button aria-label={tr(lang,"removeItem")} style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.voorraad.splice(pi,1);setLocal(n);}}>×</button>
               </div>
               <div style={{display:"flex",gap:10,marginTop:4}}>
                 <span style={{fontSize:9,color:"#7B6A9B",fontWeight:700,textTransform:"uppercase",letterSpacing:1}}>{tr(lang,"admName")}</span>
@@ -1371,7 +931,7 @@ function AdminPanel({cfg,onSave,lang="nl",sdsMap={},locId,onSdsSaved,onSdsRemove
             {local.emails.map((em,ei)=><div key={em.id} style={{display:"flex",gap:6,marginBottom:8,alignItems:"center"}}>
               <input style={{...ai,width:80}} value={em.dept} onChange={e=>upd(`emails.${ei}.dept`,e.target.value)}/>
               <input style={{...ai,flex:1}} value={em.email} type="email" onChange={e=>upd(`emails.${ei}.email`,e.target.value)}/>
-              <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.emails.splice(ei,1);setLocal(n);}}>×</button>
+              <button aria-label={tr(lang,"removeEmail")} style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.emails.splice(ei,1);setLocal(n);}}>×</button>
             </div>)}
             <button style={{...S.btn,width:"100%",background:"transparent",border:"1.5px dashed #3D2A7A",color:"#7C5CBF",fontSize:12,padding:9,marginTop:4}} onClick={()=>setLocal(p=>({...p,emails:[...p.emails,{id:Date.now(),dept:tr(lang,"admDept"),email:"",active:true}]}))}>+ {tr(lang,"admRecipient")}</button>
           </div>
@@ -1383,7 +943,7 @@ function AdminPanel({cfg,onSave,lang="nl",sdsMap={},locId,onSdsSaved,onSdsRemove
               <span style={{fontSize:20}}>{acc.role==="manager"?"📊":"👥"}</span>
               <div style={{flex:1}}><div style={{fontSize:12,fontWeight:800,color:"#C0B0E8"}}>{acc.username}</div></div>
               <button style={{background:"none",border:`1.5px solid ${acc.active?"#2A5A1A":"#5A1A1A"}`,color:acc.active?"#7FE060":"#CC6666",borderRadius:8,width:38,height:28,cursor:"pointer",fontSize:10,fontWeight:800}} onClick={()=>upd(`accounts.${ai_}.active`,!acc.active)}>{acc.active?tr(lang,"on"):tr(lang,"off")}</button>
-              <button style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.accounts.splice(ai_,1);setLocal(n);}}>×</button>
+              <button aria-label={tr(lang,"removeAccount")} style={{background:"none",border:"1.5px solid #5A1A1A",color:"#CC6666",borderRadius:7,width:36,height:36,cursor:"pointer"}} onClick={()=>{const n=JSON.parse(JSON.stringify(local));n.accounts.splice(ai_,1);setLocal(n);}}>×</button>
             </div>
             <div className="admin-grid-3" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:6}}>
               <div><label className="lbl-responsive" style={al}>{tr(lang,"admName")}</label><input style={ai} value={acc.username} onChange={e=>upd(`accounts.${ai_}.username`,e.target.value)}/></div>
@@ -1416,6 +976,7 @@ function AdminPanel({cfg,onSave,lang="nl",sdsMap={},locId,onSdsSaved,onSdsRemove
 }
 
 function ReportModal({cfg,inv,onClose,lang="nl"}){
+  useEffect(()=>{const f=(e)=>{if(e.key==="Escape")onClose();};document.addEventListener("keydown",f);return()=>document.removeEventListener("keydown",f);},[onClose]);
   const [copied,setCopied]=useState(false);
   const emails=(cfg.emails||[]).filter(e=>e.active&&e.email.includes("@"));
   // Compacte HelloFresh-stijl: alleen de tekorten, mobiel deelbaar (WhatsApp/Teams).
@@ -1451,9 +1012,9 @@ function ReportModal({cfg,inv,onClose,lang="nl"}){
         <div style={{background:"linear-gradient(135deg,#91C11E,#79A516)",padding:"13px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0,boxShadow:"0 2px 10px rgba(121,165,22,0.35)"}}>
           <div style={{display:"flex",alignItems:"center",gap:11}}>
             <span style={{background:"#fff",borderRadius:12,padding:"5px 9px",display:"inline-flex",alignItems:"center",boxShadow:"0 2px 8px rgba(0,0,0,0.12)"}}><HelloFreshLogo size={26}/></span>
-            <div style={{fontSize:15,fontWeight:900,color:"#fff",letterSpacing:0.3}}>{tr(lang,"monthlyReport")}</div>
+            <div style={{fontSize:15,fontWeight:900,color:"#1A3A0A",letterSpacing:0.3}}>{tr(lang,"monthlyReport")}</div>
           </div>
-          <button style={{background:"rgba(255,255,255,0.18)",border:"1.5px solid rgba(255,255,255,0.4)",color:"#fff",fontSize:16,width:36,height:36,borderRadius:10,cursor:"pointer",fontWeight:700}} onClick={onClose}>×</button>
+          <button style={{background:"rgba(0,0,0,0.08)",border:"1.5px solid rgba(0,0,0,0.15)",color:"#1A3A0A",fontSize:16,width:36,height:36,borderRadius:10,cursor:"pointer",fontWeight:700}} onClick={onClose}>×</button>
         </div>
         <div style={{flex:1,padding:16,background:"linear-gradient(160deg,#F4FBE6,#FEFCF4)"}}>
           <div style={{background:total>0?"#FFFBEA":"#F0FAE0",border:`2px solid ${total>0?"#F5C842":"#A8D44E"}`,borderRadius:14,padding:"14px 16px",marginBottom:14,display:"flex",alignItems:"center",gap:12}}>
@@ -1484,6 +1045,7 @@ function ReportModal({cfg,inv,onClose,lang="nl"}){
           </button>
           <button style={{...S.btn,width:"100%",background:"#fff",border:"2.5px solid #C8E6B0",color:"#4A6A3A",display:"flex",alignItems:"center",justifyContent:"center",gap:8}}
             onClick={async()=>{
+              const { default: jsPDF } = await import("jspdf");
               const doc=new jsPDF();
               const ph=doc.internal.pageSize.height,pw=doc.internal.pageSize.width;let y=28;
               // HelloFresh-balk met het echte logo (op witte pill voor contrast)
@@ -1514,7 +1076,10 @@ function ReportModal({cfg,inv,onClose,lang="nl"}){
 }
 
 function VoorraadView({cfg,inv,onUpdate,onAudit,lang="nl"}){
+  const [q,setQ]=useState("");
+  const [confirm,setConfirm]=useState(null);
   const products=(cfg.voorraad||[]).filter(p=>p.active!==false);
+  const filtered=q?products.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())):products;
   const totalNeed=products.reduce((s,p)=>s+Math.max(0,p.target-(inv[p.id]||{count:0}).count),0);
   return(
     <div style={{width:"100%",maxWidth:420,padding:"14px 14px 0",margin:"0 auto"}}>
@@ -1538,17 +1103,28 @@ function VoorraadView({cfg,inv,onUpdate,onAudit,lang="nl"}){
         </div>
       </div>
 
+      {/* Zoekbalk */}
+      <input
+        type="search" value={q} onChange={e=>setQ(e.target.value)}
+        placeholder={tr(lang,"searchQ")}
+        style={{width:"100%",boxSizing:"border-box",padding:"10px 14px",borderRadius:12,border:"2px solid #C8E6B0",fontFamily:"Nunito,sans-serif",fontSize:14,marginBottom:8,outline:"none",background:"#F5FBF0"}}
+      />
+
       {/* Products */}
-      {products.map(p=>{
+      {filtered.map(p=>{
         const cnt=(inv[p.id]||{count:0}).count;
         const need=Math.max(0,p.target-cnt);
         const pct=Math.min((cnt/p.target)*100,100);
         const col=pct>=80?"#3D8B2E":pct>=40?"#E8A020":"#D44A2A";
+        const critical=pct<30;
         return(
-          <div key={p.id} style={S.card}>
+          <div key={p.id} style={{...S.card,border:`2px solid ${critical?"#D44A2A":"#C8E6B0"}`,background:critical?"#FFF8F6":"#fff"}}>
             <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",marginBottom:10}}>
               <div>
-                <div style={{fontSize:15,fontWeight:800}}>{p.name}</div>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <div style={{fontSize:15,fontWeight:800}}>{p.name}</div>
+                  {critical&&<span style={{fontSize:9,fontWeight:900,color:"#D44A2A",background:"#FDEDEA",padding:"2px 6px",borderRadius:8,letterSpacing:0.5}}>⚠ {tr(lang,"lowStock")}</span>}
+                </div>
                 <div style={{fontSize:10,color:"#8AAA7A",fontWeight:600,marginTop:2}}>{tr(lang,"per")} {p.unit} · {tr(lang,"targetLabel")}: {p.target} {p.unit}{p.target!==1?"s":""}</div>
               </div>
               <div style={{textAlign:"right"}}>
@@ -1560,7 +1136,7 @@ function VoorraadView({cfg,inv,onUpdate,onAudit,lang="nl"}){
               <div style={{height:"100%",width:`${pct}%`,background:col,borderRadius:5,transition:"width 0.4s"}}/>
             </div>
             {need>0&&<div style={{fontSize:11,fontWeight:700,color:"#E8632A",marginBottom:10}}>⚠ {need} {p.unit} {tr(lang,"reorder")}</div>}
-            <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
               <div style={{display:"flex",alignItems:"center",border:"2px solid #C8E6B0",borderRadius:12,overflow:"hidden"}}>
                 <button style={{width:44,height:44,background:"#F5FBF0",border:"none",color:"#3D8B2E",fontSize:22,fontWeight:900,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}
                   disabled={cnt<=0}
@@ -1571,15 +1147,20 @@ function VoorraadView({cfg,inv,onUpdate,onAudit,lang="nl"}){
                   onClick={()=>{onUpdate(p.id,"count",cnt+1);onAudit?.(`${p.name}: ${cnt} → ${cnt+1} ${p.unit}`)}}>+</button>
               </div>
               <span style={{fontSize:11,color:"#8AAA7A",fontWeight:700}}>{p.unit} {tr(lang,"present")}</span>
+              {need>0&&<button style={{marginLeft:"auto",padding:"6px 12px",background:"#EEF9E6",border:"2px solid #3D8B2E",borderRadius:10,color:"#3D8B2E",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}}
+                onClick={()=>{onUpdate(p.id,"count",p.target);onAudit?.(`${p.name}: aangevuld naar doel ${p.target} ${p.unit}`);}}>
+                {tr(lang,"setToTarget")}
+              </button>}
             </div>
           </div>
         );
       })}
 
       <button style={{width:"100%",padding:13,background:"#FDEDEA",border:"2px solid #D44A2A55",color:"#D44A2A",fontFamily:"Nunito,Arial,sans-serif",fontSize:12,fontWeight:800,letterSpacing:1,borderRadius:14,cursor:"pointer",textTransform:"uppercase",marginTop:4,marginBottom:20}}
-        onClick={()=>{if(!window.confirm(tr(lang,"confirmEmptyStock")))return;products.forEach(p=>onUpdate(p.id,"count",0));onAudit?.("Normale voorraad leeg gemeld")}}>
+        onClick={()=>setConfirm({msg:tr(lang,"confirmEmptyStock"),fn:()=>{products.forEach(p=>onUpdate(p.id,"count",0));onAudit?.("Normale voorraad leeg gemeld");}})}>
         {tr(lang,"reportStockEmpty")}
       </button>
+      {confirm&&<ConfirmModal msg={confirm.msg} onConfirm={()=>{confirm.fn();setConfirm(null);}} onCancel={()=>setConfirm(null)}/>}
     </div>
   );
 }
@@ -1692,6 +1273,7 @@ const MANUAL_TRANS = {
 };
 
 function ManualModal({type,lang="nl",onClose}){
+  useEffect(()=>{const f=(e)=>{if(e.key==="Escape")onClose();};document.addEventListener("keydown",f);return()=>document.removeEventListener("keydown",f);},[onClose]);
   const isWorker=type==="worker";
   const accent=isWorker?"#3D8B2E":"#E8632A";
   const accentLight=isWorker?"#EEF9E6":"#FDF0EB";
@@ -1909,13 +1491,15 @@ function ManualModal({type,lang="nl",onClose}){
 }
 
 function AuditView({log,onClear,lang="nl"}){
+  const [confirm,setConfirm]=useState(null);
   const roleColor={worker:"#3D8B2E",manager:"#E8632A",admin:"#7C5CBF",systeem:"#8AAA7A"};
   const roleLabel={worker:tr(lang,"worker"),manager:tr(lang,"manager"),admin:tr(lang,"admin"),systeem:tr(lang,"roleSystem")};
   return(
     <div>
+      {confirm&&<ConfirmModal msg={confirm.msg} onConfirm={()=>{confirm.fn();setConfirm(null);}} onCancel={()=>setConfirm(null)}/>}
       <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
         <div style={{fontSize:11,fontWeight:800,color:"#8AAA7A",textTransform:"uppercase",letterSpacing:2}}>{tr(lang,"activityLog")} ({log.length})</div>
-        {log.length>0&&<button style={{background:"#FDEDEA",border:"1.5px solid #D44A2A44",color:"#D44A2A",borderRadius:8,padding:"4px 10px",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}} onClick={()=>{if(!window.confirm(tr(lang,"confirmClearLog")))return;onClear();}}>{tr(lang,"clearLog")}</button>}
+        {log.length>0&&<button style={{background:"#FDEDEA",border:"1.5px solid #D44A2A44",color:"#D44A2A",borderRadius:8,padding:"4px 10px",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,cursor:"pointer"}} onClick={()=>setConfirm({msg:tr(lang,"confirmClearLog"),fn:onClear})}>{tr(lang,"clearLog")}</button>}
       </div>
       {log.length===0&&(
         <div style={{...S.card,textAlign:"center",padding:28}}>
@@ -1946,6 +1530,7 @@ function AuditView({log,onClear,lang="nl"}){
 }
 
 function QRPrintModal({cfg,locId,lang="nl",onClose}){
+  useEffect(()=>{const f=(e)=>{if(e.key==="Escape")onClose();};document.addEventListener("keydown",f);return()=>document.removeEventListener("keydown",f);},[onClose]);
   const base="https://hellofresh-webtooling.github.io/";
   // Unieke URL per hub: scannen opent de app direct op deze locatie (slaat het keuzescherm over).
   const appUrl=locId?`${base}?loc=${locId}`:base;
@@ -2017,14 +1602,16 @@ function QRPrintModal({cfg,locId,lang="nl",onClose}){
             {[{top:-3,left:-3},{top:-3,right:-3},{bottom:-3,left:-3},{bottom:-3,right:-3}].map((pos,i)=>(
               <div key={i} style={{position:"absolute",width:20,height:20,background:"#E8632A",borderRadius:4,...pos}}/>
             ))}
-            <QRCodeSVG
-              value={appUrl}
-              size={280}
-              bgColor="#ffffff"
-              fgColor="#1A3A0A"
-              level="H"
-              marginSize={1}
-            />
+            <Suspense fallback={<div style={{width:280,height:280,background:"#f5f5f5",borderRadius:8}}/>}>
+              <QRCodeSVG
+                value={appUrl}
+                size={280}
+                bgColor="#ffffff"
+                fgColor="#1A3A0A"
+                level="H"
+                marginSize={1}
+              />
+            </Suspense>
           </div>
 
           <div style={{fontSize:30,fontWeight:900,color:"#1A3A0A",marginBottom:10,textAlign:"center",letterSpacing:-0.5}}>{tr(lang,"qrAppName")}</div>
@@ -2069,266 +1656,6 @@ function QRPrintModal({cfg,locId,lang="nl",onClose}){
   );
 }
 
-// Per locatie: totaal te bestellen, aantal lage-voorraad-items en de uitsplitsing.
-const orderSummary = (cfg,inv) => {
-  const shelves=aSh(cfg);
-  const vProducts=(cfg.voorraad||[]).filter(p=>p.active!==false);
-  let order=0, low=0; const items=[];
-  shelves.forEach(sh=>aPr(sh).forEach(p=>{
-    const need=Math.max(0,p.target-(inv[p.id]||{full:0}).full);
-    order+=need; if(need>0){low++; items.push({group:sh.label,name:p.name,need,unit:"fl"});}
-  }));
-  vProducts.forEach(p=>{
-    const need=Math.max(0,p.target-(inv[p.id]||{count:0}).count);
-    order+=need; if(need>0){low++; items.push({group:"Normale Voorraad",name:p.name,need,unit:p.unit});}
-  });
-  return {order,low,items,shelfCount:shelves.length};
-};
-
-// VIB/SDS-document per product. Knop + modal: bekijken/downloaden altijd,
-// uploaden/vervangen/verwijderen alleen als canEdit (Beheer + Manager).
-// Bestand staat in Storage-bucket "sds" onder <locId>/<productId>.<ext>; de
-// metadata (fileName/path/url/...) staat per product-id in sdsMap (key
-// "vkast-sds:<locId>"). Werkt voor zowel lekbak-producten als normale voorraad.
-// Documenttypes. `id` wordt opgeslagen (taalonafhankelijk), label via tr().
-const SDS_KINDS=[
-  {id:"vib",   icon:"⚠️", key:"sdsKindVib"},
-  {id:"tech",  icon:"🔧", key:"sdsKindTech"},
-  {id:"manual",icon:"📘", key:"sdsKindManual"},
-  {id:"other", icon:"📎", key:"sdsKindOther"},
-];
-const sdsKindOf=(id)=>SDS_KINDS.find(k=>k.id===id)||SDS_KINDS[0];   // fallback = VIB (ook voor oude docs zonder kind)
-
-function SdsControl({product,locId,meta,canEdit=false,lang="nl",uploadedBy="",onSaved,onRemoved}){
-  const [open,setOpen]=useState(false);
-  const [busy,setBusy]=useState(false);
-  const [err,setErr]=useState("");
-  const [kind,setKind]=useState("vib");
-  const fileRef=useRef(null);
-  const rtl=lang==="ar";
-  // meta kan een array (nieuw) of één object (oude data) zijn — normaliseren.
-  const docs=Array.isArray(meta)?meta:(meta?[meta]:[]);
-  const has=docs.length>0;
-
-  const onFile=async(e)=>{
-    const file=e.target.files?.[0];
-    if(e.target)e.target.value="";   // reset zodat hetzelfde bestand opnieuw kan
-    if(!file)return;
-    if(file.type!=="application/pdf"){setErr(tr(lang,"sdsBadType"));return;}
-    if(file.size>10*1024*1024){setErr(tr(lang,"sdsTooBig"));return;}
-    setErr("");setBusy(true);
-    try{
-      const ext=(file.name.split(".").pop()||"pdf").toLowerCase();
-      const path=`${locId}/${product.id}-${Date.now()}.${ext}`;   // uniek pad: documenten overschrijven elkaar niet
-      const {error}=await supabase.storage.from("sds").upload(path,file,{upsert:true,contentType:file.type});
-      if(error)throw error;
-      const {data}=supabase.storage.from("sds").getPublicUrl(path);
-      onSaved?.(product.id,{fileName:file.name,path,url:data.publicUrl,size:file.size,type:file.type,kind,uploadedAt:new Date().toISOString(),uploadedBy,productName:product.name});
-    }catch{ setErr(tr(lang,"sdsError")); }
-    setBusy(false);
-  };
-
-  const remove=(doc)=>{
-    if(!window.confirm(tr(lang,"sdsRemoveConfirm")))return;
-    if(doc?.path)supabase.storage.from("sds").remove([doc.path]).catch(()=>{});
-    onRemoved?.(product.id,doc,product.name);
-  };
-
-  return(<>
-    <button title={tr(lang,"sds")} onClick={()=>setOpen(true)}
-      style={{flexShrink:0,display:"inline-flex",alignItems:"center",gap:3,background:has?"#EEF9E6":"#F3F3F3",border:`1.5px solid ${has?"#3D8B2E":"#D6D6D6"}`,borderRadius:8,padding:"3px 7px",cursor:"pointer",fontFamily:"Nunito,sans-serif",fontSize:10,fontWeight:800,color:has?"#3D8B2E":"#9A9A9A",lineHeight:1}}>
-      <span style={{fontSize:12}}>📄</span>{tr(lang,"sds")}{has&&<span style={{background:"#3D8B2E",color:"#fff",borderRadius:8,padding:"0 5px",fontSize:9}}>{docs.length}</span>}
-    </button>
-    {open&&(
-      <div className="modal-overlay" style={{position:"fixed",inset:0,background:"rgba(61,139,46,0.45)",zIndex:600,display:"flex",alignItems:"center",justifyContent:"center",padding:16}} onClick={()=>!busy&&setOpen(false)}>
-        <div dir={rtl?"rtl":"ltr"} onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:440,maxHeight:"90vh",display:"flex",flexDirection:"column",background:"linear-gradient(160deg,#F7FCF2,#FEFEFB)",borderRadius:18,overflow:"hidden",boxShadow:"0 12px 40px rgba(0,0,0,0.25)"}}>
-          <div style={{background:"#3D8B2E",padding:"13px 16px",display:"flex",alignItems:"center",justifyContent:"space-between",flexShrink:0}}>
-            <div style={{display:"flex",alignItems:"center",gap:8,minWidth:0}}><span style={{fontSize:18}}>📄</span><div style={{minWidth:0}}>
-              <div style={{fontSize:14,fontWeight:900,color:"#fff"}}>{tr(lang,"sdsTitle")}</div>
-              <div style={{fontSize:11,fontWeight:700,color:"#D6F0C8",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{product.name}</div>
-            </div></div>
-            <button onClick={()=>!busy&&setOpen(false)} style={{background:"rgba(255,255,255,0.15)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:16,width:34,height:34,borderRadius:9,cursor:"pointer",fontWeight:700,flexShrink:0}}>×</button>
-          </div>
-          <div style={{padding:16,overflowY:"auto"}}>
-            {has?(
-              <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:14}}>
-                {docs.map((doc,i)=>{
-                  const dt=doc.uploadedAt?new Date(doc.uploadedAt).toLocaleDateString(dloc(lang)):"";
-                  const dk=sdsKindOf(doc.kind);
-                  return(
-                    <div key={doc.path||i} style={{border:"2px solid #DCEFCF",borderRadius:12,padding:"10px 12px",background:"#fff"}}>
-                      <span style={{display:"inline-flex",alignItems:"center",gap:4,background:"#EEF9E6",border:"1.5px solid #3D8B2E55",borderRadius:20,padding:"2px 9px",fontSize:10,fontWeight:800,color:"#3D8B2E",marginBottom:6}}>{dk.icon} {tr(lang,dk.key)}</span>
-                      <div style={{fontSize:13,fontWeight:800,color:"#1A3A0A",wordBreak:"break-all",marginBottom:4}}>{doc.fileName}</div>
-                      {(doc.uploadedBy||dt)&&<div style={{fontSize:11,fontWeight:700,color:"#8AAA7A",marginBottom:8}}>{tr(lang,"sdsUploadedBy")} {doc.uploadedBy||"—"}{dt&&` ${tr(lang,"sdsUploadedOn")} ${dt}`}</div>}
-                      <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                        <a href={doc.url} target="_blank" rel="noreferrer" style={{...S.btn,flex:1,minWidth:120,textAlign:"center",textDecoration:"none",background:"linear-gradient(135deg,#4DA035,#3D8B2E)",color:"#fff",padding:"9px 10px",fontSize:13}}>👁 {tr(lang,"sdsView")}</a>
-                        <a href={doc.url} download={doc.fileName} style={{...S.btn,flex:1,minWidth:120,textAlign:"center",textDecoration:"none",background:"#F5FBF0",border:"2px solid #C8E6B0",color:"#3D8B2E",padding:"9px 10px",fontSize:13}}>⬇ {tr(lang,"sdsDownload")}</a>
-                        {canEdit&&<button onClick={()=>remove(doc)} disabled={busy} title={tr(lang,"sdsRemove")} style={{background:"#fff",border:"2px solid #E8C0C0",color:"#C0392B",borderRadius:12,padding:"9px 12px",cursor:busy?"wait":"pointer",fontSize:13,fontWeight:800}}>🗑</button>}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ):(
-              <div style={{fontSize:13,fontWeight:700,color:"#8AAA7A",textAlign:"center",padding:"14px 0 18px"}}>{tr(lang,"sdsNone")}</div>
-            )}
-            {canEdit&&(<div style={{borderTop:has?"1px solid #DCEFCF":"none",paddingTop:has?14:0}}>
-              <input ref={fileRef} type="file" accept="application/pdf" style={{display:"none"}} onChange={onFile}/>
-              <span style={{...S.lbl,marginBottom:6}}>{tr(lang,"sdsKind")}</span>
-              <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:12}}>
-                {SDS_KINDS.map(k=>{
-                  const active=kind===k.id;
-                  return(
-                    <button key={k.id} onClick={()=>setKind(k.id)} disabled={busy}
-                      style={{display:"inline-flex",alignItems:"center",gap:4,background:active?"#EEF9E6":"#fff",border:`2px solid ${active?"#3D8B2E":"#C8E6B0"}`,borderRadius:20,padding:"5px 11px",cursor:busy?"wait":"pointer",fontFamily:"Nunito,sans-serif",fontSize:11,fontWeight:800,color:active?"#3D8B2E":"#8AAA7A"}}>
-                      {k.icon} {tr(lang,k.key)}
-                    </button>
-                  );
-                })}
-              </div>
-              {err&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:8,textAlign:"center"}}>{err}</div>}
-              <button onClick={()=>fileRef.current?.click()} disabled={busy}
-                style={{...S.btn,width:"100%",background:busy?"#B8D9A8":"linear-gradient(135deg,#4DA035,#3D8B2E)",color:"#fff",cursor:busy?"wait":"pointer"}}>
-                {busy?tr(lang,"sdsUploading"):`⬆ ${tr(lang,"sdsAdd")}`}
-              </button>
-            </div>)}
-          </div>
-        </div>
-      </div>
-    )}
-  </>);
-}
-
-// Meldingen/ideeën van medewerkers per locatie. Opgeslagen in app_state onder
-// key "vkast-feedback:<locId>" (zelfde schrijfpad als de rest via dbSet).
-// In te zien door HQ via het "Meldingen"-tabblad in het HQ-overzicht.
-function FeedbackModal({locId,lang="nl",onClose}){
-  const [type,setType]=useState("probleem");
-  const [name,setName]=useState("");
-  const [msg,setMsg]=useState("");
-  const [err,setErr]=useState(false);
-  const [sending,setSending]=useState(false);
-  const [done,setDone]=useState(false);
-  const rtl=lang==="ar";
-
-  const submit=async()=>{
-    if(!msg.trim()){setErr(true);return;}
-    setSending(true);
-    const entry={id:crypto.randomUUID(),type,name:name.trim(),msg:msg.trim(),ts:Date.now(),status:"open"};
-    const k=keyFor("vkast-feedback",locId);
-    let cur=[];
-    try{
-      const {data}=await supabase.from("app_state").select("value").eq("key",k).maybeSingle();
-      cur=Array.isArray(data?.value)?data.value:[];
-    }catch{ cur=ls.get(k)||[]; }
-    if(!Array.isArray(cur))cur=[];
-    await dbSet(k,[entry,...cur].slice(0,300));
-    setSending(false);setDone(true);
-  };
-  const reset=()=>{setType("probleem");setName("");setMsg("");setErr(false);setDone(false);};
-
-  return(
-    <div className="modal-overlay" style={{position:"fixed",inset:0,background:"rgba(196,106,18,0.5)",zIndex:500,display:"flex",flexDirection:"column",alignItems:"center",overflowY:"auto"}}>
-      <div dir={rtl?"rtl":"ltr"} className="modal-box" style={{width:"100%",maxWidth:460,minHeight:"100vh",display:"flex",flexDirection:"column",background:"linear-gradient(160deg,#FFF8EF,#FEFCF4)"}}>
-        <div style={{background:"#E8902A",padding:"13px 18px",display:"flex",alignItems:"center",justifyContent:"space-between",position:"sticky",top:0}}>
-          <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:18}}>📣</span><div style={{fontSize:15,fontWeight:900,color:"#fff"}}>{tr(lang,"fbTitle")}</div></div>
-          <button style={{background:"rgba(255,255,255,0.15)",border:"1.5px solid rgba(255,255,255,0.3)",color:"#fff",fontSize:16,width:36,height:36,borderRadius:10,cursor:"pointer",fontWeight:700}} onClick={onClose}>×</button>
-        </div>
-
-        {done?(
-          <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:"40px 24px",textAlign:"center"}}>
-            <div style={{fontSize:54,marginBottom:12}}>✅</div>
-            <div style={{fontSize:22,fontWeight:900,color:"#C46A12",marginBottom:6}}>{tr(lang,"fbThanksTitle")}</div>
-            <div style={{fontSize:14,fontWeight:700,color:"#8A6A3A",marginBottom:28,maxWidth:300}}>{tr(lang,"fbThanksMsg")}</div>
-            <button onClick={reset} style={{...S.btn,background:"#fff",border:"2.5px solid #F3C98B",color:"#C46A12",marginBottom:10}}>{tr(lang,"fbNew")}</button>
-            <button onClick={onClose} style={{...S.btn,background:"linear-gradient(135deg,#E8902A,#C46A12)",color:"#fff"}}>{tr(lang,"close")}</button>
-          </div>
-        ):(
-          <div style={{flex:1,padding:16}}>
-            <div style={{fontSize:13,fontWeight:700,color:"#8A6A3A",lineHeight:1.5,marginBottom:16}}>{tr(lang,"fbIntro")}</div>
-
-            <div style={{marginBottom:16}}>
-              <span style={{...S.lbl,color:"#B5895A"}}>{tr(lang,"fbType")}</span>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-                {[["probleem","⚠️","fbProblem","fbProblemSub"],["aanpassing","💡","fbChange","fbChangeSub"]].map(([t,ic,lbl,sub])=>(
-                  <div key={t} onClick={()=>setType(t)} className="card-hover"
-                    style={{cursor:"pointer",textAlign:"center",padding:"14px 8px",borderRadius:14,border:`2.5px solid ${type===t?"#E8902A":"#F0DFC4"}`,background:type===t?"#FFF1DE":"#fff"}}>
-                    <div style={{fontSize:24,marginBottom:4}}>{ic}</div>
-                    <div style={{fontSize:13,fontWeight:900,color:type===t?"#C46A12":"#8A6A3A"}}>{tr(lang,lbl)}</div>
-                    <div style={{fontSize:9,fontWeight:700,color:"#B5895A",marginTop:2}}>{tr(lang,sub)}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{marginBottom:16}}>
-              <span style={{...S.lbl,color:"#B5895A"}}>{tr(lang,"fbName")}</span>
-              <input value={name} onChange={e=>setName(e.target.value)} placeholder={tr(lang,"fbNamePlaceholder")}
-                style={{...S.inp,background:"#FFFDF8",border:"2px solid #F0DFC4",textAlign:rtl?"right":"left"}}/>
-            </div>
-
-            <div style={{marginBottom:8}}>
-              <span style={{...S.lbl,color:"#B5895A"}}>{tr(lang,"fbMessage")} *</span>
-              <textarea value={msg} onChange={e=>{setMsg(e.target.value);if(err)setErr(false);}} placeholder={tr(lang,"fbMessagePlaceholder")}
-                style={{...S.inp,background:"#FFFDF8",border:`2px solid ${err?"#e74c3c":"#F0DFC4"}`,height:120,resize:"vertical",lineHeight:1.5,textAlign:rtl?"right":"left"}}/>
-            </div>
-            {err&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:10}}>{tr(lang,"fbRequired")}</div>}
-
-            <button onClick={submit} disabled={sending}
-              style={{...S.btn,width:"100%",marginTop:8,background:sending?"#E8C49A":"linear-gradient(135deg,#E8902A,#C46A12)",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",gap:8,cursor:sending?"wait":"pointer"}}>
-              <span style={{fontSize:18}}>📨</span> {sending?tr(lang,"fbSending"):tr(lang,"fbSend")}
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function LocationPicker({onPick,onHQ}){
-  return(
-    <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,Arial,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
-      <style>{GF}</style>
-      <Hdr cfg={{appName:"Voorraadbeheer",location:"Kies je locatie"}}/>
-      <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",padding:"28px 18px 12px",width:"100%",maxWidth:560}}>
-        <div style={{marginBottom:14}}><HelloFreshLogo size={96}/></div>
-        <div style={{fontSize:26,fontWeight:900,color:"#3D8B2E",marginBottom:2}}>Voorraadbeheer</div>
-        <div style={{fontSize:11,color:"#8AAA7A",letterSpacing:2,textTransform:"uppercase",marginBottom:24,fontWeight:700}}>Kies een vestiging</div>
-
-        {COUNTRIES.map(c=>{
-          const locs=LOCATIONS.filter(l=>l.country===c.code);
-          if(locs.length===0)return null;
-          return(
-            <div key={c.code} style={{width:"100%",marginBottom:22}}>
-              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-                <span style={{fontSize:18}}>{c.flag}</span>
-                <span style={{fontSize:12,fontWeight:800,color:"#4A6A3A",textTransform:"uppercase",letterSpacing:1}}>{c.label}</span>
-                <div style={{flex:1,height:2,background:"#EEF9E6",borderRadius:2}}/>
-                <span style={{fontSize:10,fontWeight:700,color:"#8AAA7A"}}>{locs.length}</span>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10}}>
-                {locs.map(l=>(
-                  <div key={l.id} className="card-hover" onClick={()=>onPick(l.id)}
-                    style={{cursor:"pointer",background:"#fff",border:"2.5px solid #C8E6B0",borderRadius:16,padding:"16px 12px",textAlign:"center",boxShadow:"0 4px 14px rgba(61,139,46,0.1)"}}>
-                    <div style={{fontSize:22,marginBottom:6}}>📍</div>
-                    <div style={{fontSize:14,fontWeight:900,color:"#1A3A0A",lineHeight:1.2}}>{l.name}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        })}
-
-        <button className="btn-hover" onClick={onHQ}
-          style={{marginTop:6,marginBottom:20,display:"flex",alignItems:"center",gap:10,background:"linear-gradient(135deg,#1E3A5F,#0F2A47)",border:"none",borderRadius:16,padding:"14px 26px",fontFamily:"Nunito,Arial,sans-serif",fontSize:14,fontWeight:800,color:"#fff",cursor:"pointer",boxShadow:"0 6px 20px rgba(15,42,71,0.3)"}}>
-          <span style={{fontSize:20}}>🏢</span>
-          <div style={{textAlign:"left"}}><div>HQ-overzicht</div><div style={{fontSize:9,opacity:0.7,fontWeight:700}}>Alle locaties · PIN vereist</div></div>
-        </button>
-      </div>
-      <Ftr/>
-    </div>
-  );
-}
 
 function HQDashboard({onBack}){
   const [pin,setPin]=useState("");
@@ -2336,6 +1663,7 @@ function HQDashboard({onBack}){
   const [err,setErr]=useState(false);
   const [attempts,setAttempts]=useState(0);
   const [locked,setLocked]=useState(false);
+  const [confirm,setConfirm]=useState(null);
   const [loading,setLoading]=useState(false);
   const [rows,setRows]=useState(null);
   const [open,setOpen]=useState(null);
@@ -2376,13 +1704,11 @@ function HQDashboard({onBack}){
     updateFb(locId,list);
   };
   const deleteFb=(locId,id)=>{
-    if(!window.confirm("Deze melding verwijderen?"))return;
-    updateFb(locId,(fb[locId]||[]).filter(m=>m.id!==id));
+    setConfirm({msg:"Deze melding verwijderen?",fn:()=>updateFb(locId,(fb[locId]||[]).filter(m=>m.id!==id))});
   };
 
   const submit=async(nx)=>{
-    const h=await hashPw(nx);
-    if(h===HQ_PIN_HASH){setUnlocked(true);setErr(false);setPin("");setAttempts(0);load();}
+    if(await verifyPw(nx,HQ_PIN_HASH)){setUnlocked(true);setErr(false);setPin("");setAttempts(0);load();}
     else{const a=attempts+1;setAttempts(a);if(a>=3){setLocked(true);setTimeout(()=>{setLocked(false);setAttempts(0);},30000);}setErr(true);setPin("");}
   };
   const onDigit=(d)=>{
@@ -2395,6 +1721,7 @@ function HQDashboard({onBack}){
 
   if(!unlocked) return(
     <div style={wrap}>
+      {confirm&&<ConfirmModal msg={confirm.msg} onConfirm={()=>{confirm.fn();setConfirm(null);}} onCancel={()=>setConfirm(null)}/>}
       <style>{GF}</style>
       <Hdr cfg={{appName:"HQ-overzicht",location:"Alle locaties"}} isAdmin onBack={onBack} backLabel="Terug"/>
       <div style={{flex:1,display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
@@ -2402,32 +1729,30 @@ function HQDashboard({onBack}){
           <div style={{fontSize:40,marginBottom:10}}>🏢</div>
           <div style={{fontSize:20,fontWeight:900,color:"#6FB4E8",marginBottom:4}}>HQ-overzicht</div>
           <div style={{fontSize:10,color:"#4A7AA8",letterSpacing:2,textTransform:"uppercase",marginBottom:20}}>Voer master-PIN in</div>
-          {err&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:10}}>Onjuiste PIN</div>}
-          <div style={{display:"flex",justifyContent:"center",gap:12,marginBottom:20}}>
-            {[0,1,2,3].map(i=><div key={i} style={{width:16,height:16,borderRadius:"50%",border:`2.5px solid ${pin.length>i?"#2E6FA8":"#1A3A5A"}`,background:pin.length>i?"#2E6FA8":"transparent"}}/>)}
-          </div>
-          {locked&&<div style={{color:"#e74c3c",fontSize:12,fontWeight:700,marginBottom:10}}>Geblokkeerd — wacht 30 seconden</div>}
-          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
-            {[1,2,3,4,5,6,7,8,9].map(n=>(
-              <button key={n} style={{height:52,background:"#16324E",border:"2px solid #1A3A5A",borderRadius:12,color:locked?"#1A3A5A":"#A8D0F0",fontFamily:"Nunito,sans-serif",fontSize:20,fontWeight:700,cursor:locked?"not-allowed":"pointer"}} onClick={()=>onDigit(String(n))}>{n}</button>
-            ))}
-            <div/>
-            <button style={{height:52,background:"#16324E",border:"2px solid #1A3A5A",borderRadius:12,color:locked?"#1A3A5A":"#A8D0F0",fontFamily:"Nunito,sans-serif",fontSize:20,fontWeight:700,cursor:locked?"not-allowed":"pointer"}} onClick={()=>onDigit("0")}>0</button>
-            <button style={{height:52,background:"#16324E",border:"2px solid #1A3A5A",borderRadius:12,color:"#7BA8CC",fontFamily:"Nunito,sans-serif",fontSize:16,cursor:"pointer"}} onClick={()=>{setPin(p=>p.slice(0,-1));setErr(false);}}>DEL</button>
-          </div>
+          <PinPad
+            pin={pin}
+            locked={locked}
+            err={err}
+            errMsg="Onjuiste PIN"
+            lockedMsg="Geblokkeerd — wacht 30 seconden"
+            theme="hq"
+            onDigit={onDigit}
+            onDel={()=>{setPin(p=>p.slice(0,-1));setErr(false);}}
+          />
         </div>
       </div>
       <Ftr isAdmin/>
     </div>
   );
 
-  const totalOrder=(rows||[]).reduce((s,r)=>s+r.order,0);
-  const activeLocs=(rows||[]).filter(r=>r.configured).length;
-  const allFb=Object.values(fb).flat();
+  const totalOrder=useMemo(()=>(rows||[]).reduce((s,r)=>s+r.order,0),[rows]);
+  const activeLocs=useMemo(()=>(rows||[]).filter(r=>r.configured).length,[rows]);
+  const allFb=useMemo(()=>Object.values(fb).flat(),[fb]);
   const totalFb=allFb.length;
-  const openFb=allFb.filter(m=>m.status!=="done").length;
+  const openFb=useMemo(()=>allFb.filter(m=>m.status!=="done").length,[allFb]);
   return(
     <div style={wrap}>
+      {confirm&&<ConfirmModal msg={confirm.msg} onConfirm={()=>{confirm.fn();setConfirm(null);}} onCancel={()=>setConfirm(null)}/>}
       <style>{GF}</style>
       <Hdr cfg={{appName:"HQ-overzicht",location:`${LOCATIONS.length} locaties`}} isAdmin onBack={onBack} backLabel="Terug"/>
       <div className="resp-wide" style={{width:"100%",maxWidth:620,padding:"16px 14px 0",margin:"0 auto"}}>
@@ -2469,7 +1794,7 @@ function HQDashboard({onBack}){
                     const isOpen=open===r.loc.id;
                     return(
                       <div key={r.loc.id} style={{background:"#0F2A47",border:`2px solid ${r.order>0?"#5A4520":"#1A3A5A"}`,borderRadius:14,marginBottom:8,overflow:"hidden"}}>
-                        <div onClick={()=>setOpen(isOpen?null:r.loc.id)} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 14px",cursor:"pointer"}}>
+                        <button type="button" onClick={()=>setOpen(isOpen?null:r.loc.id)} style={{font:"inherit",width:"100%",background:"none",border:"none",display:"flex",alignItems:"center",justifyContent:"space-between",padding:"12px 14px",cursor:"pointer"}}>
                           <div style={{display:"flex",alignItems:"center",gap:10}}>
                             <span style={{fontSize:16}}>📍</span>
                             <div>
@@ -2483,7 +1808,7 @@ function HQDashboard({onBack}){
                             <span style={{fontSize:18,fontWeight:900,color:r.order>0?"#F5A623":"#5AD18A"}}>{r.order>0?`+${r.order}`:"✓"}</span>
                             <span style={{fontSize:11,color:"#4A7AA8"}}>{isOpen?"▲":"▼"}</span>
                           </div>
-                        </div>
+                        </button>
                         {isOpen&&(
                           <div style={{borderTop:"1px solid #1A3A5A",padding:"8px 14px 12px"}}>
                             {r.items.length===0&&<div style={{fontSize:12,color:"#5A8AB8",padding:"6px 0"}}>Geen bestellingen nodig.</div>}
@@ -2567,10 +1892,3 @@ function HQDashboard({onBack}){
   );
 }
 
-function Ftr({isAdmin}){
-  return(
-    <div style={{width:"100%",padding:"13px 20px 16px",marginTop:28,borderTop:`2px solid ${isAdmin?"#3D2A7A":"#C8E6B0"}`,background:isAdmin?"#16213E":"linear-gradient(180deg,#F5FBF0,#fff)",textAlign:"center"}}>
-      <div style={{fontSize:11,fontWeight:600,color:isAdmin?"#5A4A7A":"#8AAA7A",lineHeight:1.6}}>2026 HelloFresh — Alle rechten voorbehouden.</div>
-    </div>
-  );
-}

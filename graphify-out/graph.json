@@ -9,8 +9,107 @@
       "source_file": "vite.config.js",
       "source_location": "L1",
       "id": "vite_config_js",
-      "community": 6,
+      "community": 7,
       "norm_label": "vite.config.js"
+    },
+    {
+      "label": "eslint.config.js",
+      "file_type": "code",
+      "source_file": "eslint.config.js",
+      "source_location": "L1",
+      "id": "eslint_config_js",
+      "community": 8,
+      "norm_label": "eslint.config.js"
+    },
+    {
+      "label": "constants.js",
+      "file_type": "code",
+      "source_file": "src/constants.js",
+      "source_location": "L1",
+      "id": "src_constants_js",
+      "community": 3,
+      "norm_label": "constants.js"
+    },
+    {
+      "label": "defCfgFor()",
+      "file_type": "code",
+      "source_file": "src/constants.js",
+      "source_location": "L43",
+      "id": "src_constants_defcfgfor",
+      "community": 3,
+      "norm_label": "defcfgfor()"
+    },
+    {
+      "label": "aSh()",
+      "file_type": "code",
+      "source_file": "src/constants.js",
+      "source_location": "L50",
+      "id": "src_constants_ash",
+      "community": 2,
+      "norm_label": "ash()"
+    },
+    {
+      "label": "aPr()",
+      "file_type": "code",
+      "source_file": "src/constants.js",
+      "source_location": "L51",
+      "id": "src_constants_apr",
+      "community": 3,
+      "norm_label": "apr()"
+    },
+    {
+      "label": "defI()",
+      "file_type": "code",
+      "source_file": "src/constants.js",
+      "source_location": "L52",
+      "id": "src_constants_defi",
+      "community": 3,
+      "norm_label": "defi()"
+    },
+    {
+      "label": "pL()",
+      "file_type": "code",
+      "source_file": "src/constants.js",
+      "source_location": "L58",
+      "id": "src_constants_pl",
+      "community": 3,
+      "norm_label": "pl()"
+    },
+    {
+      "label": "shL()",
+      "file_type": "code",
+      "source_file": "src/constants.js",
+      "source_location": "L59",
+      "id": "src_constants_shl",
+      "community": 3,
+      "norm_label": "shl()"
+    },
+    {
+      "label": "shP()",
+      "file_type": "code",
+      "source_file": "src/constants.js",
+      "source_location": "L60",
+      "id": "src_constants_shp",
+      "community": 3,
+      "norm_label": "shp()"
+    },
+    {
+      "label": "fCol()",
+      "file_type": "code",
+      "source_file": "src/constants.js",
+      "source_location": "L61",
+      "id": "src_constants_fcol",
+      "community": 5,
+      "norm_label": "fcol()"
+    },
+    {
+      "label": "uCol()",
+      "file_type": "code",
+      "source_file": "src/constants.js",
+      "source_location": "L62",
+      "id": "src_constants_ucol",
+      "community": 3,
+      "norm_label": "ucol()"
     },
     {
       "label": "main.jsx",
@@ -31,172 +130,37 @@
       "norm_label": "app.jsx"
     },
     {
-      "label": "dbSet()",
+      "label": "ConfirmModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L16",
-      "id": "src_app_dbset",
-      "community": 3,
-      "norm_label": "dbset()"
-    },
-    {
-      "label": "hashPw()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L30",
-      "id": "src_app_hashpw",
-      "community": 3,
-      "norm_label": "hashpw()"
-    },
-    {
-      "label": "isHashed()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L34",
-      "id": "src_app_ishashed",
-      "community": 3,
-      "norm_label": "ishashed()"
-    },
-    {
-      "label": "locName()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L56",
-      "id": "src_app_locname",
-      "community": 5,
-      "norm_label": "locname()"
-    },
-    {
-      "label": "keyFor()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L59",
-      "id": "src_app_keyfor",
-      "community": 3,
-      "norm_label": "keyfor()"
-    },
-    {
-      "label": "migrateHashes()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L65",
-      "id": "src_app_migratehashes",
-      "community": 3,
-      "norm_label": "migratehashes()"
-    },
-    {
-      "label": "tr()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L343",
-      "id": "src_app_tr",
-      "community": 1,
-      "norm_label": "tr()"
-    },
-    {
-      "label": "dloc()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L348",
-      "id": "src_app_dloc",
-      "community": 2,
-      "norm_label": "dloc()"
-    },
-    {
-      "label": "defCfgFor()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L392",
-      "id": "src_app_defcfgfor",
-      "community": 5,
-      "norm_label": "defcfgfor()"
-    },
-    {
-      "label": "aSh()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L399",
-      "id": "src_app_ash",
-      "community": 2,
-      "norm_label": "ash()"
-    },
-    {
-      "label": "aPr()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L400",
-      "id": "src_app_apr",
-      "community": 4,
-      "norm_label": "apr()"
-    },
-    {
-      "label": "defI()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L401",
-      "id": "src_app_defi",
+      "source_location": "L8",
+      "id": "src_app_confirmmodal",
       "community": 0,
-      "norm_label": "defi()"
-    },
-    {
-      "label": "pL()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L407",
-      "id": "src_app_pl",
-      "community": 0,
-      "norm_label": "pl()"
-    },
-    {
-      "label": "shL()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L408",
-      "id": "src_app_shl",
-      "community": 4,
-      "norm_label": "shl()"
-    },
-    {
-      "label": "shP()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L409",
-      "id": "src_app_shp",
-      "community": 4,
-      "norm_label": "shp()"
-    },
-    {
-      "label": "fCol()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L410",
-      "id": "src_app_fcol",
-      "community": 4,
-      "norm_label": "fcol()"
-    },
-    {
-      "label": "uCol()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L411",
-      "id": "src_app_ucol",
-      "community": 0,
-      "norm_label": "ucol()"
+      "norm_label": "confirmmodal()"
     },
     {
       "label": "HelloFreshLogo()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L457",
+      "source_location": "L22",
       "id": "src_app_hellofreshlogo",
       "community": 0,
       "norm_label": "hellofreshlogo()"
     },
     {
+      "label": "PinPad()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L28",
+      "id": "src_app_pinpad",
+      "community": 0,
+      "norm_label": "pinpad()"
+    },
+    {
       "label": "App()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L463",
+      "source_location": "L57",
       "id": "src_app_app",
       "community": 2,
       "norm_label": "app()"
@@ -205,7 +169,7 @@
       "label": "Hdr()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1016",
+      "source_location": "L603",
       "id": "src_app_hdr",
       "community": 1,
       "norm_label": "hdr()"
@@ -214,7 +178,7 @@
       "label": "AccountLoginPanel()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1035",
+      "source_location": "L622",
       "id": "src_app_accountloginpanel",
       "community": 1,
       "norm_label": "accountloginpanel()"
@@ -223,7 +187,7 @@
       "label": "LoginCard()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1059",
+      "source_location": "L646",
       "id": "src_app_logincard",
       "community": 1,
       "norm_label": "logincard()"
@@ -232,7 +196,7 @@
       "label": "Cabinet()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1112",
+      "source_location": "L699",
       "id": "src_app_cabinet",
       "community": 0,
       "norm_label": "cabinet()"
@@ -241,16 +205,16 @@
       "label": "ShelfDetail()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1136",
+      "source_location": "L723",
       "id": "src_app_shelfdetail",
-      "community": 4,
+      "community": 5,
       "norm_label": "shelfdetail()"
     },
     {
       "label": "ConsumptionView()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1206",
+      "source_location": "L816",
       "id": "src_app_consumptionview",
       "community": 2,
       "norm_label": "consumptionview()"
@@ -259,7 +223,7 @@
       "label": "AdminPanel()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1272",
+      "source_location": "L882",
       "id": "src_app_adminpanel",
       "community": 1,
       "norm_label": "adminpanel()"
@@ -268,7 +232,7 @@
       "label": "ReportModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1418",
+      "source_location": "L1028",
       "id": "src_app_reportmodal",
       "community": 2,
       "norm_label": "reportmodal()"
@@ -277,7 +241,7 @@
       "label": "VoorraadView()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1516",
+      "source_location": "L1127",
       "id": "src_app_voorraadview",
       "community": 1,
       "norm_label": "voorraadview()"
@@ -286,7 +250,7 @@
       "label": "ManualModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1694",
+      "source_location": "L1324",
       "id": "src_app_manualmodal",
       "community": 1,
       "norm_label": "manualmodal()"
@@ -295,7 +259,7 @@
       "label": "AuditView()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1911",
+      "source_location": "L1541",
       "id": "src_app_auditview",
       "community": 1,
       "norm_label": "auditview()"
@@ -304,16 +268,16 @@
       "label": "QRPrintModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1948",
+      "source_location": "L1580",
       "id": "src_app_qrprintmodal",
-      "community": 5,
+      "community": 1,
       "norm_label": "qrprintmodal()"
     },
     {
       "label": "orderSummary()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2073",
+      "source_location": "L1705",
       "id": "src_app_ordersummary",
       "community": 2,
       "norm_label": "ordersummary()"
@@ -322,7 +286,7 @@
       "label": "sdsKindOf()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2100",
+      "source_location": "L1732",
       "id": "src_app_sdskindof",
       "community": 0,
       "norm_label": "sdskindof()"
@@ -331,7 +295,7 @@
       "label": "SdsControl()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2102",
+      "source_location": "L1734",
       "id": "src_app_sdscontrol",
       "community": 2,
       "norm_label": "sdscontrol()"
@@ -340,7 +304,7 @@
       "label": "FeedbackModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2205",
+      "source_location": "L1853",
       "id": "src_app_feedbackmodal",
       "community": 1,
       "norm_label": "feedbackmodal()"
@@ -349,7 +313,7 @@
       "label": "LocationPicker()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2288",
+      "source_location": "L1936",
       "id": "src_app_locationpicker",
       "community": 0,
       "norm_label": "locationpicker()"
@@ -358,7 +322,7 @@
       "label": "HQDashboard()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2333",
+      "source_location": "L1981",
       "id": "src_app_hqdashboard",
       "community": 0,
       "norm_label": "hqdashboard()"
@@ -367,13 +331,615 @@
       "label": "Ftr()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L2570",
+      "source_location": "L2217",
       "id": "src_app_ftr",
       "community": 0,
       "norm_label": "ftr()"
+    },
+    {
+      "label": "test-setup.js",
+      "file_type": "code",
+      "source_file": "src/test-setup.js",
+      "source_location": "L1",
+      "id": "src_test_setup_js",
+      "community": 9,
+      "norm_label": "test-setup.js"
+    },
+    {
+      "label": "styles.js",
+      "file_type": "code",
+      "source_file": "src/styles.js",
+      "source_location": "L1",
+      "id": "src_styles_js",
+      "community": 0,
+      "norm_label": "styles.js"
+    },
+    {
+      "label": "App.test.jsx",
+      "file_type": "code",
+      "source_file": "src/App.test.jsx",
+      "source_location": "L1",
+      "id": "src_app_test_jsx",
+      "community": 0,
+      "norm_label": "app.test.jsx"
+    },
+    {
+      "label": "db.js",
+      "file_type": "code",
+      "source_file": "src/lib/db.js",
+      "source_location": "L1",
+      "id": "src_lib_db_js",
+      "community": 4,
+      "norm_label": "db.js"
+    },
+    {
+      "label": "dbSet()",
+      "file_type": "code",
+      "source_file": "src/lib/db.js",
+      "source_location": "L13",
+      "id": "lib_db_dbset",
+      "community": 4,
+      "norm_label": "dbset()"
+    },
+    {
+      "label": "hashPw()",
+      "file_type": "code",
+      "source_file": "src/lib/db.js",
+      "source_location": "L27",
+      "id": "lib_db_hashpw",
+      "community": 4,
+      "norm_label": "hashpw()"
+    },
+    {
+      "label": "isHashed()",
+      "file_type": "code",
+      "source_file": "src/lib/db.js",
+      "source_location": "L31",
+      "id": "lib_db_ishashed",
+      "community": 4,
+      "norm_label": "ishashed()"
+    },
+    {
+      "label": "locName()",
+      "file_type": "code",
+      "source_file": "src/lib/db.js",
+      "source_location": "L52",
+      "id": "lib_db_locname",
+      "community": 3,
+      "norm_label": "locname()"
+    },
+    {
+      "label": "keyFor()",
+      "file_type": "code",
+      "source_file": "src/lib/db.js",
+      "source_location": "L55",
+      "id": "lib_db_keyfor",
+      "community": 4,
+      "norm_label": "keyfor()"
+    },
+    {
+      "label": "migrateHashes()",
+      "file_type": "code",
+      "source_file": "src/lib/db.js",
+      "source_location": "L61",
+      "id": "lib_db_migratehashes",
+      "community": 4,
+      "norm_label": "migratehashes()"
+    },
+    {
+      "label": "trans.js",
+      "file_type": "code",
+      "source_file": "src/i18n/trans.js",
+      "source_location": "L1",
+      "id": "src_i18n_trans_js",
+      "community": 2,
+      "norm_label": "trans.js"
+    },
+    {
+      "label": "tr()",
+      "file_type": "code",
+      "source_file": "src/i18n/trans.js",
+      "source_location": "L272",
+      "id": "i18n_trans_tr",
+      "community": 1,
+      "norm_label": "tr()"
+    },
+    {
+      "label": "dloc()",
+      "file_type": "code",
+      "source_file": "src/i18n/trans.js",
+      "source_location": "L277",
+      "id": "i18n_trans_dloc",
+      "community": 2,
+      "norm_label": "dloc()"
+    },
+    {
+      "label": "dbSet()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L15",
+      "community": 6,
+      "norm_label": "dbset()",
+      "id": "src_app_dbset"
+    },
+    {
+      "label": "hashPw()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L29",
+      "community": 6,
+      "norm_label": "hashpw()",
+      "id": "src_app_hashpw"
+    },
+    {
+      "label": "isHashed()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L33",
+      "community": 6,
+      "norm_label": "ishashed()",
+      "id": "src_app_ishashed"
+    },
+    {
+      "label": "locName()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L55",
+      "community": 1,
+      "norm_label": "locname()",
+      "id": "src_app_locname"
+    },
+    {
+      "label": "keyFor()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L58",
+      "community": 6,
+      "norm_label": "keyfor()",
+      "id": "src_app_keyfor"
+    },
+    {
+      "label": "migrateHashes()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L64",
+      "community": 6,
+      "norm_label": "migratehashes()",
+      "id": "src_app_migratehashes"
+    },
+    {
+      "label": "tr()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L346",
+      "community": 1,
+      "norm_label": "tr()",
+      "id": "src_app_tr"
+    },
+    {
+      "label": "dloc()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L351",
+      "community": 2,
+      "norm_label": "dloc()",
+      "id": "src_app_dloc"
+    },
+    {
+      "label": "defCfgFor()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L395",
+      "community": 1,
+      "norm_label": "defcfgfor()",
+      "id": "src_app_defcfgfor"
+    },
+    {
+      "label": "aSh()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L402",
+      "community": 2,
+      "norm_label": "ash()",
+      "id": "src_app_ash"
+    },
+    {
+      "label": "aPr()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L403",
+      "community": 5,
+      "norm_label": "apr()",
+      "id": "src_app_apr"
+    },
+    {
+      "label": "defI()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L404",
+      "community": 0,
+      "norm_label": "defi()",
+      "id": "src_app_defi"
+    },
+    {
+      "label": "pL()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L410",
+      "community": 0,
+      "norm_label": "pl()",
+      "id": "src_app_pl"
+    },
+    {
+      "label": "shL()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L411",
+      "community": 5,
+      "norm_label": "shl()",
+      "id": "src_app_shl"
+    },
+    {
+      "label": "shP()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L412",
+      "community": 5,
+      "norm_label": "shp()",
+      "id": "src_app_shp"
+    },
+    {
+      "label": "fCol()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L413",
+      "community": 5,
+      "norm_label": "fcol()",
+      "id": "src_app_fcol"
+    },
+    {
+      "label": "uCol()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L414",
+      "community": 0,
+      "norm_label": "ucol()",
+      "id": "src_app_ucol"
     }
   ],
   "links": [
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "src_lib_db_js"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "lib_db_locname"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L43",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "src_constants_defcfgfor"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L50",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "src_constants_ash"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L51",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "src_constants_apr"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L52",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "src_constants_defi"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L58",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "src_constants_pl"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L59",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "src_constants_shl"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L60",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "src_constants_shp"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L61",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "src_constants_fcol"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L62",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "src_constants_ucol"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_constants_js"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_constants_defcfgfor"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/constants.js",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "src_constants_defcfgfor",
+      "target": "lib_db_locname"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_constants_ash"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L148",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "src_constants_ash"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L809",
+      "weight": 1.0,
+      "source": "src_app_consumptionview",
+      "target": "src_constants_ash"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L996",
+      "weight": 1.0,
+      "source": "src_app_reportmodal",
+      "target": "src_constants_ash"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L1663",
+      "weight": 1.0,
+      "source": "src_app_ordersummary",
+      "target": "src_constants_ash"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L59",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_shl",
+      "target": "src_constants_apr"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_constants_apr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L692",
+      "weight": 1.0,
+      "source": "src_app_shelfdetail",
+      "target": "src_constants_apr"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_constants_defi"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_constants_pl"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L60",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_shp",
+      "target": "src_constants_shl"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_constants_shl"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L689",
+      "weight": 1.0,
+      "source": "src_app_shelfdetail",
+      "target": "src_constants_shl"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_constants_shp"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_constants_fcol"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L689",
+      "weight": 1.0,
+      "source": "src_app_shelfdetail",
+      "target": "src_constants_fcol"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_constants_ucol"
+    },
     {
       "relation": "imports_from",
       "context": "import",
@@ -386,174 +952,135 @@
       "target": "src_app_jsx"
     },
     {
-      "relation": "contains",
+      "relation": "imports_from",
+      "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/App.jsx",
-      "source_location": "L16",
+      "source_location": "L3",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_app_jsx",
-      "target": "src_app_dbset"
+      "target": "src_lib_db_js"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "lib_db_dbset"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "lib_db_hashpw"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "lib_db_ishashed"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "lib_db_locname"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "lib_db_keyfor"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "lib_db_migratehashes"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_i18n_trans_js"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "i18n_trans_dloc"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_styles_js"
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/App.jsx",
-      "source_location": "L30",
+      "source_location": "L8",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_app_jsx",
-      "target": "src_app_hashpw"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L34",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_ishashed"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L54",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_locname"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L57",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_keyfor"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L36",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_migratehashes"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L110",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L244",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_dloc"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L184",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_defcfgfor"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L161",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_ash"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L162",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_apr"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L163",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_defi"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L169",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_pl"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L170",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_shl"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L171",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_shp"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L172",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_fcol"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L173",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_ucol"
+      "target": "src_app_confirmmodal"
     },
     {
       "relation": "contains",
@@ -564,6 +1091,16 @@
       "confidence_score": 1.0,
       "source": "src_app_jsx",
       "target": "src_app_hellofreshlogo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_pinpad"
     },
     {
       "relation": "contains",
@@ -766,6 +1303,773 @@
       "target": "src_app_ftr"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.test.jsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_test_jsx",
+      "target": "src_app_jsx"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_dbset"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L30",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_hashpw"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L34",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_ishashed"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L54",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_locname"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L57",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_keyfor"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L36",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_migratehashes"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L110",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L244",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_dloc"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L184",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_defcfgfor"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L161",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_ash"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L162",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_apr"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L163",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_defi"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L169",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_pl"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L170",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_shl"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L171",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_shp"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L172",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_fcol"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L173",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_ucol"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L166",
+      "weight": 1.0,
+      "source": "src_app_app",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L376",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_app",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L309",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_app",
+      "target": "src_app_ash"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L568",
+      "weight": 1.0,
+      "source": "src_app_hdr",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L706",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_hdr",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L589",
+      "weight": 1.0,
+      "source": "src_app_accountloginpanel",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L851",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_accountloginpanel",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L640",
+      "weight": 1.0,
+      "source": "src_app_logincard",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L902",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_logincard",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L691",
+      "weight": 1.0,
+      "source": "src_app_shelfdetail",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L828",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_shelfdetail",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L849",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_shelfdetail",
+      "target": "src_app_apr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L826",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_shelfdetail",
+      "target": "src_app_shl"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L826",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_shelfdetail",
+      "target": "src_app_fcol"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L779",
+      "weight": 1.0,
+      "source": "src_app_consumptionview",
+      "target": "i18n_trans_dloc"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L796",
+      "weight": 1.0,
+      "source": "src_app_consumptionview",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1080",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_consumptionview",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1063",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_consumptionview",
+      "target": "src_app_dloc"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L927",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_consumptionview",
+      "target": "src_app_ash"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L867",
+      "weight": 1.0,
+      "source": "src_app_adminpanel",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1234",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_adminpanel",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L993",
+      "weight": 1.0,
+      "source": "src_app_reportmodal",
+      "target": "i18n_trans_dloc"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L1006",
+      "weight": 1.0,
+      "source": "src_app_reportmodal",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1275",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_reportmodal",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1275",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_reportmodal",
+      "target": "src_app_dloc"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1111",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_reportmodal",
+      "target": "src_app_ash"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L1099",
+      "weight": 1.0,
+      "source": "src_app_voorraadview",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1182",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_voorraadview",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L1342",
+      "weight": 1.0,
+      "source": "src_app_manualmodal",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1384",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_manualmodal",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L1502",
+      "weight": 1.0,
+      "source": "src_app_auditview",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1736",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_auditview",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L1541",
+      "weight": 1.0,
+      "source": "src_app_qrprintmodal",
+      "target": "lib_db_locname"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L1556",
+      "weight": 1.0,
+      "source": "src_app_qrprintmodal",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1641",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_qrprintmodal",
+      "target": "src_app_locname"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1748",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_qrprintmodal",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1745",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_ordersummary",
+      "target": "src_app_ash"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L1740",
+      "weight": 1.0,
+      "source": "src_app_sdscontrol",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L2077",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_sdscontrol",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L2074",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_sdscontrol",
+      "target": "src_app_dloc"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L1836",
+      "weight": 1.0,
+      "source": "src_app_feedbackmodal",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L2026",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_feedbackmodal",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_db_js",
+      "target": "lib_db_dbset"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_db_js",
+      "target": "lib_db_hashpw"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_db_js",
+      "target": "lib_db_ishashed"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L52",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_db_js",
+      "target": "lib_db_locname"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L55",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_db_js",
+      "target": "lib_db_keyfor"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L61",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_db_js",
+      "target": "lib_db_migratehashes"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L69",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_db_migratehashes",
+      "target": "lib_db_dbset"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L65",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_db_migratehashes",
+      "target": "lib_db_hashpw"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L65",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_db_migratehashes",
+      "target": "lib_db_ishashed"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L69",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_db_migratehashes",
+      "target": "lib_db_keyfor"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/i18n/trans.js",
+      "source_location": "L272",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_i18n_trans_js",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/i18n/trans.js",
+      "source_location": "L277",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_i18n_trans_js",
+      "target": "i18n_trans_dloc"
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
@@ -814,253 +2118,11 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/App.jsx",
-      "source_location": "L1641",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_qrprintmodal",
-      "target": "src_app_locname"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
       "source_location": "L71",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_app_migratehashes",
       "target": "src_app_keyfor"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L376",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_app",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L706",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_hdr",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L851",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_accountloginpanel",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L902",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_logincard",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L828",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_shelfdetail",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1080",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_consumptionview",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1234",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_adminpanel",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1275",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_reportmodal",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1182",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_voorraadview",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1384",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_manualmodal",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1736",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_auditview",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1748",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_qrprintmodal",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L2077",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_sdscontrol",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L2026",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_feedbackmodal",
-      "target": "src_app_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1063",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_consumptionview",
-      "target": "src_app_dloc"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1275",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_reportmodal",
-      "target": "src_app_dloc"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L2074",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_sdscontrol",
-      "target": "src_app_dloc"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L309",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_app",
-      "target": "src_app_ash"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L927",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_consumptionview",
-      "target": "src_app_ash"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1111",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_reportmodal",
-      "target": "src_app_ash"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1745",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_ordersummary",
-      "target": "src_app_ash"
     },
     {
       "relation": "calls",
@@ -1078,46 +2140,13 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/App.jsx",
-      "source_location": "L849",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_shelfdetail",
-      "target": "src_app_apr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
       "source_location": "L171",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_app_shp",
       "target": "src_app_shl"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L826",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_shelfdetail",
-      "target": "src_app_shl"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L826",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_shelfdetail",
-      "target": "src_app_fcol"
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "2a0a62e81fdd0efef4ec12b7ce511746e5f920ba"
+  "built_at_commit": "56061e095bc1c328308eae1580948d2b96817752"
 }
