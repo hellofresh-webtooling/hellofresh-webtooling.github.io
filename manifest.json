@@ -1,0 +1,18 @@
+{
+  "name": "Voorraadbeheer HelloFresh",
+  "short_name": "Voorraadbeheer",
+  "description": "Voorraadbeheer voor HelloFresh Nederland & België",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F0FAE8",
+  "theme_color": "#3D8B2E",
+  "lang": "nl",
+  "icons": [
+    {
+      "src": "/hellofresh-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
