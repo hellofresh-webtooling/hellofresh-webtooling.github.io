@@ -1,4 +1,4 @@
-const CACHE = "vkast-v2";
+const CACHE = "vkast-v3";
 
 self.addEventListener("install", e => {
   e.waitUntil(
@@ -32,16 +32,13 @@ self.addEventListener("fetch", e => {
     return;
   }
 
-  // Navigatie en overige verzoeken: stale-while-revalidate (cache direct, netwerk update op achtergrond)
+  // Navigatie (index.html): network-first zodat deploys direct actief zijn; cache als offline-fallback
   e.respondWith(
-    caches.open(CACHE).then(cache =>
-      cache.match(e.request).then(cached => {
-        const fresh = fetch(e.request).then(res => {
-          if (res.ok) cache.put(e.request, res.clone());
-          return res;
-        });
-        return cached || fresh;
+    fetch(e.request)
+      .then(res => {
+        if (res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+        return res;
       })
-    )
+      .catch(() => caches.match(e.request))
   );
 });
