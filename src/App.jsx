@@ -353,6 +353,7 @@ export default function App() {
     const shelves=shelvesMemo;
     const vProducts=vProductsMemo;
     const totalOrder=totalOrderMemo;
+    const totalOrderVoorraad=vProducts.reduce((s,p)=>s+Math.max(0,p.target-(inv[p.id]||{count:0}).count),0);
     return (
       <div dir={lang==="ar"?"rtl":"ltr"} style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,sans-serif",display:"flex",flexDirection:"column",alignItems:"center",paddingBottom:40}}>
         <style>{GF}</style>

@@ -1,54 +1,74 @@
 {
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/feedback_laadlijst_deploy.md": {
-    "mtime": 1781673320.7131677,
-    "hash": "c1f58788c44a9e43a183da2aad2d7814"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/vite.config.js": {
+    "mtime": 1781965892.5004408,
+    "hash": "ae6747f9afcffca4450ff5ece6594184"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/project_voorraadbeheer.md": {
-    "mtime": 1781935829.8989782,
-    "hash": "53bd802890ef026b1b80afdacce0ad4c"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/eslint.config.js": {
+    "mtime": 1781807609.8136237,
+    "hash": "5b7afe01d9234146cd1bbc469ae162ed"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/project_spraak_vertaler.md": {
-    "mtime": 1779645064.3503687,
-    "hash": "98693d43233dc8afbfe12fc8034dbf21"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/supabase/functions/stock-notify/index.ts": {
+    "mtime": 1781931474.898527,
+    "hash": "92b527847b37ca4bcb23a10989901c26"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/project_snelheidscheck.md": {
-    "mtime": 1778344574.9661877,
-    "hash": "09939699b172421b1ca1daabebe680e2"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/public/sw.js": {
+    "mtime": 1781965897.8169096,
+    "hash": "86742431e32ef3623be57008a7e79a98"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/reference_blackhole.md": {
-    "mtime": 1779643589.8823473,
-    "hash": "4453e573075c16d2d87a11983ac71702"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/constants.js": {
+    "mtime": 1781966322.1303992,
+    "hash": "2726a5e7c0542bd9e040212d7731db25"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/project_voorraadbeheer_verbeterplan.md": {
-    "mtime": 1781965988.587871,
-    "hash": "b9c5aab68592e5b7f6eed02452dd4fa9"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/main.jsx": {
+    "mtime": 1781931051.9774084,
+    "hash": "d4c5aeb6c35b211dfc35852534443eca"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/project_laadlijst.md": {
-    "mtime": 1781707466.9514074,
-    "hash": "5ff6e08e4c00833dc0d56965834fd5b0"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/App.jsx": {
+    "mtime": 1782139660.0451677,
+    "hash": "7b348f40eec4bfa070084247d8acd256"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/feedback_vault_commit.md": {
-    "mtime": 1781709423.8496442,
-    "hash": "aeae3af98754d989fe118fc7714cdeda"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/test-setup.js": {
+    "mtime": 1781807618.7011423,
+    "hash": "75e3a9790232ab9b4100e82f18c00702"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/MEMORY.md": {
-    "mtime": 1781935816.1591332,
-    "hash": "2464e9ddadc59fe4352f5c75eaf5777e"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/styles.js": {
+    "mtime": 1781808110.100516,
+    "hash": "d8277e18a6c6844f268b04054c6adf60"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/user_language.md": {
-    "mtime": 1778073261.1236587,
-    "hash": "506fa735c1cec523ac286e5f8357a9fa"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/App.test.jsx": {
+    "mtime": 1781807697.85041,
+    "hash": "bc9d4727979d6c0570de2b6bbcaa425f"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/project_webshop_platform.md": {
-    "mtime": 1778827478.3113728,
-    "hash": "0c184b2e1ca36a046b874e50999810ef"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/components/shared.jsx": {
+    "mtime": 1781966362.0863512,
+    "hash": "81fab12d370ae39552bba84b6477552f"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/feedback_model_suggestion.md": {
-    "mtime": 1779166532.5661936,
-    "hash": "88ede2b58b4881901b59afd78b96e3a5"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/components/LocationPicker.jsx": {
+    "mtime": 1781966639.736251,
+    "hash": "56a0b08ff1f9291151e49909f6a4ea61"
   },
-  "/Users/leroy/.claude/projects/-Users-leroy/memory/project_ollama_local_llm.md": {
-    "mtime": 1780493525.6181486,
-    "hash": "d0e405443abc722ce72fd7528d18f08b"
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/components/FeedbackModal.jsx": {
+    "mtime": 1781966431.4786556,
+    "hash": "b87dc71c47e6a63669acee8273ca459e"
+  },
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/components/SdsControl.jsx": {
+    "mtime": 1781966403.5770051,
+    "hash": "1bd199dc67a14a56db0f4570b43777ef"
+  },
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/lib/db.js": {
+    "mtime": 1781966304.1215901,
+    "hash": "16d3eb0fbfe7fd015db1ff6387c69655"
+  },
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/src/i18n/trans.js": {
+    "mtime": 1781965614.472375,
+    "hash": "eede01adfe57675729d897da610a6d8f"
+  },
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/index.html": {
+    "mtime": 1781931045.780396,
+    "hash": "1991c55568c7ecde1b011506061516ca"
+  },
+  "/Users/leroy/Downloads/vloeistoffenkast-demo/public/hellofresh-logo.svg": {
+    "mtime": 1781191544.9771442,
+    "hash": "a2b048abe7f4fbc551f9becf2d724311"
   }
 }

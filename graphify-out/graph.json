@@ -9,7 +9,7 @@
       "source_file": "vite.config.js",
       "source_location": "L1",
       "id": "vite_config_js",
-      "community": 7,
+      "community": 6,
       "norm_label": "vite.config.js"
     },
     {
@@ -18,8 +18,62 @@
       "source_file": "eslint.config.js",
       "source_location": "L1",
       "id": "eslint_config_js",
-      "community": 8,
+      "community": 7,
       "norm_label": "eslint.config.js"
+    },
+    {
+      "label": "index.ts",
+      "file_type": "code",
+      "source_file": "supabase/functions/stock-notify/index.ts",
+      "source_location": "L1",
+      "id": "supabase_functions_stock_notify_index_ts",
+      "community": 5,
+      "norm_label": "index.ts"
+    },
+    {
+      "label": "keyFor()",
+      "file_type": "code",
+      "source_file": "supabase/functions/stock-notify/index.ts",
+      "source_location": "L4",
+      "id": "stock_notify_index_keyfor",
+      "community": 5,
+      "norm_label": "keyfor()"
+    },
+    {
+      "label": "pL()",
+      "file_type": "code",
+      "source_file": "supabase/functions/stock-notify/index.ts",
+      "source_location": "L24",
+      "id": "stock_notify_index_pl",
+      "community": 5,
+      "norm_label": "pl()"
+    },
+    {
+      "label": "sendMail()",
+      "file_type": "code",
+      "source_file": "supabase/functions/stock-notify/index.ts",
+      "source_location": "L29",
+      "id": "stock_notify_index_sendmail",
+      "community": 5,
+      "norm_label": "sendmail()"
+    },
+    {
+      "label": "toHtml()",
+      "file_type": "code",
+      "source_file": "supabase/functions/stock-notify/index.ts",
+      "source_location": "L114",
+      "id": "stock_notify_index_tohtml",
+      "community": 5,
+      "norm_label": "tohtml()"
+    },
+    {
+      "label": "sw.js",
+      "file_type": "code",
+      "source_file": "public/sw.js",
+      "source_location": "L1",
+      "id": "public_sw_js",
+      "community": 8,
+      "norm_label": "sw.js"
     },
     {
       "label": "constants.js",
@@ -27,7 +81,7 @@
       "source_file": "src/constants.js",
       "source_location": "L1",
       "id": "src_constants_js",
-      "community": 3,
+      "community": 2,
       "norm_label": "constants.js"
     },
     {
@@ -36,7 +90,7 @@
       "source_file": "src/constants.js",
       "source_location": "L43",
       "id": "src_constants_defcfgfor",
-      "community": 3,
+      "community": 2,
       "norm_label": "defcfgfor()"
     },
     {
@@ -45,7 +99,7 @@
       "source_file": "src/constants.js",
       "source_location": "L50",
       "id": "src_constants_ash",
-      "community": 2,
+      "community": 1,
       "norm_label": "ash()"
     },
     {
@@ -54,7 +108,7 @@
       "source_file": "src/constants.js",
       "source_location": "L51",
       "id": "src_constants_apr",
-      "community": 3,
+      "community": 2,
       "norm_label": "apr()"
     },
     {
@@ -63,7 +117,7 @@
       "source_file": "src/constants.js",
       "source_location": "L52",
       "id": "src_constants_defi",
-      "community": 3,
+      "community": 2,
       "norm_label": "defi()"
     },
     {
@@ -72,7 +126,7 @@
       "source_file": "src/constants.js",
       "source_location": "L58",
       "id": "src_constants_pl",
-      "community": 3,
+      "community": 2,
       "norm_label": "pl()"
     },
     {
@@ -81,7 +135,7 @@
       "source_file": "src/constants.js",
       "source_location": "L59",
       "id": "src_constants_shl",
-      "community": 3,
+      "community": 2,
       "norm_label": "shl()"
     },
     {
@@ -90,7 +144,7 @@
       "source_file": "src/constants.js",
       "source_location": "L60",
       "id": "src_constants_shp",
-      "community": 3,
+      "community": 2,
       "norm_label": "shp()"
     },
     {
@@ -99,7 +153,7 @@
       "source_file": "src/constants.js",
       "source_location": "L61",
       "id": "src_constants_fcol",
-      "community": 5,
+      "community": 2,
       "norm_label": "fcol()"
     },
     {
@@ -108,8 +162,17 @@
       "source_file": "src/constants.js",
       "source_location": "L62",
       "id": "src_constants_ucol",
-      "community": 3,
+      "community": 2,
       "norm_label": "ucol()"
+    },
+    {
+      "label": "orderSummary()",
+      "file_type": "code",
+      "source_file": "src/constants.js",
+      "source_location": "L64",
+      "id": "src_constants_ordersummary",
+      "community": 1,
+      "norm_label": "ordersummary()"
     },
     {
       "label": "main.jsx",
@@ -130,55 +193,19 @@
       "norm_label": "app.jsx"
     },
     {
-      "label": "ConfirmModal()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L8",
-      "id": "src_app_confirmmodal",
-      "community": 0,
-      "norm_label": "confirmmodal()"
-    },
-    {
-      "label": "HelloFreshLogo()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L22",
-      "id": "src_app_hellofreshlogo",
-      "community": 0,
-      "norm_label": "hellofreshlogo()"
-    },
-    {
-      "label": "PinPad()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L28",
-      "id": "src_app_pinpad",
-      "community": 0,
-      "norm_label": "pinpad()"
-    },
-    {
       "label": "App()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L57",
+      "source_location": "L12",
       "id": "src_app_app",
-      "community": 2,
-      "norm_label": "app()"
-    },
-    {
-      "label": "Hdr()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L603",
-      "id": "src_app_hdr",
       "community": 1,
-      "norm_label": "hdr()"
+      "norm_label": "app()"
     },
     {
       "label": "AccountLoginPanel()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L622",
+      "source_location": "L568",
       "id": "src_app_accountloginpanel",
       "community": 1,
       "norm_label": "accountloginpanel()"
@@ -187,7 +214,7 @@
       "label": "LoginCard()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L646",
+      "source_location": "L592",
       "id": "src_app_logincard",
       "community": 1,
       "norm_label": "logincard()"
@@ -196,7 +223,7 @@
       "label": "Cabinet()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L699",
+      "source_location": "L648",
       "id": "src_app_cabinet",
       "community": 0,
       "norm_label": "cabinet()"
@@ -205,25 +232,25 @@
       "label": "ShelfDetail()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L723",
+      "source_location": "L672",
       "id": "src_app_shelfdetail",
-      "community": 5,
+      "community": 2,
       "norm_label": "shelfdetail()"
     },
     {
       "label": "ConsumptionView()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L816",
+      "source_location": "L765",
       "id": "src_app_consumptionview",
-      "community": 2,
+      "community": 1,
       "norm_label": "consumptionview()"
     },
     {
       "label": "AdminPanel()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L882",
+      "source_location": "L831",
       "id": "src_app_adminpanel",
       "community": 1,
       "norm_label": "adminpanel()"
@@ -232,16 +259,16 @@
       "label": "ReportModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1028",
+      "source_location": "L979",
       "id": "src_app_reportmodal",
-      "community": 2,
+      "community": 1,
       "norm_label": "reportmodal()"
     },
     {
       "label": "VoorraadView()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1127",
+      "source_location": "L1079",
       "id": "src_app_voorraadview",
       "community": 1,
       "norm_label": "voorraadview()"
@@ -250,7 +277,7 @@
       "label": "ManualModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1324",
+      "source_location": "L1276",
       "id": "src_app_manualmodal",
       "community": 1,
       "norm_label": "manualmodal()"
@@ -259,7 +286,7 @@
       "label": "AuditView()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1541",
+      "source_location": "L1494",
       "id": "src_app_auditview",
       "community": 1,
       "norm_label": "auditview()"
@@ -268,73 +295,19 @@
       "label": "QRPrintModal()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1580",
+      "source_location": "L1533",
       "id": "src_app_qrprintmodal",
       "community": 1,
       "norm_label": "qrprintmodal()"
     },
     {
-      "label": "orderSummary()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L1705",
-      "id": "src_app_ordersummary",
-      "community": 2,
-      "norm_label": "ordersummary()"
-    },
-    {
-      "label": "sdsKindOf()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L1732",
-      "id": "src_app_sdskindof",
-      "community": 0,
-      "norm_label": "sdskindof()"
-    },
-    {
-      "label": "SdsControl()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L1734",
-      "id": "src_app_sdscontrol",
-      "community": 2,
-      "norm_label": "sdscontrol()"
-    },
-    {
-      "label": "FeedbackModal()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L1853",
-      "id": "src_app_feedbackmodal",
-      "community": 1,
-      "norm_label": "feedbackmodal()"
-    },
-    {
-      "label": "LocationPicker()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L1936",
-      "id": "src_app_locationpicker",
-      "community": 0,
-      "norm_label": "locationpicker()"
-    },
-    {
       "label": "HQDashboard()",
       "file_type": "code",
       "source_file": "src/App.jsx",
-      "source_location": "L1981",
+      "source_location": "L1661",
       "id": "src_app_hqdashboard",
       "community": 0,
       "norm_label": "hqdashboard()"
-    },
-    {
-      "label": "Ftr()",
-      "file_type": "code",
-      "source_file": "src/App.jsx",
-      "source_location": "L2217",
-      "id": "src_app_ftr",
-      "community": 0,
-      "norm_label": "ftr()"
     },
     {
       "label": "test-setup.js",
@@ -351,7 +324,7 @@
       "source_file": "src/styles.js",
       "source_location": "L1",
       "id": "src_styles_js",
-      "community": 0,
+      "community": 3,
       "norm_label": "styles.js"
     },
     {
@@ -362,6 +335,132 @@
       "id": "src_app_test_jsx",
       "community": 0,
       "norm_label": "app.test.jsx"
+    },
+    {
+      "label": "shared.jsx",
+      "file_type": "code",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L1",
+      "id": "src_components_shared_jsx",
+      "community": 3,
+      "norm_label": "shared.jsx"
+    },
+    {
+      "label": "useFocusTrap()",
+      "file_type": "code",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L5",
+      "id": "components_shared_usefocustrap",
+      "community": 3,
+      "norm_label": "usefocustrap()"
+    },
+    {
+      "label": "ConfirmModal()",
+      "file_type": "code",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L25",
+      "id": "components_shared_confirmmodal",
+      "community": 3,
+      "norm_label": "confirmmodal()"
+    },
+    {
+      "label": "HelloFreshLogo()",
+      "file_type": "code",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L46",
+      "id": "components_shared_hellofreshlogo",
+      "community": 3,
+      "norm_label": "hellofreshlogo()"
+    },
+    {
+      "label": "PinPad()",
+      "file_type": "code",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L52",
+      "id": "components_shared_pinpad",
+      "community": 3,
+      "norm_label": "pinpad()"
+    },
+    {
+      "label": "Hdr()",
+      "file_type": "code",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L81",
+      "id": "components_shared_hdr",
+      "community": 3,
+      "norm_label": "hdr()"
+    },
+    {
+      "label": "Ftr()",
+      "file_type": "code",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L103",
+      "id": "components_shared_ftr",
+      "community": 3,
+      "norm_label": "ftr()"
+    },
+    {
+      "label": "LocationPicker.jsx",
+      "file_type": "code",
+      "source_file": "src/components/LocationPicker.jsx",
+      "source_location": "L1",
+      "id": "src_components_locationpicker_jsx",
+      "community": 3,
+      "norm_label": "locationpicker.jsx"
+    },
+    {
+      "label": "LocationPicker()",
+      "file_type": "code",
+      "source_file": "src/components/LocationPicker.jsx",
+      "source_location": "L5",
+      "id": "components_locationpicker_locationpicker",
+      "community": 3,
+      "norm_label": "locationpicker()"
+    },
+    {
+      "label": "FeedbackModal.jsx",
+      "file_type": "code",
+      "source_file": "src/components/FeedbackModal.jsx",
+      "source_location": "L1",
+      "id": "src_components_feedbackmodal_jsx",
+      "community": 4,
+      "norm_label": "feedbackmodal.jsx"
+    },
+    {
+      "label": "FeedbackModal()",
+      "file_type": "code",
+      "source_file": "src/components/FeedbackModal.jsx",
+      "source_location": "L6",
+      "id": "components_feedbackmodal_feedbackmodal",
+      "community": 4,
+      "norm_label": "feedbackmodal()"
+    },
+    {
+      "label": "SdsControl.jsx",
+      "file_type": "code",
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L1",
+      "id": "src_components_sdscontrol_jsx",
+      "community": 3,
+      "norm_label": "sdscontrol.jsx"
+    },
+    {
+      "label": "sdsKindOf()",
+      "file_type": "code",
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L12",
+      "id": "components_sdscontrol_sdskindof",
+      "community": 3,
+      "norm_label": "sdskindof()"
+    },
+    {
+      "label": "SdsControl()",
+      "file_type": "code",
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L14",
+      "id": "components_sdscontrol_sdscontrol",
+      "community": 3,
+      "norm_label": "sdscontrol()"
     },
     {
       "label": "db.js",
@@ -382,19 +481,46 @@
       "norm_label": "dbset()"
     },
     {
-      "label": "hashPw()",
+      "label": "toHex()",
       "file_type": "code",
       "source_file": "src/lib/db.js",
       "source_location": "L27",
+      "id": "lib_db_tohex",
+      "community": 4,
+      "norm_label": "tohex()"
+    },
+    {
+      "label": "hashSha256()",
+      "file_type": "code",
+      "source_file": "src/lib/db.js",
+      "source_location": "L29",
+      "id": "lib_db_hashsha256",
+      "community": 4,
+      "norm_label": "hashsha256()"
+    },
+    {
+      "label": "hashPw()",
+      "file_type": "code",
+      "source_file": "src/lib/db.js",
+      "source_location": "L34",
       "id": "lib_db_hashpw",
       "community": 4,
       "norm_label": "hashpw()"
     },
     {
+      "label": "verifyPw()",
+      "file_type": "code",
+      "source_file": "src/lib/db.js",
+      "source_location": "L41",
+      "id": "lib_db_verifypw",
+      "community": 4,
+      "norm_label": "verifypw()"
+    },
+    {
       "label": "isHashed()",
       "file_type": "code",
       "source_file": "src/lib/db.js",
-      "source_location": "L31",
+      "source_location": "L54",
       "id": "lib_db_ishashed",
       "community": 4,
       "norm_label": "ishashed()"
@@ -403,16 +529,16 @@
       "label": "locName()",
       "file_type": "code",
       "source_file": "src/lib/db.js",
-      "source_location": "L52",
+      "source_location": "L75",
       "id": "lib_db_locname",
-      "community": 3,
+      "community": 2,
       "norm_label": "locname()"
     },
     {
       "label": "keyFor()",
       "file_type": "code",
       "source_file": "src/lib/db.js",
-      "source_location": "L55",
+      "source_location": "L78",
       "id": "lib_db_keyfor",
       "community": 4,
       "norm_label": "keyfor()"
@@ -421,7 +547,7 @@
       "label": "migrateHashes()",
       "file_type": "code",
       "source_file": "src/lib/db.js",
-      "source_location": "L61",
+      "source_location": "L84",
       "id": "lib_db_migratehashes",
       "community": 4,
       "norm_label": "migratehashes()"
@@ -432,14 +558,14 @@
       "source_file": "src/i18n/trans.js",
       "source_location": "L1",
       "id": "src_i18n_trans_js",
-      "community": 2,
+      "community": 4,
       "norm_label": "trans.js"
     },
     {
       "label": "tr()",
       "file_type": "code",
       "source_file": "src/i18n/trans.js",
-      "source_location": "L272",
+      "source_location": "L288",
       "id": "i18n_trans_tr",
       "community": 1,
       "norm_label": "tr()"
@@ -448,17 +574,107 @@
       "label": "dloc()",
       "file_type": "code",
       "source_file": "src/i18n/trans.js",
-      "source_location": "L277",
+      "source_location": "L293",
       "id": "i18n_trans_dloc",
-      "community": 2,
+      "community": 1,
       "norm_label": "dloc()"
+    },
+    {
+      "label": "ConfirmModal()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L8",
+      "community": 0,
+      "norm_label": "confirmmodal()",
+      "id": "src_app_confirmmodal"
+    },
+    {
+      "label": "HelloFreshLogo()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L22",
+      "community": 0,
+      "norm_label": "hellofreshlogo()",
+      "id": "src_app_hellofreshlogo"
+    },
+    {
+      "label": "PinPad()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L28",
+      "community": 0,
+      "norm_label": "pinpad()",
+      "id": "src_app_pinpad"
+    },
+    {
+      "label": "Hdr()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L603",
+      "community": 1,
+      "norm_label": "hdr()",
+      "id": "src_app_hdr"
+    },
+    {
+      "label": "orderSummary()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L1705",
+      "community": 1,
+      "norm_label": "ordersummary()",
+      "id": "src_app_ordersummary"
+    },
+    {
+      "label": "sdsKindOf()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L1732",
+      "community": 0,
+      "norm_label": "sdskindof()",
+      "id": "src_app_sdskindof"
+    },
+    {
+      "label": "SdsControl()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L1734",
+      "community": 1,
+      "norm_label": "sdscontrol()",
+      "id": "src_app_sdscontrol"
+    },
+    {
+      "label": "FeedbackModal()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L1853",
+      "community": 1,
+      "norm_label": "feedbackmodal()",
+      "id": "src_app_feedbackmodal"
+    },
+    {
+      "label": "LocationPicker()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L1936",
+      "community": 0,
+      "norm_label": "locationpicker()",
+      "id": "src_app_locationpicker"
+    },
+    {
+      "label": "Ftr()",
+      "file_type": "code",
+      "source_file": "src/App.jsx",
+      "source_location": "L2217",
+      "community": 0,
+      "norm_label": "ftr()",
+      "id": "src_app_ftr"
     },
     {
       "label": "dbSet()",
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L15",
-      "community": 6,
+      "community": 0,
       "norm_label": "dbset()",
       "id": "src_app_dbset"
     },
@@ -467,7 +683,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L29",
-      "community": 6,
+      "community": 0,
       "norm_label": "hashpw()",
       "id": "src_app_hashpw"
     },
@@ -476,7 +692,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L33",
-      "community": 6,
+      "community": 0,
       "norm_label": "ishashed()",
       "id": "src_app_ishashed"
     },
@@ -485,7 +701,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L55",
-      "community": 1,
+      "community": 0,
       "norm_label": "locname()",
       "id": "src_app_locname"
     },
@@ -494,7 +710,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L58",
-      "community": 6,
+      "community": 0,
       "norm_label": "keyfor()",
       "id": "src_app_keyfor"
     },
@@ -503,7 +719,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L64",
-      "community": 6,
+      "community": 0,
       "norm_label": "migratehashes()",
       "id": "src_app_migratehashes"
     },
@@ -521,7 +737,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L351",
-      "community": 2,
+      "community": 1,
       "norm_label": "dloc()",
       "id": "src_app_dloc"
     },
@@ -530,7 +746,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L395",
-      "community": 1,
+      "community": 0,
       "norm_label": "defcfgfor()",
       "id": "src_app_defcfgfor"
     },
@@ -539,7 +755,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L402",
-      "community": 2,
+      "community": 1,
       "norm_label": "ash()",
       "id": "src_app_ash"
     },
@@ -548,7 +764,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L403",
-      "community": 5,
+      "community": 2,
       "norm_label": "apr()",
       "id": "src_app_apr"
     },
@@ -575,7 +791,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L411",
-      "community": 5,
+      "community": 2,
       "norm_label": "shl()",
       "id": "src_app_shl"
     },
@@ -584,7 +800,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L412",
-      "community": 5,
+      "community": 2,
       "norm_label": "shp()",
       "id": "src_app_shp"
     },
@@ -593,7 +809,7 @@
       "file_type": "code",
       "source_file": "src/App.jsx",
       "source_location": "L413",
-      "community": 5,
+      "community": 2,
       "norm_label": "fcol()",
       "id": "src_app_fcol"
     },
@@ -608,6 +824,46 @@
     }
   ],
   "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/stock-notify/index.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "supabase_functions_stock_notify_index_ts",
+      "target": "stock_notify_index_keyfor"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/stock-notify/index.ts",
+      "source_location": "L24",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "supabase_functions_stock_notify_index_ts",
+      "target": "stock_notify_index_pl"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/stock-notify/index.ts",
+      "source_location": "L29",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "supabase_functions_stock_notify_index_ts",
+      "target": "stock_notify_index_sendmail"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "supabase/functions/stock-notify/index.ts",
+      "source_location": "L114",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "supabase_functions_stock_notify_index_ts",
+      "target": "stock_notify_index_tohtml"
+    },
     {
       "relation": "imports_from",
       "context": "import",
@@ -721,6 +977,16 @@
       "target": "src_constants_ucol"
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L64",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_js",
+      "target": "src_constants_ordersummary"
+    },
+    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -752,6 +1018,17 @@
       "weight": 1.0,
       "source": "src_constants_defcfgfor",
       "target": "lib_db_locname"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/constants.js",
+      "source_location": "L65",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_constants_ordersummary",
+      "target": "src_constants_ash"
     },
     {
       "relation": "imports",
@@ -941,6 +1218,17 @@
       "target": "src_constants_ucol"
     },
     {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_constants_ordersummary"
+    },
+    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -983,6 +1271,17 @@
       "confidence_score": 1.0,
       "source": "src_app_jsx",
       "target": "lib_db_hashpw"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "lib_db_verifypw"
     },
     {
       "relation": "imports",
@@ -1073,34 +1372,114 @@
       "target": "src_styles_js"
     },
     {
-      "relation": "contains",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_components_shared_jsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "components_shared_usefocustrap"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "components_shared_confirmmodal"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "components_shared_hellofreshlogo"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "components_shared_pinpad"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "components_shared_hdr"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L7",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "components_shared_ftr"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/App.jsx",
       "source_location": "L8",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_app_jsx",
-      "target": "src_app_confirmmodal"
+      "target": "src_components_sdscontrol_jsx"
     },
     {
-      "relation": "contains",
+      "relation": "imports_from",
+      "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/App.jsx",
-      "source_location": "L216",
+      "source_location": "L9",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_app_jsx",
-      "target": "src_app_hellofreshlogo"
+      "target": "src_components_feedbackmodal_jsx"
     },
     {
-      "relation": "contains",
+      "relation": "imports_from",
+      "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/App.jsx",
-      "source_location": "L28",
+      "source_location": "L10",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_app_jsx",
-      "target": "src_app_pinpad"
+      "target": "src_components_locationpicker_jsx"
     },
     {
       "relation": "contains",
@@ -1111,16 +1490,6 @@
       "confidence_score": 1.0,
       "source": "src_app_jsx",
       "target": "src_app_app"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L705",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_hdr"
     },
     {
       "relation": "contains",
@@ -1236,6 +1605,67 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/App.jsx",
+      "source_location": "L1804",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_hqdashboard"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.test.jsx",
+      "source_location": "L13",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_test_jsx",
+      "target": "src_app_jsx"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_confirmmodal"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L216",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_hellofreshlogo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L28",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_pinpad"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L705",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_jsx",
+      "target": "src_app_hdr"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
       "source_location": "L1744",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -1286,32 +1716,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/App.jsx",
-      "source_location": "L1804",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_jsx",
-      "target": "src_app_hqdashboard"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
       "source_location": "L1689",
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_app_jsx",
       "target": "src_app_ftr"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.test.jsx",
-      "source_location": "L13",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_test_jsx",
-      "target": "src_app_jsx"
     },
     {
       "relation": "contains",
@@ -1515,28 +1924,6 @@
       "confidence_score": 1.0,
       "source": "src_app_app",
       "target": "src_app_ash"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "INFERRED",
-      "confidence_score": 0.8,
-      "source_file": "src/App.jsx",
-      "source_location": "L568",
-      "weight": 1.0,
-      "source": "src_app_hdr",
-      "target": "i18n_trans_tr"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L706",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_hdr",
-      "target": "src_app_tr"
     },
     {
       "relation": "calls",
@@ -1880,70 +2267,379 @@
       "target": "src_app_tr"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_shared_jsx",
+      "target": "src_styles_js"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/LocationPicker.jsx",
+      "source_location": "L1",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_locationpicker_jsx",
+      "target": "src_styles_js"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/FeedbackModal.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_feedbackmodal_jsx",
+      "target": "src_styles_js"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_sdscontrol_jsx",
+      "target": "src_styles_js"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_shared_jsx",
+      "target": "src_i18n_trans_js"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_shared_jsx",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_shared_jsx",
+      "target": "components_shared_usefocustrap"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L25",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_shared_jsx",
+      "target": "components_shared_confirmmodal"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L46",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_shared_jsx",
+      "target": "components_shared_hellofreshlogo"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L52",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_shared_jsx",
+      "target": "components_shared_pinpad"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L81",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_shared_jsx",
+      "target": "components_shared_hdr"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L103",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_shared_jsx",
+      "target": "components_shared_ftr"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/LocationPicker.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_locationpicker_jsx",
+      "target": "src_components_shared_jsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_sdscontrol_jsx",
+      "target": "src_components_shared_jsx"
+    },
+    {
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L1745",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L27",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "src_app_ordersummary",
-      "target": "src_app_ash"
+      "source": "components_shared_confirmmodal",
+      "target": "components_shared_usefocustrap"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_sdscontrol_jsx",
+      "target": "components_shared_confirmmodal"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/LocationPicker.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_locationpicker_jsx",
+      "target": "components_shared_hellofreshlogo"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/LocationPicker.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_locationpicker_jsx",
+      "target": "components_shared_hdr"
     },
     {
       "relation": "calls",
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "src/App.jsx",
-      "source_location": "L1740",
+      "source_file": "src/components/shared.jsx",
+      "source_location": "L82",
       "weight": 1.0,
-      "source": "src_app_sdscontrol",
+      "source": "components_shared_hdr",
       "target": "i18n_trans_tr"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "imports",
+      "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L2077",
+      "source_file": "src/components/LocationPicker.jsx",
+      "source_location": "L3",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "src_app_sdscontrol",
-      "target": "src_app_tr"
+      "source": "src_components_locationpicker_jsx",
+      "target": "components_shared_ftr"
     },
     {
-      "relation": "calls",
-      "context": "call",
+      "relation": "imports_from",
+      "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L2074",
+      "source_file": "src/components/LocationPicker.jsx",
+      "source_location": "L2",
       "weight": 1.0,
       "confidence_score": 1.0,
-      "source": "src_app_sdscontrol",
-      "target": "src_app_dloc"
+      "source": "src_components_locationpicker_jsx",
+      "target": "src_lib_db_js"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/LocationPicker.jsx",
+      "source_location": "L5",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_locationpicker_jsx",
+      "target": "components_locationpicker_locationpicker"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/FeedbackModal.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_feedbackmodal_jsx",
+      "target": "src_lib_db_js"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/FeedbackModal.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_feedbackmodal_jsx",
+      "target": "lib_db_dbset"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/FeedbackModal.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_feedbackmodal_jsx",
+      "target": "lib_db_keyfor"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/FeedbackModal.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_feedbackmodal_jsx",
+      "target": "src_i18n_trans_js"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/FeedbackModal.jsx",
+      "source_location": "L3",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_feedbackmodal_jsx",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/FeedbackModal.jsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_feedbackmodal_jsx",
+      "target": "components_feedbackmodal_feedbackmodal"
     },
     {
       "relation": "calls",
       "context": "call",
       "confidence": "INFERRED",
       "confidence_score": 0.8,
-      "source_file": "src/App.jsx",
-      "source_location": "L1836",
+      "source_file": "src/components/FeedbackModal.jsx",
+      "source_location": "L36",
       "weight": 1.0,
-      "source": "src_app_feedbackmodal",
+      "source": "components_feedbackmodal_feedbackmodal",
       "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_sdscontrol_jsx",
+      "target": "src_i18n_trans_js"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_sdscontrol_jsx",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L2",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_sdscontrol_jsx",
+      "target": "i18n_trans_dloc"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L12",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_sdscontrol_jsx",
+      "target": "components_sdscontrol_sdskindof"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L14",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_sdscontrol_jsx",
+      "target": "components_sdscontrol_sdscontrol"
     },
     {
       "relation": "calls",
       "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "src/App.jsx",
-      "source_location": "L2026",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/components/SdsControl.jsx",
+      "source_location": "L65",
       "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_app_feedbackmodal",
-      "target": "src_app_tr"
+      "source": "components_sdscontrol_sdscontrol",
+      "target": "i18n_trans_tr"
     },
     {
       "relation": "contains",
@@ -1963,7 +2659,37 @@
       "weight": 1.0,
       "confidence_score": 1.0,
       "source": "src_lib_db_js",
+      "target": "lib_db_tohex"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L29",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_db_js",
+      "target": "lib_db_hashsha256"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L27",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_db_js",
       "target": "lib_db_hashpw"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L41",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_lib_db_js",
+      "target": "lib_db_verifypw"
     },
     {
       "relation": "contains",
@@ -2021,6 +2747,50 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/lib/db.js",
+      "source_location": "L31",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_db_hashsha256",
+      "target": "lib_db_tohex"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L38",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_db_hashpw",
+      "target": "lib_db_tohex"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L49",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_db_verifypw",
+      "target": "lib_db_tohex"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
+      "source_location": "L51",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "lib_db_verifypw",
+      "target": "lib_db_hashsha256"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db.js",
       "source_location": "L65",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -2068,6 +2838,94 @@
       "confidence_score": 1.0,
       "source": "src_i18n_trans_js",
       "target": "i18n_trans_dloc"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L568",
+      "weight": 1.0,
+      "source": "src_app_hdr",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L1740",
+      "weight": 1.0,
+      "source": "src_app_sdscontrol",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/App.jsx",
+      "source_location": "L1836",
+      "weight": 1.0,
+      "source": "src_app_feedbackmodal",
+      "target": "i18n_trans_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L706",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_hdr",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L1745",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_ordersummary",
+      "target": "src_app_ash"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L2077",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_sdscontrol",
+      "target": "src_app_tr"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L2074",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_sdscontrol",
+      "target": "src_app_dloc"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/App.jsx",
+      "source_location": "L2026",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_app_feedbackmodal",
+      "target": "src_app_tr"
     },
     {
       "relation": "calls",
@@ -2148,5 +3006,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "56061e095bc1c328308eae1580948d2b96817752"
+  "built_at_commit": "0e9ad8fead411cad02b6c9a06f49f0c76d6455d6"
 }
