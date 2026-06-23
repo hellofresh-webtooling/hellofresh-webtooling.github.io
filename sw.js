@@ -25,7 +25,7 @@ self.addEventListener("fetch", e => {
   if (/\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(js|css|woff2?)/.test(url.pathname)) {
     e.respondWith(
       caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
-        if (res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+        if (res.ok) { const clone = res.clone(); caches.open(CACHE).then(c => c.put(e.request, clone)); }
         return res;
       }))
     );
@@ -36,7 +36,7 @@ self.addEventListener("fetch", e => {
   e.respondWith(
     fetch(e.request)
       .then(res => {
-        if (res.ok) caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+        if (res.ok) { const clone = res.clone(); caches.open(CACHE).then(c => c.put(e.request, clone)); }
         return res;
       })
       .catch(() => caches.match(e.request))
