@@ -2,6 +2,30 @@ import { GF } from "../styles.js";
 import { LOCATIONS, COUNTRIES } from "../lib/db.js";
 import { HelloFreshLogo, Hdr, Ftr } from "./shared.jsx";
 
+// Inline SVG-vlaggen: renderen overal (ook Windows, waar emoji-vlaggen niet werken)
+function FlagIcon({code}){
+  const common={width:24,height:16,rx:2.5,style:{display:"block",boxShadow:"0 0 0 1px rgba(0,0,0,0.08)",borderRadius:2.5}};
+  if(code==="NL"){
+    return(
+      <svg viewBox="0 0 24 16" {...common}>
+        <rect width="24" height="16" fill="#21468B"/>
+        <rect width="24" height="10.67" fill="#fff"/>
+        <rect width="24" height="5.33" fill="#AE1C28"/>
+      </svg>
+    );
+  }
+  if(code==="BE"){
+    return(
+      <svg viewBox="0 0 24 16" {...common}>
+        <rect width="24" height="16" fill="#EF3340"/>
+        <rect width="16" height="16" fill="#FDDA24"/>
+        <rect width="8" height="16" fill="#000"/>
+      </svg>
+    );
+  }
+  return null;
+}
+
 export default function LocationPicker({onPick,onHQ}){
   return(
     <div style={{minHeight:"100vh",background:"linear-gradient(160deg,#F0FAE8,#FEFCF4)",fontFamily:"Nunito,Arial,sans-serif",display:"flex",flexDirection:"column",alignItems:"center"}}>
@@ -18,7 +42,7 @@ export default function LocationPicker({onPick,onHQ}){
           return(
             <div key={c.code} style={{width:"100%",marginBottom:22}}>
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-                <span style={{fontSize:18}}>{c.flag}</span>
+                <FlagIcon code={c.code}/>
                 <span style={{fontSize:12,fontWeight:800,color:"#4A6A3A",textTransform:"uppercase",letterSpacing:1}}>{c.label}</span>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10}}>
