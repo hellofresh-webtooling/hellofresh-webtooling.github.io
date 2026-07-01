@@ -20,8 +20,6 @@ export default function LocationPicker({onPick,onHQ}){
               <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
                 <span style={{fontSize:18}}>{c.flag}</span>
                 <span style={{fontSize:12,fontWeight:800,color:"#4A6A3A",textTransform:"uppercase",letterSpacing:1}}>{c.label}</span>
-                <div style={{flex:1,height:2,background:"#EEF9E6",borderRadius:2}}/>
-                <span style={{fontSize:10,fontWeight:700,color:"#8AAA7A"}}>{locs.length}</span>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(140px,1fr))",gap:10}}>
                 {locs.map(l=>(
