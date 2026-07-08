@@ -17,7 +17,7 @@ const MERK_COLOR = { HelloFresh: BRAND.lime, Factor: "#1A1A1A" };
 // Werkelijke boxafmetingen (visueel/informatief, telt niet mee in de volgorde)
 const SIZES = { L: { w: 0.5, h: 0.42, d: 0.5 }, M: { w: 0.4, h: 0.32, d: 0.4 }, S: { w: 0.3, h: 0.24, d: 0.3 } };
 
-// Uniforme slotmaat voor het stapelraster (3 boxen naast elkaar per laag)
+// Uniforme slotmaat voor het stapelraster
 const UNIT = { w: 0.5, h: 0.38, d: 0.5 };
 const SLOT_GAP = 0.1;
 
@@ -47,120 +47,73 @@ const ROUTES = [
   { id: "centrum", naam: "Ruinerwold Centrum", boxes: generateBoxes("centrum", 30, 6) },
 ];
 
-const BLOCK_LAYERS = 4; // "tot aan de lijn" — schematische invulling van de 20cm-vrije-ruimte-regel
-const BLOCK_CAPACITY = 3 * BLOCK_LAYERS;
-const ADDON_LAYERS = 6;
-const ADDON_CAPACITY = 2 * ADDON_LAYERS; // max 12 boxen (2x6), voor restant/add-on/Factor-boxen
+const COL_HEIGHT = 3; // boxen per kolom — bevestigd op een daadwerkelijk geladen bus (route RUIAM-260708)
+const REAR_LANES = 4; // kolommen naast elkaar bij de achterdeuren
+const FRONT_FRACTION = 0.4; // aandeel van de boxen (hoogste stopnummers) dat vooraan bij de cabine komt
 
-// Laadproces (zijkant-module) — volgens de "HelloFresh Laagjes Methode" uit de SOP:
-// laders staan bij de pallet en geven boxen door aan de lader bij de zijdeur, die in
-// laagjes stapelt, van links naar rechts (zodat de eerstvolgende stop altijd rechts staat).
-// Eerst het blok vooraan (bij de cabine) volledig vullen tot aan de lijn, dan het blok
-// achteraan. Restant-, add-on- en Factor-boxen (max 12, 2x6) komen apart bij de zijdeur —
-// onderop het hoogste nummer, bovenop het laagste. Volgorde: aflopend stopnummer.
-function computeSideLayout(boxesList) {
+// Eén doorlopend, daadwerkelijk laadproces, gefotografeerd van begin tot eind op een echte
+// bus (route RUIAM-260708). Geen twee losse "methodes" meer — de schuifdeur en de
+// achterdeuren worden voor twee verschillende stukken van dezelfde bus gebruikt:
+//
+// - Vooraan (bij de cabine, bereikt via de schuifdeur): 1 box breed. Kolommen van 3 hoog,
+//   onderin steeds het hoogste (dus laatst te bezorgen) stopnummer van die kolom, boven-
+//   in het laagste. Eerste kolom helemaal tegen de voorwand, elke volgende kolom een stukje
+//   verder naar het midden van de bus toe.
+// - Achteraan (bereikt via de achterdeuren): 4 kolommen naast elkaar, ook 3 hoog, in
+//   "golven" van 12 boxen. Een golf wordt vlak bij de achterdeur opgebouwd (van het hoogste
+//   naar het laagste stopnummer van die golf) en daarna in zijn geheel een stukje naar
+//   binnen geschoven — voor de ergonomie, en om plek te maken voor de volgende golf. Netto
+//   effect: na afloop staan de laagste (eerst te bezorgen) stopnummers het dichtst bij de
+//   achterdeur.
+function computeVanLayout(boxesList) {
   const order = [...boxesList].sort((a, b) => b.stop - a.stop);
 
   const pitchX = UNIT.w + SLOT_GAP;
   const pitchY = UNIT.h + SLOT_GAP * 0.6;
   const pitchZ = UNIT.d + SLOT_GAP;
 
-  let frontZ = pitchZ * 0.6;
-  let backZ = -pitchZ * 1.6;
-  let addonZ = pitchZ * 1.9;
-  const addonPitchX = pitchX * 0.62;
+  const frontCount = Math.min(order.length, Math.round(order.length * FRONT_FRACTION));
+  const frontBoxes = order.slice(0, frontCount);
+  const rearBoxes = order.slice(frontCount);
 
-  // centreren zodat de wanden/deuren (die symmetrisch rond z=0 gebouwd worden) blijven kloppen
-  const rearmost = backZ - pitchZ / 2;
-  const frontmost = addonZ + pitchZ / 2;
-  const shift = -(rearmost + frontmost) / 2;
-  frontZ += shift;
-  backZ += shift;
-  addonZ += shift;
+  const frontColumns = Math.ceil(frontBoxes.length / COL_HEIGHT);
+  const rearChunks = Math.ceil(rearBoxes.length / (COL_HEIGHT * REAR_LANES));
+
+  const frontDepth = frontColumns * pitchZ;
+  const rearDepth = Math.max(rearChunks, 1) * pitchZ;
+  const busDepth = frontDepth + rearDepth + 0.8;
+  const busWidth = REAR_LANES * pitchX + 0.6;
+  const busHeight = COL_HEIGHT * pitchY + 0.5;
+  const halfD = busDepth / 2;
 
   const positions = {};
+
+  // Vooraan: 1 kolom breed, begint tegen de voorwand en werkt naar het midden toe
   let idx = 0;
-
-  const frontCount = Math.min(BLOCK_CAPACITY, order.length - idx);
-  for (let j = 0; j < frontCount; j++, idx++) {
-    const layer = Math.floor(j / 3);
-    const lane = j % 3;
-    positions[order[idx].id] = { x: (lane - 1) * pitchX, y: layer * pitchY + UNIT.h / 2 + 0.02, z: frontZ };
-  }
-
-  const backCount = Math.min(BLOCK_CAPACITY, order.length - idx);
-  for (let j = 0; j < backCount; j++, idx++) {
-    const layer = Math.floor(j / 3);
-    const lane = j % 3;
-    positions[order[idx].id] = { x: (lane - 1) * pitchX, y: layer * pitchY + UNIT.h / 2 + 0.02, z: backZ };
-  }
-
-  const addonCount = Math.min(ADDON_CAPACITY, order.length - idx);
-  for (let j = 0; j < addonCount; j++, idx++) {
-    const layer = Math.floor(j / 2);
-    const lane = j % 2;
-    positions[order[idx].id] = { x: (lane - 0.5) * addonPitchX, y: layer * pitchY + UNIT.h / 2 + 0.02, z: addonZ };
-  }
-
-  const busWidth = pitchX * 3 + 0.6;
-  const busDepth = frontmost - rearmost + 0.8;
-  const busHeight = BLOCK_LAYERS * pitchY + 0.5;
-
-  return {
-    order,
-    positions,
-    busWidth,
-    busDepth,
-    busHeight,
-    spawn: { x: busWidth / 2 + 1.3, y: busHeight * 0.5, z: addonZ },
-    cameraCenterY: busHeight * 0.42,
-    cameraRadius: Math.max(5.2, busDepth * 1.3, busHeight * 2.2),
-    meta: { frontCount, backCount, addonCount },
-  };
-}
-
-// Laadproces (achterkant-module) — vereenvoudigde spiegelversie: trapsgewijs oplopend
-// profiel vanaf de achterdeuren naar voren. Niet gebaseerd op een officiële SOP.
-function computeRearLayout(boxesList) {
-  const order = [...boxesList].sort((a, b) => b.stop - a.stop);
-
-  const pitchX = UNIT.w + SLOT_GAP;
-  const pitchY = UNIT.h + SLOT_GAP * 0.6;
-  const pitchZ = UNIT.d + SLOT_GAP;
-
-  const blocks = [];
-  let remaining = order.length;
-  let layers = 2;
-  while (remaining > 0) {
-    const capacity = 3 * layers;
-    const used = Math.min(capacity, remaining);
-    blocks.push({ used, usedLayers: Math.ceil(used / 3) });
-    remaining -= used;
-    layers += 1;
-  }
-
-  const totalDepth = blocks.length * pitchZ;
-  let zCursor = totalDepth / 2;
-  let boxCursor = 0;
-  let maxLayers = 0;
-  const positions = {};
-
-  blocks.forEach((block) => {
-    const zCenter = zCursor - pitchZ / 2;
-    zCursor -= pitchZ;
-    for (let j = 0; j < block.used; j++) {
-      const box = order[boxCursor];
-      boxCursor++;
-      const layer = Math.floor(j / 3);
-      const lane = j % 3;
-      positions[box.id] = { x: (lane - 1) * pitchX, y: layer * pitchY + UNIT.h / 2 + 0.02, z: -zCenter };
+  for (let col = 0; col < frontColumns; col++) {
+    const count = Math.min(COL_HEIGHT, frontBoxes.length - idx);
+    const z = halfD - 0.4 - (col + 0.5) * pitchZ;
+    for (let layer = 0; layer < count; layer++, idx++) {
+      const box = frontBoxes[idx];
+      positions[box.id] = { x: 0, y: layer * pitchY + UNIT.h / 2 + 0.02, z };
     }
-    maxLayers = Math.max(maxLayers, block.usedLayers);
-  });
+  }
 
-  const busWidth = pitchX * 3 + 0.5;
-  const busDepth = totalDepth + 0.8;
-  const busHeight = maxLayers * pitchY + 0.5;
+  // Achteraan: golven van (tot) 4 kolommen breed, 3 hoog; laatste golf (laagste
+  // stopnummers) staat na het terugschuiven het dichtst bij de achterdeur.
+  idx = 0;
+  for (let chunk = 0; chunk < rearChunks; chunk++) {
+    const chunkDepthIndex = rearChunks - 1 - chunk; // 0 = dichtst bij de achterdeur
+    const z = -halfD + 0.4 + (chunkDepthIndex + 0.5) * pitchZ;
+    for (let lane = 0; lane < REAR_LANES && idx < rearBoxes.length; lane++) {
+      const count = Math.min(COL_HEIGHT, rearBoxes.length - idx);
+      const x = ((REAR_LANES - 1) / 2 - lane) * pitchX;
+      for (let layer = 0; layer < count; layer++, idx++) {
+        const box = rearBoxes[idx];
+        positions[box.id] = { x, y: layer * pitchY + UNIT.h / 2 + 0.02, z };
+      }
+    }
+  }
 
   return {
     order,
@@ -168,14 +121,11 @@ function computeRearLayout(boxesList) {
     busWidth,
     busDepth,
     busHeight,
-    spawn: { x: 0, y: busHeight * 0.5, z: -(busDepth / 2 + 1.4) },
+    spawn: { x: busWidth / 2 + 1.3, y: busHeight * 0.5, z: halfD * 0.25 },
     cameraCenterY: busHeight * 0.42,
     cameraRadius: Math.max(5.2, busDepth * 1.3, busHeight * 2.2),
+    meta: { frontCount, rearCount: rearBoxes.length, frontColumns, rearChunks },
   };
-}
-
-function computeLayout(boxesList, entryMode) {
-  return entryMode === "rear" ? computeRearLayout(boxesList) : computeSideLayout(boxesList);
 }
 
 function easeInOutCubic(t) {
@@ -188,10 +138,10 @@ const SPEEDS = [
   { id: "fast", label: "Snel", ms: 500 },
 ];
 
-function LoadingModule({ entryMode }) {
+export default function LaadModel3D() {
   const [routeId, setRouteId] = useState(ROUTES[0].id);
   const route = ROUTES.find((r) => r.id === routeId);
-  const layout = useMemo(() => computeLayout(route.boxes, entryMode), [routeId, entryMode]);
+  const layout = useMemo(() => computeVanLayout(route.boxes), [routeId]);
 
   const [placedCount, setPlacedCount] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -202,7 +152,6 @@ function LoadingModule({ entryMode }) {
   const apiRef = useRef(null);
 
   const finished = placedCount === route.boxes.length;
-  const currentBox = placedCount > 0 ? layout.order[placedCount - 1] : null;
   const nextBox = !finished ? layout.order[placedCount] : null;
 
   // ---- Three.js setup (eenmalig) ----
@@ -264,14 +213,14 @@ function LoadingModule({ entryMode }) {
 
     function updateCamera() {
       if (!activeLayout) return;
-      // Kijkrichting over de lengte van de bus (in plaats van dwars over de breedte),
-      // zodat de 3-brede laag echt links-naar-rechts in beeld staat. Standpunt: iets
-      // terug van de schuifdeur, aan de voorkant, zodat het hele laadproces in beeld past.
+      // Kijkrichting over de lengte van de bus. Standpunt: iets terug van de schuifdeur,
+      // aan de voorkant, zodat zowel het smalle voorstuk als de bredere achterkant in
+      // beeld passen.
       const eyeX = activeLayout.busWidth / 2 - 0.35;
       const eyeY = 1.75;
       const eyeZ = activeLayout.busDepth / 2 + 0.75;
       camera.position.set(eyeX, eyeY, eyeZ);
-      camera.lookAt(new THREE.Vector3(eyeX * 0.4, activeLayout.busHeight * 0.4, eyeZ - 6));
+      camera.lookAt(new THREE.Vector3(eyeX * 0.2, activeLayout.busHeight * 0.4, eyeZ - activeLayout.busDepth - 1));
     }
 
     function addWheel(group, x, z) {
@@ -297,7 +246,8 @@ function LoadingModule({ entryMode }) {
       addPanel(staticGroup, lay.busWidth, lay.busDepth, { x: 0, y: 0, z: 0 }, { x: -Math.PI / 2 });
       addPanel(staticGroup, lay.busDepth, lay.busHeight, { x: -halfW, y: lay.busHeight / 2, z: 0 }, { y: Math.PI / 2 });
 
-      // Schuifdeur op de zijkant (x = +halfW) — altijd open, zodat direct zichtbaar is dat dit de zijkant is
+      // Schuifdeur op de zijkant (x = +halfW), ter hoogte van het voorste (smalle) stuk —
+      // altijd open. Hier komen de boxen voor het cabine-gedeelte naar binnen.
       {
         const geo = new THREE.PlaneGeometry(lay.busDepth, lay.busHeight);
         const mesh = new THREE.Mesh(geo, doorMat);
@@ -310,7 +260,8 @@ function LoadingModule({ entryMode }) {
         staticGroup.add(edges);
       }
 
-      // 2 klapdeuren aan de achterkant (z = -halfD) — altijd open, zodat direct zichtbaar is dat dit de achterkant is
+      // 2 klapdeuren aan de achterkant (z = -halfD) — altijd open. Hier komen de boxen
+      // voor het achterste (brede) stuk naar binnen.
       {
         const doorW = lay.busWidth / 2;
         const doorGeo = new THREE.PlaneGeometry(doorW, lay.busHeight);
@@ -335,7 +286,7 @@ function LoadingModule({ entryMode }) {
       staticGroup.add(backStripe);
 
       // Cabine (versimpeld) net buiten de schuifdeur, om de vorm van een bus te suggereren
-      const cabW = lay.busWidth * 0.85;
+      const cabW = lay.busWidth * 0.5;
       const cabH = lay.busHeight * 0.75;
       const cabD = 0.85;
       const cab = new THREE.Mesh(new THREE.BoxGeometry(cabW, cabH, cabD), wallMat);
@@ -351,8 +302,8 @@ function LoadingModule({ entryMode }) {
       addWheel(staticGroup, halfW, wheelZ);
       addWheel(staticGroup, -halfW, -wheelZ);
       addWheel(staticGroup, halfW, -wheelZ);
-      addWheel(staticGroup, -halfW * 0.7, halfD + cabD * 0.6);
-      addWheel(staticGroup, halfW * 0.7, halfD + cabD * 0.6);
+      addWheel(staticGroup, -halfW * 0.35, halfD + cabD * 0.6);
+      addWheel(staticGroup, halfW * 0.35, halfD + cabD * 0.6);
 
       Object.values(lay.positions).forEach((p) => {
         const markerGeo = new THREE.PlaneGeometry(UNIT.w + 0.04, UNIT.d + 0.04);
@@ -526,7 +477,7 @@ function LoadingModule({ entryMode }) {
   function selectRoute(id) {
     if (id === routeId) return;
     const nextRoute = ROUTES.find((r) => r.id === id);
-    const nextLayout = computeLayout(nextRoute.boxes, entryMode);
+    const nextLayout = computeVanLayout(nextRoute.boxes);
     apiRef.current?.clearBoxes();
     apiRef.current?.buildStaticBus(nextLayout);
     apiRef.current?.setSpawn(nextLayout.spawn);
@@ -541,7 +492,7 @@ function LoadingModule({ entryMode }) {
         <div className="mb-4">
           <div className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: BRAND.lime }}>Laadmodel 3D • HelloFresh & Factor</div>
           <h1 className="text-xl sm:text-2xl font-extrabold leading-tight" style={{ color: BRAND.forestDark }}>
-            {entryMode === "rear" ? "Zo wordt de bus geladen via de achterdeuren" : "Zo wordt de bus geladen — HelloFresh Laagjes Methode"}
+            Zo wordt de bus geladen — HelloFresh Laagjes Methode
           </h1>
         </div>
 
@@ -561,21 +512,12 @@ function LoadingModule({ entryMode }) {
         <div className="rounded-xl px-4 py-3 mb-4 flex gap-2 text-xs sm:text-sm leading-snug" style={{ backgroundColor: "#EEF3E4", borderLeft: `4px solid ${BRAND.lime}` }}>
           <Info size={16} className="shrink-0 mt-0.5" color={BRAND.forest} />
           <div>
-            {entryMode === "rear" ? (
-              <>
-                <strong>Regel:</strong> laden begint bij de achterdeuren, 3 boxen per laag naast elkaar,
-                2 lagen op de eerste plek. Elke volgende plek — verder naar voren de bus in — komt 1 laag
-                hoger dan de vorige. Volgorde: aflopend stopnummer, laatste stop het eerst, vlak bij de achterdeuren.
-              </>
-            ) : (
-              <>
-                <strong>HelloFresh Laagjes Methode:</strong> laders staan bij de pallet en geven boxen door aan
-                de lader bij de zijdeur, die in laagjes stapelt — van links naar rechts, zodat de
-                eerstvolgende stop altijd rechts staat. Eerst het blok vooraan (bij de cabine) volledig
-                vullen tot aan de lijn, dan het blok achteraan. Restant-, add-on- en Factor-boxen (max 12)
-                komen apart bij de zijdeur. Volgorde: aflopend stopnummer.
-              </>
-            )}
+            <strong>HelloFresh Laagjes Methode:</strong> vooraan (bij de cabine, via de schuifdeur)
+            wordt 1 kolom breed geladen, 3 boxen hoog — steeds het hoogste stopnummer onderin,
+            en telkens een kolom verder het midden in. Achterin (via de achterdeuren) wordt in
+            golven van 4 kolommen naast elkaar geladen, ook 3 hoog; elke golf schuift na
+            afronding een stukje naar binnen om plek te maken — en voor de ergonomie, zodat
+            niemand hoeft over te strekken. Volgorde overal: aflopend stopnummer.
           </div>
         </div>
 
@@ -669,39 +611,6 @@ function LoadingModule({ entryMode }) {
 
         <p className="text-xs text-center opacity-50">Voorbeeldmodel — routes en boxen zijn aan te passen aan jullie exacte data.</p>
       </div>
-    </div>
-  );
-}
-
-const MODULES = [
-  { id: "side", naam: "Via schuifdeur" },
-  { id: "rear", naam: "Via achterdeuren" },
-];
-
-export default function LaadModel3D() {
-  const [moduleId, setModuleId] = useState("side");
-
-  return (
-    <div>
-      <div className="w-full flex justify-center pt-4" style={{ backgroundColor: BRAND.cream }}>
-        <div className="w-full max-w-md flex gap-2">
-          {MODULES.map((m) => (
-            <button
-              key={m.id}
-              onClick={() => setModuleId(m.id)}
-              className="flex-1 text-xs font-bold px-3 py-2.5 rounded-xl transition-colors"
-              style={{
-                backgroundColor: moduleId === m.id ? BRAND.lime : "#FFFFFF",
-                color: BRAND.forestDark,
-                border: `1.5px solid ${BRAND.forestDark}`,
-              }}
-            >
-              {m.naam}
-            </button>
-          ))}
-        </div>
-      </div>
-      <LoadingModule entryMode={moduleId} key={moduleId} />
     </div>
   );
 }
