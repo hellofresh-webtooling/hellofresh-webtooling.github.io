@@ -1,12 +1,47 @@
-# Laadmodel 3D — context voor toekomstige sessies
+# Laadmodel — context voor toekomstige sessies
 
 ## Wat dit is
-Interactief/demonstratief 3D-model (React + Three.js) dat het laadproces van een
-HelloFresh/Factor bezorgbus visualiseert. Hoofdcomponent: `src/LaadModel3D.jsx`.
-Oorspronkelijk gebouwd als los Claude.ai-artifact (single-file React component,
-Tailwind-classes, `three` via importmap); hier gemigreerd naar een standalone
-Vite-project met eigen `package.json`, los van de hoofdapp (`vloeistoffenkast-demo`)
-in de root van deze repo.
+Interactieve, stap-voor-stap **2D-laadinstructie** (React + SVG) die het
+laadproces van een HelloFresh/Factor bezorgbus visualiseert. Hoofdcomponent:
+`src/LaadInstructie.jsx` (dat is wat `main.jsx` rendert).
+
+### Waarom 2D i.p.v. het oude 3D-model
+De eerste versie was een 3D-model (React + Three.js, `src/LaadModel3D.jsx`).
+De gebruiker vond dat "niet interactief genoeg" en wilde iets nieuws in de
+richting van (1) een strak 2D-schema én (3) een stap-voor-stap werkinstructie.
+Daarom vervangen door een SVG-plattegrond met een stappen-flow. Het oude
+`LaadModel3D.jsx` staat er nog als referentie maar wordt niet meer gerenderd —
+verwijder het niet zonder overleg, het bevat dezelfde laadlogica in 3D-vorm.
+
+**De laadvolgorde-logica is ongewijzigd** overgenomen uit het 3D-model (zelfde
+uit-foto's-afgeleide algoritme, zie hieronder); alleen de *weergave* is nieuw.
+
+## De 2D-instructie (`LaadInstructie.jsx`)
+- **Plattegrond (bovenaanzicht, SVG)**: cabine boven, achterdeuren onder,
+  schuifdeur (lime strook + pijl) rechts bij de voorzone. De voorzone is 1 cel
+  breed; de zijvlakken ernaast zijn gearceerd ("wielkast") om te tonen *waarom*
+  daar maar 1 box breed past. De achterzone is tot 4 banen breed.
+- Elke cel toont de geplaatste boxen als **gestapelde kaarten** (fan naar
+  linksboven per laag) met het laadnummer op de bovenste kaart, plus een
+  balkjes-indicator voor het aantal gevulde lagen (max 3). Merk = kleur van de
+  linker rand (lime = HelloFresh, zwart = Factor).
+- **Stap-flow**: `placed` (0..total) telt hoeveel boxen geplaatst zijn.
+  Bediening: afspelen/pauze, vorige/volgende stap, een **scrubber (range-slider)**
+  om vrij door de belading te slepen, snelheid (langzaam/normaal/snel), reset.
+- **Fase-banner** boven de plattegrond zegt in welke zone/golf/kolom je zit.
+- **StepDetail** onder de plattegrond: beschrijft de zojuist geplaatste box
+  (`describe()`), toont merk/formaat/stop/code, en een **kolom-opbouw**-detail
+  (`StackDetail`) die laag 3→1 toont zodat "onderin eerst" duidelijk is. Bij de
+  laatste box van een achterzone-golf verschijnt de terugschuif-notitie.
+- **Klikken op een stapel** in de plattegrond opent `CellDetail` met de opbouw
+  van die specifieke kolom (klik nogmaals of kruisje om terug te gaan).
+- Alles is `useMemo`'d per route via `buildPlan(route)`, dat het raster,
+  de cellen en de geordende `steps[]` (met per stap zone/kolom/golf/baan/laag,
+  laadnummer en `waveComplete`-vlag) berekent.
+
+## Projectopzet
+Standalone Vite-project met eigen `package.json`, los van de hoofdapp
+(`vloeistoffenkast-demo`) in de root van deze repo.
 
 Dit project draait volledig los van de root-app: eigen `package.json`,
 `vite.config.js`, `node_modules`. De `deploy.sh`/`netlify.toml` van de root-app
@@ -70,16 +105,17 @@ terugschuift) dient uitsluitend om dat te garanderen.
   halverwege het terugschuiven. Bij twijfel: de complete, doorlopende
   fotoserie van de echte belading is de meest betrouwbare bron.
 
-## Implementatie (`computeVanLayout` in `LaadModel3D.jsx`)
+## Implementatie van de laadvolgorde (`buildPlan` in `LaadInstructie.jsx`)
 - `COL_HEIGHT = 3`, `REAR_LANES = 4`, `FRONT_FRACTION = 0.4` (aandeel van de
   boxen — de hoogste stopnummers — dat naar de smalle voorzone gaat; verder
   niet uit de foto's te herleiden hoe die verhouding er in het echt precies
   uitziet voor een volledige route, dit is een redelijke schatting).
 - Boxen gesorteerd op aflopend stopnummer; eerste `frontCount` boxen → smalle
-  kolom-voor-kolom voorzone; rest → brede golven-achterzone.
-  Zie codecommentaar in de functie voor de exacte z/x-berekening per zone.
-- De twee zones sluiten in de diepte (z-as) op elkaar aan; geen kunstmatige
-  tussenruimte.
+  kolom-voor-kolom voorzone; rest → brede golven-achterzone. Dit is exact
+  dezelfde ordening als het oude 3D-`computeVanLayout`, alleen naar een
+  2D-raster (rij = diepte, baan = breedte, laag = hoogte) vertaald.
+- De voor- en achterzone sluiten in de diepte op elkaar aan (met een dunne
+  zone-scheiding in de plattegrond, puur visueel).
 
 ## Boxdata
 - Drie voorbeeldroutes (Noord/Zuid/Centrum) in `ROUTES`, gegenereerd via
@@ -90,58 +126,51 @@ terugschuift) dient uitsluitend om dat te garanderen.
   1 t/m ~51) — voor deze demo maakt dat niet uit omdat het layout-algoritme
   alleen op relatieve volgorde sorteert, geen unieke stops vereist.
 - Formaten: HelloFresh = L/M/S, Factor = alleen M/S.
-- Boxen zijn genummerd (canvas-sprite, geen echt 3D-lettertype geladen) **van
-  hoog naar laag**: eerst geladen box krijgt het hoogste nummer, laatst
-  geladen box nummer 1. Dit "volgnummer" (aftellend vanaf het totaal) is iets
-  anders dan het fictieve `stop`-veld — zie boxdata hierboven.
+- Boxen krijgen een **laadnummer van hoog naar laag**: eerst geladen box krijgt
+  het hoogste nummer (diep in de bus), laatst geladen box nummer 1 (bij de
+  achterdeur, en dus als eerste weer eruit bij bezorgen). Dit "laadnummer"
+  (aftellend vanaf het totaal) is iets anders dan het fictieve `stop`-veld.
 
-## Visueel
-- HelloFresh-kleuren: kartonkleurige boxromp + merkaccent (lime voor
+## Visueel (2D)
+- HelloFresh-kleuren: kartonkleurige kaarten met merk-randkleur (lime voor
   HelloFresh, zwart/antraciet voor Factor — geen echte logo's/typografie).
-- Bus: transparante, donkergroene carrosserie, lime accentstrip alleen op de
-  achterkant, wielen, vereenvoudigde cabine, schuifdeur + 2 klapdeuren —
-  **altijd open** (geen toggle-interactie). Beide deuren worden nu ook
-  daadwerkelijk allebei "gebruikt" door het model (voorzone via schuifdeur,
-  achterzone via achterdeuren) — dat is inhoudelijk correct, niet enkel
-  decoratief zoals voorheen.
-- Bus-breedte is nu gebaseerd op de bredere achterzone (4 kolommen); de smalle
-  voorzone (1 kolom) staat gecentreerd in diezelfde breedte — de muren zelf
-  zijn dus niet visueel taps toelopend, dat is een bewuste vereenvoudiging.
-- Camera: **vast**, geen orbit/drag/zoom. POV vanaf net terug van de
-  schuifdeur (die zich ter hoogte van de smalle voorzone bevindt), kijkend
-  over de lengte van de bus — de achterzone ligt daardoor verder van de
-  camera af en oogt kleiner/dieper in beeld, wat overeenkomt met de
-  werkelijke afstand tot de achterdeuren.
-- Boxanimatie: vloeiende vlucht (`easeInOutCubic`, lichte boog via
-  `Math.sin(t * Math.PI) * 0.18`), geen tuimelende rotatie. Eén vast
-  spawn-punt bij de schuifdeur voor alle boxen (ook die naar de achterzone
-  vliegen) — vereenvoudiging, want de camera ziet de achterdeuren toch niet.
+- Plattegrond: donkergroene buitenwand, cabine boven, achterdeuren onder,
+  schuifdeur als lime strook + pijl rechts bij de voorzone. De niet-bruikbare
+  zijvlakken van de voorzone zijn gearceerd met een klein "wielkast"-label om
+  te tonen *waarom* de voorzone maar 1 box breed is (i.p.v. een verzonnen
+  taps-toelopende wand zoals de 3D-versie suggereerde).
+- Stapeling wordt getoond als kaarten die per laag naar linksboven "fannen",
+  met het laadnummer op de bovenste kaart en een balkjes-indicator voor het
+  aantal gevulde lagen. De actieve cel krijgt een pulserende lime-ring.
+- Lichte pop-in-animatie (CSS `@keyframes`) bij het plaatsen van een box; geen
+  zware 3D/WebGL meer, dus de bundel is fors kleiner (~168 kB i.p.v. ~540 kB).
 
 ## Besturing
-- Geen tik-interactie op losse boxen (was eerst een spel-idee, is nu een
-  demonstratiemodel).
-- Afspelen/pauzeren/stap-voor-stap, snelheid instelbaar (langzaam/normaal/snel
-  via `SPEEDS`), reset, routewissel.
+- Afspelen/pauzeren, vorige/volgende stap, **scrubber** (range-slider) om vrij
+  door de belading te slepen, snelheid (langzaam/normaal/snel via `SPEEDS`),
+  reset, routewissel.
+- **Klikken op een stapel** in de plattegrond toont de kolom-opbouw van die cel.
 
-## Techniek na migratie
-- `three` en `lucide-react` op recente major-versies (niet gepind op de oude
-  r128-beperking van de Claude.ai-sandbox) — component gebruikt alleen
-  stabiele, langjarige Three.js-API's (Scene/Mesh/Geometry/Material/Sprite),
-  geen breaking changes verwacht.
-- Tailwind v4 via `@tailwindcss/vite` (geen los `tailwind.config.js`/PostCSS
-  nodig) om de bestaande `className`-utility-classes ongewijzigd te laten
-  werken.
-- Getest: `npm run build` + Playwright-screenshots (start, tussenstand,
-  volledig geladen bij een grotere route) — rendert correct, geen
+## Techniek
+- Geen `three` meer nodig voor de weergave (`LaadInstructie.jsx` gebruikt puur
+  React + inline SVG). `three` staat nog in `package.json` omdat het oude
+  `LaadModel3D.jsx` het importeert; dat bestand wordt niet gerenderd en wordt
+  uit de productiebundle getreeshaket. Bij definitief opruimen van het 3D-model
+  kan `three` als dependency weg.
+- `lucide-react` voor iconen. Tailwind v4 via `@tailwindcss/vite` (geen los
+  `tailwind.config.js`/PostCSS nodig).
+- Getest: `npm run build` + Playwright-screenshots (leeg, tussenstand, en
+  volledig geladen bij de grootste route) — rendert correct, geen
   console-errors (op een onschuldige favicon-404 na).
 
 ## Bekende openstaande punten
 - `FRONT_FRACTION = 0.4` is een schatting, geen uit foto's afgeleide waarde —
   in het echt hing het af van waar precies de koelunit/wielkast de bus
   versmalt. Idealiter per voertuigtype configureerbaar maken.
-- Camera-afstand/FOV kan nog verder gebalanceerd worden per route-grootte.
 - Boxdata is fictief; voor productiegebruik koppelen aan echte route-/
   orderdata (en dan bij voorkeur met unieke oplopende stopnummers, zoals in
   het echt).
+- Het oude `LaadModel3D.jsx` (+ `three`-dependency) staat er nog puur als
+  referentie; kan opgeruimd worden zodra het niet meer nodig is.
 - Publicatie/deploy van dit subproject (los van de root-app) is nog niet
   ingericht.

@@ -1,8 +1,13 @@
-# Laadmodel 3D — HelloFresh & Factor
+# Laadmodel — HelloFresh & Factor
 
-Interactief/demonstratief 3D-model (React + Three.js) dat het laadproces van een
-HelloFresh/Factor bezorgbus visualiseert. Standalone Vite-project, los van de
-hoofdapp (`vloeistoffenkast-demo`) in de root van deze repo.
+Interactieve, stap-voor-stap **2D-laadinstructie** (React + SVG) die het
+laadproces van een HelloFresh/Factor bezorgbus visualiseert: een strakke
+plattegrond (bovenaanzicht) die zich per stap opbouwt, met per box een
+werkinstructie en kolom-opbouw. Standalone Vite-project, los van de hoofdapp
+(`vloeistoffenkast-demo`) in de root van deze repo.
+
+Het oude Three.js-model (`src/LaadModel3D.jsx`) staat er nog als referentie,
+maar de app rendert nu `src/LaadInstructie.jsx`.
 
 ## Draaien
 
