@@ -1,43 +1,49 @@
 # Laadmodel — context voor toekomstige sessies
 
 ## Wat dit is
-Interactieve, stap-voor-stap **2D-laadinstructie** (React + SVG) die het
-laadproces van een HelloFresh/Factor bezorgbus visualiseert. Hoofdcomponent:
-`src/LaadInstructie.jsx` (dat is wat `main.jsx` rendert).
+Interactief **3D-model** (React + Three.js) dat het laadproces van een
+HelloFresh/Factor bezorgbus visualiseert, met een stap-voor-stap besturing en
+info-panelen. Hoofdcomponent: `src/LaadModel3D.jsx` (dat is wat `main.jsx`
+rendert).
 
-### Waarom 2D i.p.v. het oude 3D-model
-De eerste versie was een 3D-model (React + Three.js, `src/LaadModel3D.jsx`).
-De gebruiker vond dat "niet interactief genoeg" en wilde iets nieuws in de
-richting van (1) een strak 2D-schema én (3) een stap-voor-stap werkinstructie.
-Daarom vervangen door een SVG-plattegrond met een stappen-flow. Het oude
-`LaadModel3D.jsx` staat er nog als referentie maar wordt niet meer gerenderd —
-verwijder het niet zonder overleg, het bevat dezelfde laadlogica in 3D-vorm.
+### Weg-en-terug: 3D → 2D → interactief 3D
+Er is een tijdje een 2D-SVG-plattegrondvariant geweest (`LaadInstructie.jsx`),
+gebouwd omdat de gebruiker het eerste 3D-model "niet interactief genoeg" vond.
+Daarna vroeg de gebruiker expliciet om terug te gaan naar 3D — maar dan wél
+interactief — en om de 2D-versie te verwijderen. Vandaar de huidige opzet:
+**één interactief 3D-model met OrbitControls** (draaien/kantelen/zoomen, touch
++ muis), plus de goede stap-flow en info-panelen die in de 2D-versie zaten.
+De 2D-component is verwijderd; zie git-historie als je 'm terug wil.
 
-**De laadvolgorde-logica is ongewijzigd** overgenomen uit het 3D-model (zelfde
-uit-foto's-afgeleide algoritme, zie hieronder); alleen de *weergave* is nieuw.
+**De laadvolgorde-logica is al die tijd ongewijzigd** (zelfde uit-foto's-
+afgeleide algoritme, zie hieronder); alleen de weergave is geëvolueerd.
 
-## De 2D-instructie (`LaadInstructie.jsx`)
-- **Plattegrond (bovenaanzicht, SVG)**: cabine boven, achterdeuren onder,
-  schuifdeur (lime strook + pijl) rechts bij de voorzone. De voorzone is 1 cel
-  breed; de zijvlakken ernaast zijn gearceerd ("wielkast") om te tonen *waarom*
-  daar maar 1 box breed past. De achterzone is tot 4 banen breed.
-- Elke cel toont de geplaatste boxen als **gestapelde kaarten** (fan naar
-  linksboven per laag) met het laadnummer op de bovenste kaart, plus een
-  balkjes-indicator voor het aantal gevulde lagen (max 3). Merk = kleur van de
-  linker rand (lime = HelloFresh, zwart = Factor).
-- **Stap-flow**: `placed` (0..total) telt hoeveel boxen geplaatst zijn.
-  Bediening: afspelen/pauze, vorige/volgende stap, een **scrubber (range-slider)**
-  om vrij door de belading te slepen, snelheid (langzaam/normaal/snel), reset.
-- **Fase-banner** boven de plattegrond zegt in welke zone/golf/kolom je zit.
-- **StepDetail** onder de plattegrond: beschrijft de zojuist geplaatste box
-  (`describe()`), toont merk/formaat/stop/code, en een **kolom-opbouw**-detail
-  (`StackDetail`) die laag 3→1 toont zodat "onderin eerst" duidelijk is. Bij de
-  laatste box van een achterzone-golf verschijnt de terugschuif-notitie.
-- **Klikken op een stapel** in de plattegrond opent `CellDetail` met de opbouw
-  van die specifieke kolom (klik nogmaals of kruisje om terug te gaan).
-- Alles is `useMemo`'d per route via `buildPlan(route)`, dat het raster,
-  de cellen en de geordende `steps[]` (met per stap zone/kolom/golf/baan/laag,
-  laadnummer en `waveComplete`-vlag) berekent.
+## Het interactieve 3D-model (`LaadModel3D.jsx`)
+- **Three.js-scene**: doorzichtige donkergroene carrosserie, open schuifdeur
+  (rechterzijde, voorzone), 2 open klapdeuren achter, wielen, versimpelde
+  cabine, lime accentstrip, vloerraster + slotmarkeringen. Boxen zijn
+  kartonkleurige `BoxGeometry` met een merk-accentvlak en een canvas-sprite met
+  het laadnummer.
+- **OrbitControls** (`three/addons/controls/OrbitControls.js`): slepen =
+  draaien, scroll/knijpen = zoomen. `enablePan=false`, `enableDamping=true`,
+  `maxPolarAngle` net onder de horizon (niet onder de vloer kijken),
+  min/max-afstand begrensd. `frameCamera()` zet target + camerapositie bij het
+  (her)bouwen van de bus per route.
+- **Stap-flow**: `placed` (0..total). Bij één stap vooruit (play/knop) **vliegt**
+  de nieuwe box in vanaf een spawn bij de juiste deur (`easeInOutCubic` + boogje);
+  bij scrubben worden boxen **direct** geplaatst. Dit gebeurt in `ensurePlaced()`
+  die de scene met `placed` synchroniseert (meshes bijmaken/opruimen).
+- **Klik op een box**: raycast-selectie (alleen als je niet sleept — beweging
+  < 6px). De geselecteerde box krijgt een lichte lime `emissive` + iets grotere
+  schaal, en `SelectedDetail` toont box-info + kolom-opbouw.
+- Info-panelen (data-gedreven, ongewijzigd t.o.v. de 2D-versie): `PhaseBanner`
+  (zone/golf/kolom), `StepDetail` (`describe()` + `StackDetail` "onderin eerst"
+  + terugschuif-notitie bij een voltooide golf), `DoneCard`.
+- Bediening: afspelen/pauze, vorige/volgende stap, **scrubber**, snelheid
+  (langzaam/normaal/snel), reset, routewissel.
+- Alles is `useMemo`'d per route via `buildPlan(route)`, dat de geordende
+  `steps[]` (met per stap zone/kolom/golf/baan/laag, `pos3` 3D-positie, `spawn`,
+  laadnummer en `waveComplete`-vlag), de cellen en de busafmetingen berekent.
 
 ## Projectopzet
 Standalone Vite-project met eigen `package.json`, los van de hoofdapp
@@ -105,17 +111,16 @@ terugschuift) dient uitsluitend om dat te garanderen.
   halverwege het terugschuiven. Bij twijfel: de complete, doorlopende
   fotoserie van de echte belading is de meest betrouwbare bron.
 
-## Implementatie van de laadvolgorde (`buildPlan` in `LaadInstructie.jsx`)
+## Implementatie van de laadvolgorde (`buildPlan` in `LaadModel3D.jsx`)
 - `COL_HEIGHT = 3`, `REAR_LANES = 4`, `FRONT_FRACTION = 0.4` (aandeel van de
   boxen — de hoogste stopnummers — dat naar de smalle voorzone gaat; verder
   niet uit de foto's te herleiden hoe die verhouding er in het echt precies
   uitziet voor een volledige route, dit is een redelijke schatting).
 - Boxen gesorteerd op aflopend stopnummer; eerste `frontCount` boxen → smalle
-  kolom-voor-kolom voorzone; rest → brede golven-achterzone. Dit is exact
-  dezelfde ordening als het oude 3D-`computeVanLayout`, alleen naar een
-  2D-raster (rij = diepte, baan = breedte, laag = hoogte) vertaald.
-- De voor- en achterzone sluiten in de diepte op elkaar aan (met een dunne
-  zone-scheiding in de plattegrond, puur visueel).
+  kolom-voor-kolom voorzone (x = 0, van de voorwand naar het midden); rest →
+  brede golven-achterzone (4 banen, laagste stops nabij de achterdeur). Elke
+  stap krijgt een `pos3` (3D-doelpositie) via het `PITCH_X/Y/Z`-slotraster.
+- De voor- en achterzone sluiten in de diepte (z-as) op elkaar aan.
 
 ## Boxdata
 - Drie voorbeeldroutes (Noord/Zuid/Centrum) in `ROUTES`, gegenereerd via
@@ -131,46 +136,46 @@ terugschuift) dient uitsluitend om dat te garanderen.
   achterdeur, en dus als eerste weer eruit bij bezorgen). Dit "laadnummer"
   (aftellend vanaf het totaal) is iets anders dan het fictieve `stop`-veld.
 
-## Visueel (2D)
-- HelloFresh-kleuren: kartonkleurige kaarten met merk-randkleur (lime voor
+## Visueel (3D)
+- HelloFresh-kleuren: kartonkleurige boxen met een merk-accentvlak (lime voor
   HelloFresh, zwart/antraciet voor Factor — geen echte logo's/typografie).
-- Plattegrond: donkergroene buitenwand, cabine boven, achterdeuren onder,
-  schuifdeur als lime strook + pijl rechts bij de voorzone. De niet-bruikbare
-  zijvlakken van de voorzone zijn gearceerd met een klein "wielkast"-label om
-  te tonen *waarom* de voorzone maar 1 box breed is (i.p.v. een verzonnen
-  taps-toelopende wand zoals de 3D-versie suggereerde).
-- Stapeling wordt getoond als kaarten die per laag naar linksboven "fannen",
-  met het laadnummer op de bovenste kaart en een balkjes-indicator voor het
-  aantal gevulde lagen. De actieve cel krijgt een pulserende lime-ring.
-- Lichte pop-in-animatie (CSS `@keyframes`) bij het plaatsen van een box; geen
-  zware 3D/WebGL meer, dus de bundel is fors kleiner (~168 kB i.p.v. ~540 kB).
+- Bus: doorzichtige donkergroene carrosserie (alleen vloer + linkerwand als
+  vlakken, zodat je van rechts/achter naar binnen kijkt), open schuifdeur
+  rechts (voorzone), 2 open klapdeuren achter, wielen, versimpelde cabine, lime
+  accentstrip achter. Vloerraster + lime slotmarkeringen tonen het laadraster.
+- Bewuste vereenvoudiging: de carrosserie is niet fysiek taps toelopend; de
+  voorzone is gewoon 1 kolom breed gecentreerd. De echte reden (wielkast/koeling
+  vooraan) is in deze 3D-versie niet apart uitgetekend.
+- Boxanimatie: alleen bij één stap vooruit vliegt de box in (`easeInOutCubic`
+  + boogje) vanaf een spawn bij de betreffende deur; bij scrubben plaatsen
+  boxen direct.
 
 ## Besturing
-- Afspelen/pauzeren, vorige/volgende stap, **scrubber** (range-slider) om vrij
-  door de belading te slepen, snelheid (langzaam/normaal/snel via `SPEEDS`),
-  reset, routewissel.
-- **Klikken op een stapel** in de plattegrond toont de kolom-opbouw van die cel.
+- **Camera**: OrbitControls — slepen = draaien/kantelen, scroll/knijpen = zoomen
+  (touch + muis). Pannen staat uit; er is demping.
+- Afspelen/pauzeren, vorige/volgende stap, **scrubber** (range-slider), snelheid
+  (langzaam/normaal/snel via `SPEEDS`), reset, routewissel.
+- **Klik op een box** (zonder te slepen): selecteert 'm (lime gloed) en toont
+  box-info + kolom-opbouw in `SelectedDetail`.
 
 ## Techniek
-- Geen `three` meer nodig voor de weergave (`LaadInstructie.jsx` gebruikt puur
-  React + inline SVG). `three` staat nog in `package.json` omdat het oude
-  `LaadModel3D.jsx` het importeert; dat bestand wordt niet gerenderd en wordt
-  uit de productiebundle getreeshaket. Bij definitief opruimen van het 3D-model
-  kan `three` als dependency weg.
-- `lucide-react` voor iconen. Tailwind v4 via `@tailwindcss/vite` (geen los
+- `three` (0.185) voor de scene, `OrbitControls` via `three/addons/...`.
+  `lucide-react` voor iconen. Tailwind v4 via `@tailwindcss/vite` (geen los
   `tailwind.config.js`/PostCSS nodig).
-- Getest: `npm run build` + Playwright-screenshots (leeg, tussenstand, en
-  volledig geladen bij de grootste route) — rendert correct, geen
-  console-errors (op een onschuldige favicon-404 na).
+- WebGL-bundle is groot (~716 kB / ~192 kB gzip) — de Vite chunk-grootte-
+  waarschuwing is hier onschuldig.
+- Getest: `npm run build` + Playwright (leeg, tussenstand, volledig geladen,
+  én slepen-om-te-draaien) — rendert correct, geen console-errors (op een
+  onschuldige favicon-404 na).
 
 ## Bekende openstaande punten
 - `FRONT_FRACTION = 0.4` is een schatting, geen uit foto's afgeleide waarde —
   in het echt hing het af van waar precies de koelunit/wielkast de bus
   versmalt. Idealiter per voertuigtype configureerbaar maken.
+- Bij grote routes overlappen de nummer-sprites wat in vooraanzicht; inzoomen/
+  draaien lost het op. Eventueel later de labels schaal-/afstand-afhankelijk maken.
 - Boxdata is fictief; voor productiegebruik koppelen aan echte route-/
   orderdata (en dan bij voorkeur met unieke oplopende stopnummers, zoals in
   het echt).
-- Het oude `LaadModel3D.jsx` (+ `three`-dependency) staat er nog puur als
-  referentie; kan opgeruimd worden zodra het niet meer nodig is.
 - Publicatie/deploy van dit subproject (los van de root-app) is nog niet
   ingericht.
